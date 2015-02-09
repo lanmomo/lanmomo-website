@@ -60,8 +60,12 @@ WSGI_APPLICATION = 'lanmomo.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'lanmomo',
+        'USER': 'change',
+        'PASSWORD': 'change',
+        'HOST': 'localhost',
+        'PORT': '3306'
     }
 }
 
