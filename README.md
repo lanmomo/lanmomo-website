@@ -11,8 +11,9 @@ Website for LanMomo
  * Activate the environment, `source bin/active`.
  * Install the requirements, `pip install -r requirements.txt`.
  * Create an environment file in `lanmomo/lanmomo/settings/env.py` (file is git ignored).
- 
+
   ```python
+  # see lanmomo/lanmomo/settings/env.py.skel
   SETTINGS = 'lanmomo.settings.devel' # or 'lanmomo.settings.prod' or another module if you want
   SECRET_KEY = '...' # https://docs.djangoproject.com/en/1.7/ref/settings/#secret-key
   DB_USER = '...' # optional, when using mysql
