@@ -5,6 +5,7 @@ Website for LanMomo
 
 ### Setup the project
  * You need `python3`, `pip` and `virtualenv`.
+ * For `mysqlclient`, you need `python3-dev`, `libssl-dev` and `libmariadbclient-dev` or `libmysqlclient-dev`.
  * Clone the repository, `git clone ...`.
  * Run `virtualenv -p /usr/bin/python3 ./` inside the project's folder to create a virtual environment inside of it.
  * Activate the environment, `bin/active`.
