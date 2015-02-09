@@ -12,7 +12,7 @@ class Event(models.Model):
     places = models.IntegerField()
     date_debut = models.DateTimeField()
     date_fin = models.DateTimeField()
-    location = models.CharField(max_length=200)
+    endroit = models.CharField(max_length=200)
 
 
 class Jeu(models.Model):
@@ -23,8 +23,9 @@ class Jeu(models.Model):
 
 class Serveur(models.Model):
     jeu = models.ForeignKey(Jeu)
-    adresse = models.CharField(max_length=20)
+    # ipv4, ipv6 ou nom de domaine
+    adresse = models.CharField(max_length=60)
     port = models.IntegerField()
     places = models.IntegerField()
-    modes = models.CharField(max_length=200)
+    mode = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
