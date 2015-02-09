@@ -1,2 +1,13 @@
+# virtualenv files
 bin/
 lib/
+
+# python files
+*.py[cod]
+__pycache__/
+lanmomo/__pycache__/
+lanmomo/lanmomo/__pychache__/
+
+# secret files
+lanmomo/db.sqlite3
+lanmomo/lanmomo/secret.key
