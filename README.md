@@ -12,5 +12,5 @@ Website for LanMomo
 
 ### When working on the project
 
-* Use `bin/activate` to active your `virtualenv` session.
+* Use `source bin/activate` to active your `virtualenv` session.
 * Use `deactive` to close your `virtualenv` sesssion.
