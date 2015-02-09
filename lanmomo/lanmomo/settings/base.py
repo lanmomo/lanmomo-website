@@ -8,17 +8,19 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+import lanmomo.settings.env as env
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-with open(os.path.join(BASE_DIR, 'lanmomo', 'secret.key')) as f:
-    SECRET_KEY = f.read()
+
+SECRET_KEY = env.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -53,23 +55,6 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'lanmomo.urls'
 
 WSGI_APPLICATION = 'lanmomo.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
-with open(os.path.join(BASE_DIR, 'lanmomo', 'db.auth')) as f:
-    lines = f.readlines()
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'lanmomo',
-            'USER': lines[0].rstrip(),
-            'PASSWORD': lines[1].rstrip(),
-            'HOST': 'localhost',
-            'PORT': '3306'
-        }
-    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
