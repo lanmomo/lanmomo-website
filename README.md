@@ -11,6 +11,7 @@ Website for LanMomo
  * Activate the environment, `bin/active`.
  * Install the requirements, `pip install -r requirements.txt`.
  * Create a [secret key](https://docs.djangoproject.com/en/1.7/ref/settings/#secret-key) inside the file `lanmomo/lanmomo/secret.key`.
+ * Setup mysql authentication inside the file `lanmomo/lanmomo/db.auth` (first line user, second line password).
  * Create the django database `python lanmomo/manage.py migrate`.
 
 ### When working on the project

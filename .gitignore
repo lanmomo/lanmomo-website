@@ -11,3 +11,4 @@ lanmomo/lanmomo/__pychache__/
 # secret files
 lanmomo/db.sqlite3
 lanmomo/lanmomo/secret.key
+lanmomo/lanmomo/db.auth

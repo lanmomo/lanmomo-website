@@ -58,16 +58,18 @@ WSGI_APPLICATION = 'lanmomo.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'lanmomo',
-        'USER': 'change',
-        'PASSWORD': 'change',
-        'HOST': 'localhost',
-        'PORT': '3306'
+with open(os.path.join(BASE_DIR, 'lanmomo', 'db.auth')) as f:
+    lines = f.readlines()
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'lanmomo',
+            'USER': lines[0].rstrip(),
+            'PASSWORD': lines[1].rstrip(),
+            'HOST': 'localhost',
+            'PORT': '3306'
+        }
     }
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
