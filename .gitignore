@@ -1,6 +1,7 @@
 # virtualenv files
 bin/
 lib/
+include/
 
 # python files
 *.py[cod]
