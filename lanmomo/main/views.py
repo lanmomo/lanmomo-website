@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from main.models import Utilisateur
-from main.serializers import UtilisateurSerializer
+from main.models import User
+from main.serializers import UserSerializer
 
 
 def home(request):
@@ -20,39 +20,39 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
         
 @csrf_exempt
-def utilisateur_list(request):
+def users_list(request):
     if request.method == 'GET':
-        utilisateurs = Utilisateur.objects.all()
-        serializer = UtilisateurSerializer(utilisateurs, many=True)
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
         return JSONResponse(serializer.data)
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
-        serializer = UtilisateurSerializer(data=data)
+        serializer = UserSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JSONResponse(serializer.data, status=201)
         return JSONResponse(serializer.errors, status=400)
 
 @csrf_exempt
-def utilisateur_detail(request, pk):
+def users_detail(request, pk):
     try:
-        utilisateur = Utilisateur.objects.get(pk=pk)
-    except utilisateur.DoesNotExist:
+        user = User.objects.get(pk=pk)
+    except user.DoesNotExist:
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = UtilisateurSerializer(utilisateur)
+        serializer = UserSerializer(user)
         return JSONResponse(serializer.data)
 
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = UtilisateurSerializer(utilisateur, data=data)
+        serializer = UserSerializer(user, data=data)
         if serializer.is_valid():
             serializer.save()
             return JSONResponse(serializer.data)
         return JSONResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
-        utilisateur.delete()
+        user.delete()
         return HttpResponse(status=204)

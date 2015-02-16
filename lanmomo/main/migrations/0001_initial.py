@@ -13,10 +13,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Event',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('places', models.IntegerField()),
-                ('date_debut', models.DateTimeField()),
-                ('date_fin', models.DateTimeField()),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('seats', models.IntegerField()),
+                ('date_start', models.DateTimeField()),
+                ('date_end', models.DateTimeField()),
                 ('location', models.CharField(max_length=200)),
             ],
             options={
@@ -24,11 +24,11 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Jeu',
+            name='Game',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('nom', models.CharField(max_length=100)),
-                ('description', models.CharField(max_length=500)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=100)),
+                ('description', models.TextField()),
                 ('event', models.ForeignKey(to='main.Event')),
             ],
             options={
@@ -36,31 +36,38 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Serveur',
+            name='Server',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('adresse', models.CharField(max_length=20)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('ip_addr', models.CharField(max_length=200)),
                 ('port', models.IntegerField()),
-                ('places', models.IntegerField()),
-                ('modes', models.CharField(max_length=200)),
-                ('description', models.CharField(max_length=500)),
-                ('jeu', models.ForeignKey(to='main.Jeu')),
+                ('slots', models.IntegerField()),
+                ('mode', models.CharField(max_length=200)),
+                ('description', models.TextField()),
+                ('game', models.ForeignKey(to='main.Game')),
             ],
             options={
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Utilisateur',
+            name='User',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('prenom', models.CharField(max_length=100)),
-                ('nom', models.CharField(max_length=100)),
-                ('username', models.CharField(max_length=30)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('username', models.CharField(default=b'anon', max_length=30)),
+                ('first_name', models.CharField(max_length=100)),
+                ('last_name', models.CharField(max_length=100)),
                 ('email', models.CharField(max_length=256)),
+                ('active', models.BooleanField(default=False)),
             ],
             options={
             },
             bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='attendees',
+            field=models.ManyToManyField(to='main.User'),
+            preserve_default=True,
         ),
     ]

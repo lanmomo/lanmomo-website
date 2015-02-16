@@ -1,10 +1,10 @@
 from django.db import models
 
 
-class Utilisateur(models.Model):
+class User(models.Model):
     username = models.CharField(max_length=30, default='anon')
-    prenom = models.CharField(max_length=100)
-    nom = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     email = models.CharField(max_length=256)
     active = models.BooleanField(default=False)
     
@@ -13,26 +13,26 @@ class Utilisateur(models.Model):
 
 
 class Event(models.Model):
-    places = models.IntegerField()
-    date_debut = models.DateTimeField()
-    date_fin = models.DateTimeField()
-    endroit = models.CharField(max_length=200)
-    participants = models.ManyToManyField(Utilisateur)
+    seats = models.IntegerField()
+    date_start = models.DateTimeField()
+    date_end = models.DateTimeField()
+    location = models.CharField(max_length=200)
+    attendees = models.ManyToManyField(User)
 
-class Jeu(models.Model):
+class Game(models.Model):
     event = models.ForeignKey(Event)
-    nom = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     description = models.TextField()
     
     def __str__(self):
         return self.nom
 
-class Serveur(models.Model):
-    jeu = models.ForeignKey(Jeu)
+class Server(models.Model):
+    game = models.ForeignKey(Game)
     # ipv4, ipv6 ou nom de domaine
-    adresse = models.CharField(max_length=200)
+    ip_addr = models.CharField(max_length=200)
     port = models.IntegerField()
-    places = models.IntegerField()
+    slots = models.IntegerField()
     mode = models.CharField(max_length=200)
     description = models.TextField()
 

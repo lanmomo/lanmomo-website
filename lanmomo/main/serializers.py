@@ -1,9 +1,9 @@
 from django.forms import widgets
 from rest_framework import serializers
-from main.models import Utilisateur, Jeu, Serveur
+from main.models import User, Game, Server
 
-class UtilisateurSerializer(serializers.Serializer):
+class UserSerializer(serializers.Serializer):
     
     class Meta:
-        model = Utilisateur
-        fields = ('id', 'username', 'prenom', 'nom', 'email', 'active')
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'active')
