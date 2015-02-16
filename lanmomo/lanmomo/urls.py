@@ -9,6 +9,6 @@ urlpatterns = patterns('',
     
     url(r'^$', views.home),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^api/users/$', views.users_list),
-    url(r'^api/users/(?P<pk>[0-9]+)/$', views.users_detail),
+    url(r'^api/(?P<key>.*)/$', views.models_list),
+    url(r'^api/(?P<key>.*)/(?P<pk>[0-9]+)/$', views.models_detail),
 )

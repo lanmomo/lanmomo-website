@@ -35,4 +35,3 @@ class Server(models.Model):
     slots = models.IntegerField()
     mode = models.CharField(max_length=200)
     description = models.TextField()
-

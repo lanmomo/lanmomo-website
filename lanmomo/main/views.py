@@ -3,14 +3,24 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from main.models import User
-from main.serializers import UserSerializer
+from main.models import User, Game, Server
+from main.serializers import UserSerializer, GameSerializer, ServerSerializer
 
+models = {
+   'users'  :(User, UserSerializer),
+   'games'  :(Game, GameSerializer),
+   'servers':(Server, ServerSerializer)
+}
 
+def get_model(key):
+    try:
+        model = models[key]
+    except KeyError:
+        model = 'null'
+    return model
+    
 def home(request):
     return HttpResponse('<img src="http://a.pomf.se/lbvmhf.jpg" />')
-
-
 
 class JSONResponse(HttpResponse):
 
@@ -20,39 +30,48 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
         
 @csrf_exempt
-def users_list(request):
+def models_list(request, key):
+    
+    model = get_model(key)
+    if(model == 'null'):
+        return HttpResponse(status=404)
+    
     if request.method == 'GET':
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
+        objects = model[0].objects.all()
+        serializer = model[1](objects, many=True)
         return JSONResponse(serializer.data)
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
-        serializer = UserSerializer(data=data)
+        serializer = model[1](data=data)
         if serializer.is_valid():
             serializer.save()
             return JSONResponse(serializer.data, status=201)
         return JSONResponse(serializer.errors, status=400)
-
+        
 @csrf_exempt
-def users_detail(request, pk):
+def models_detail(request, key, pk):
+
+    model = get_model(key)
+    if(model == 'null'):
+        return HttpResponse(status=404)
     try:
-        user = User.objects.get(pk=pk)
-    except user.DoesNotExist:
+        object_ = model[0].objects.get(pk=pk)
+    except object_.DoesNotExist:
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = UserSerializer(user)
+        serializer = model[1](user)
         return JSONResponse(serializer.data)
 
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = UserSerializer(user, data=data)
+        serializer = model[1](user, data=data)
         if serializer.is_valid():
             serializer.save()
             return JSONResponse(serializer.data)
         return JSONResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
-        user.delete()
+        object_.delete()
         return HttpResponse(status=204)
