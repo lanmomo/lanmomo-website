@@ -11,21 +11,12 @@ class User(models.Model):
     def __str__(self):
         return self.username
 
-
-class Event(models.Model):
-    seats = models.IntegerField()
-    date_start = models.DateTimeField()
-    date_end = models.DateTimeField()
-    location = models.CharField(max_length=200)
-    attendees = models.ManyToManyField(User)
-
 class Game(models.Model):
-    event = models.ForeignKey(Event)
     name = models.CharField(max_length=100)
     description = models.TextField()
     
     def __str__(self):
-        return self.nom
+        return self.name
 
 class Server(models.Model):
     game = models.ForeignKey(Game)
@@ -35,3 +26,11 @@ class Server(models.Model):
     slots = models.IntegerField()
     mode = models.CharField(max_length=200)
     description = models.TextField()
+    
+class Event(models.Model):
+    seats = models.IntegerField()
+    date_start = models.DateTimeField()
+    date_end = models.DateTimeField()
+    location = models.CharField(max_length=200)
+    attendees = models.ManyToManyField(User)
+    games = models.ManyToManyField(Server)

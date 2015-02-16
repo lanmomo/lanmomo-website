@@ -61,12 +61,12 @@ def models_detail(request, key, pk):
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = model[1](user)
+        serializer = model[1](object_)
         return JSONResponse(serializer.data)
 
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = model[1](user, data=data)
+        serializer = model[1](object_, data=data)
         if serializer.is_valid():
             serializer.save()
             return JSONResponse(serializer.data)

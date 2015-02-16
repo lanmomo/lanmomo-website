@@ -6,18 +6,20 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'active')
+        fields = ('id', 'username', 'first_name', 'last_name',
+                  'email', 'active')
 
 
 class GameSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Game
-        fields = ('id', 'name', 'event', 'description')
+        fields = ('id', 'name', 'description')
     
 
 class ServerSerializer(serializers.ModelSerializer):
     
     class Meta :   
         model = Server
-        fields = ('id', 'game', 'ip_addr', 'port', 'slots', 'mode', 'description')
+        fields = ('id', 'game', 'ip_addr', 'port',
+                  'slots', 'mode', 'description')
