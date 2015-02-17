@@ -12,3 +12,6 @@ lanmomo/lanmomo/__pychache__/
 # secret files
 lanmomo/db.sqlite3
 lanmomo/lanmomo/settings/env.py
+
+# front
+public/bower_components
