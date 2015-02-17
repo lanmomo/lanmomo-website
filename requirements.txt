@@ -1,2 +1,4 @@
 Django==1.7.4
+djangorestframework>=3.0
 mysqlclient==1.3.5
+
