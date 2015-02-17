@@ -14,4 +14,4 @@ lanmomo/db.sqlite3
 lanmomo/lanmomo/settings/env.py
 
 # front
-public/node_modules
+public/bower_components
