@@ -16,5 +16,11 @@ app.get('/', function(req, res) {
   res.send('public/index.html');
 });
 
+app.get('/api/users', function(req, res) {
+  User.find({}, function(err, users) {
+    res.json(users);
+  })
+});
+
 app.listen(3000);
 console.log("Listening on port 3000");
