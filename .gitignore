@@ -1,17 +1,5 @@
-# virtualenv files
-bin/
-lib/
-include/
-
-# python files
-*.py[cod]
-__pycache__/
-lanmomo/__pycache__/
-lanmomo/lanmomo/__pychache__/
-
-# secret files
-lanmomo/db.sqlite3
-lanmomo/lanmomo/settings/env.py
-
-# front
+#front
 public/bower_components
+
+#nodejs
+node_modules
