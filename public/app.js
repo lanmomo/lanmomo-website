@@ -12,6 +12,12 @@ app.controller('UsersController', function($scope, $http) {
     })
 });
 
+app.controller('SubscriptionController', function($scope, $http) {
+  $scope.subscribe = function(data) {
+    console.log(data);
+  }
+})
+
 
 app.config(function($routeProvider) {
   $routeProvider.when('/', {
@@ -20,5 +26,9 @@ app.config(function($routeProvider) {
   .when('/users', {
     templateUrl: 'partials/users.html',
     controller: 'UsersController'
-  });
+  })
+  .when('/subscribe', {
+    templateUrl: 'partials/subscription.html',
+    controller: 'SubscriptionController'
+  })
 });
