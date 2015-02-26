@@ -14,9 +14,15 @@ app.controller('UsersController', function($scope, $http) {
 
 app.controller('SubscriptionController', function($scope, $http) {
   $scope.subscribe = function(data) {
-    console.log(data);
+    $http.post('/api/subscribe', data)
+      .success(function(data, status) {
+        console.log(status);
+      })
+      .error(function(data, status) {
+        console.log(data);
+      });
   }
-})
+});
 
 
 app.config(function($routeProvider) {
@@ -30,5 +36,5 @@ app.config(function($routeProvider) {
   .when('/subscribe', {
     templateUrl: 'partials/subscription.html',
     controller: 'SubscriptionController'
-  })
+  });
 });
