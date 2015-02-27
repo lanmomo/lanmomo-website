@@ -4,6 +4,7 @@ switch(process.env.NODE_ENV) {
     db = {url: 'mongodb://localhost/dev'};
     break;
   case 'prod':
+    //TODO Add security
     db = {url: 'mongodb://localhost/lanmomo'};
     break;
 }
