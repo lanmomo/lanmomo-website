@@ -9,7 +9,7 @@ app.controller('UsersController', function($scope, $http) {
       //TODO Provide visual error in view
       console.log(status);
       console.log(err);
-    })
+    });
 });
 
 app.controller('SubscriptionController', function($scope, $http) {
@@ -21,7 +21,7 @@ app.controller('SubscriptionController', function($scope, $http) {
       .error(function(data, status) {
         console.log(data);
       });
-  }
+  };
 });
 
 
