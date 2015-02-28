@@ -3,11 +3,6 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.initConfig({
-    nodemon: {
-      dev: {
-        script: 'app.js'
-      }
-    },
     env: {
       dev: {
         NODE_ENV: 'dev'
@@ -16,11 +11,25 @@ module.exports = function(grunt) {
     jshint: {
       all: ['Gruntfile.js', 'backend/**/*.js', 'public/**/*.js'],
       options: {
-        ignores: ['public/bower_components/**/*.js'],
-        jshintrc: true
+        ignores: ['public/bower_components/**/*.js']
+        //TODO jshintrc
+        //jshintrc: true
+      }
+    },
+    watch: {
+      scripts: {
+        files: ['Gruntfile.js', 'backend/**/*.js', 'public/**/*.js', '!public/bower_components/**/*.js', 'public/**/*.html', 'public/**/*.css'],
+        tasks: ['jshint', 'env:dev']
+      }
+    },
+    express: {
+      dev: {
+        options: {
+          script: 'app.js'
+        }
       }
     }
   });
 
-  grunt.registerTask('default', ['env:dev', 'jshint', 'nodemon:dev']);
+  grunt.registerTask('default', ['env:dev', 'jshint', 'express:dev', 'watch']);
 };
