@@ -11,9 +11,8 @@ module.exports = function(grunt) {
     jshint: {
       all: ['Gruntfile.js', 'backend/**/*.js', 'public/**/*.js'],
       options: {
-        ignores: ['public/bower_components/**/*.js']
-        //TODO jshintrc
-        //jshintrc: true
+        ignores: ['public/bower_components/**/*.js'],
+        jshintrc: true
       }
     },
     watch: {
