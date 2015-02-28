@@ -1,4 +1,5 @@
 var db = {};
+//TODO Common configuration
 switch(process.env.NODE_ENV) {
   case 'dev':
     db = {url: 'mongodb://localhost/dev'};
