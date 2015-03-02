@@ -16,22 +16,22 @@ module.exports = function(app){
     });
   });
 
-  app.post('/api/subscribe', function(req, res) {
+  app.post('/api/subscribe', function(req) {
     req.body.active = false;
     var random = Math.random().toString();
     var hash = crypto.createHash('sha1').update(random).digest('hex');
     User.create(req.body, function(err, user) {
-      data = {
+      var data = {
         userId: user._id,
         emailId: hash
-      }
+      };
       EmailVerification.create(data, function(err, emailVerification) {
         if(err) console.log(err);
         mailOptions.to = req.body.email;
         //TODO change to the dns
         //TODO hostname from config?
-        hostname = "http://localhost:3000";
-        url = hostname + "/api/verify/" + emailVerification.emailId;
+        var hostname = "http://localhost:3000";
+        var url = hostname + "/api/verify/" + emailVerification.emailId;
         mailOptions.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
         tranporter.sendMail(mailOptions, function(err, info) {
           if(err) console.log(err);
@@ -43,7 +43,7 @@ module.exports = function(app){
 
   app.get('/api/verify/:emailId', function(req, res) {
     EmailVerification.findOne({emailId: req.param('emailId')}, function(err, emailVerification) {
-      if(err) log(err);
+      if(err) console.log(err);
       User.update({_id: emailVerification.userId}, {active: true}, function(err, numAffected) {
         if(err) console.log(err);
         console.log(numAffected);
@@ -52,4 +52,4 @@ module.exports = function(app){
       });
     });
   });
-}
+};

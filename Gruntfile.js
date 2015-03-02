@@ -8,6 +8,11 @@ module.exports = function(grunt) {
         NODE_ENV: 'dev'
       }
     },
+    nodemon: {
+      dev: {
+        script: 'app.js'
+      }
+    },
     jshint: {
       all: ['Gruntfile.js', 'backend/**/*.js', 'public/**/*.js'],
       options: {
@@ -18,17 +23,11 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ['Gruntfile.js', 'backend/**/*.js', 'public/**/*.js', '!public/bower_components/**/*.js', 'public/**/*.html', 'public/**/*.css'],
-        tasks: ['jshint', 'env:dev']
-      }
-    },
-    express: {
-      dev: {
-        options: {
-          script: 'app.js'
-        }
+        tasks: ['jshint']
       }
     }
   });
 
-  grunt.registerTask('default', ['env:dev', 'express:dev', 'watch']);
+  grunt.registerTask('serve', ['env:dev', 'nodemon']);
+  grunt.registerTask('lint', ['watch']);
 };
