@@ -3,3 +3,6 @@ public/bower_components
 
 #nodejs
 node_modules
+
+#credentials
+backend/config/credentials.js
