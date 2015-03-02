@@ -2,6 +2,7 @@ var tranporter = require('../config/transporter');
 var mailOptions = require('../config/mail-options');
 var User = require('../models/user');
 var EmailVerification = require('../models/email-verification');
+var crypto = require('crypto');
 
 module.exports = function(app){
   app.get('/', function(req, res) {
@@ -9,7 +10,8 @@ module.exports = function(app){
   });
 
   app.get('/api/users', function(req, res) {
-    User.find({}, function(err, users) {
+    //TODO Send only specific fields
+    User.find({active:true}, function(err, users) {
       res.json(users);
     });
   });
@@ -24,11 +26,12 @@ module.exports = function(app){
         emailId: hash
       }
       EmailVerification.create(data, function(err, emailVerification) {
+        if(err) console.log(err);
         mailOptions.to = req.body.email;
         //TODO change to the dns
         //TODO hostname from config?
         hostname = "http://localhost:3000";
-        url = hostname + "/api/verify/" + hash;
+        url = hostname + "/api/verify/" + emailVerification.emailId;
         mailOptions.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
         tranporter.sendMail(mailOptions, function(err, info) {
           if(err) console.log(err);

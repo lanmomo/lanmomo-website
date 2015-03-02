@@ -30,5 +30,5 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('default', ['env:dev', 'jshint', 'express:dev', 'watch']);
+  grunt.registerTask('default', ['env:dev', 'express:dev', 'watch']);
 };

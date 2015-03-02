@@ -1,8 +1,9 @@
+"use strict";
 var app = angular.module('App', ['ngRoute']);
 
 app.controller('UsersController', function($scope, $http) {
   $http.get('/api/users')
-    .success(function(data, status) {
+    .success(function(data) {
       $scope.data = data;
     })
     .error(function(err, status) {
@@ -15,10 +16,10 @@ app.controller('UsersController', function($scope, $http) {
 app.controller('SubscriptionController', function($scope, $http) {
   $scope.subscribe = function(data) {
     $http.post('/api/subscribe', data)
-      .success(function(data, status) {
-        console.log(status);
+      .success(function(data) {
+        console.log(data);
       })
-      .error(function(data, status) {
+      .error(function(data) {
         console.log(data);
       });
   };
