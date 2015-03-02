@@ -14,6 +14,7 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
+      //TODO add app.js file
       all: ['Gruntfile.js', 'backend/**/*.js', 'public/**/*.js'],
       options: {
         ignores: ['public/bower_components/**/*.js'],

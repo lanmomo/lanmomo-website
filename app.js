@@ -4,6 +4,7 @@ var crypto = require('crypto');
 var bodyParser = require('body-parser');
 var app = express();
 var db = require('./backend/config/db');
+var server = require('./backend/config/server');
 
 //Database
 mongoose.connect(db.url);
@@ -16,7 +17,6 @@ app.use(bodyParser.urlencoded({extended:true}));
 //Routing
 require('./backend/routes/routes')(app);
 
-//TODO Use configuration for port
-app.listen(3000, function() {
-  console.log('Server listening on port 3000');
+app.listen(server.port, function() {
+  console.log('Server listening on port ' + server.port);
 });
