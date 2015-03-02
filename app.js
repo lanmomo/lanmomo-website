@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 //Routing
 require('./backend/routes/routes')(app);
 
-//TODO Using configuration for port
-app.listen(3000);
-console.log("Listening on port 3000");
+//TODO Use configuration for port
+app.listen(3000, function() {
+  console.log('Server listening on port 3000');
+});
