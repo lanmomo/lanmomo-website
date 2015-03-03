@@ -14,8 +14,7 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      //TODO add app.js file
-      all: ['Gruntfile.js', 'backend/**/*.js', 'public/**/*.js'],
+      all: ['app.js', 'Gruntfile.js', 'backend/**/*.js', 'public/**/*.js'],
       options: {
         ignores: ['public/bower_components/**/*.js'],
         jshintrc: true
@@ -23,7 +22,7 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['Gruntfile.js', 'backend/**/*.js', 'public/**/*.js', '!public/bower_components/**/*.js', 'public/**/*.html', 'public/**/*.css'],
+        files: ['app.js', 'Gruntfile.js', 'backend/**/*.js', 'public/**/*.js', '!public/bower_components/**/*.js', 'public/**/*.html', 'public/**/*.css'],
         tasks: ['jshint']
       }
     }

@@ -84,5 +84,5 @@
 
     // Custom Globals
     "globals"       : {},        // additional predefined global variables
-    "predef": ["angular", "module", "require", "process"]
+    "predef": ["angular", "module", "require", "process", "__dirname"]
 }
