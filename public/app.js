@@ -7,9 +7,7 @@ app.controller('UsersController', function($scope, $http) {
       $scope.data = data;
     })
     .error(function(err, status) {
-      //TODO Provide visual error in view
-      console.log(status);
-      console.log(err);
+      $scope.error = {message: err, status: status};
     });
 });
 
