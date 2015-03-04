@@ -9,8 +9,7 @@ module.exports = function(app){
   });
 
   app.get('/api/users', function(req, res) {
-    //TODO Send only specific fields
-    User.find({active:true}, function(err, users) {
+    User.find({active:true},'username firstname lastname', function(err, users) {
       res.json(users);
     });
   });
