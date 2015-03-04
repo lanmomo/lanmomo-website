@@ -12,5 +12,5 @@ Website for LanMomo
 
 ### When working on the project
 
-* Launch the development server using `grunt dev`
+* Launch the development server using `grunt serve`
 * Launch the linting using `grunt lint`
