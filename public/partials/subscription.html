@@ -1,0 +1,34 @@
+<h1>Inscription</h1>
+<form>
+<!--   TODO client side validation -->
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="username">Nom d'utilisateur</label>
+      <input type="text" ng-model="user.username" class="form-control" placeholder="Entrez votre nom d'utilisateur">
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="email">Courriel</label>
+      <input type="email" ng-model="user.email" class="form-control" placeholder="Entrez votre courriel">
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="firstname">Prénom</label>
+      <input type="text" ng-model="user.firstname" class="form-control" placeholder="Entrez votre prénom">
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="lastname">Nom</label>
+      <input type="text" ng-model="user.lastname" class="form-control" placeholder="Entrez votre nom">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <button type="button" class="btn btn-primary" ng-click="subscribe(user)">S'inscrire</button>
+    </div>
+  </div>
+<!--   TODO Visual feedback when sending email -->
+</form>

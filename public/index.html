@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <link rel="icon" href="assets/logo.jpeg">
     <title>LAN Montmorency</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -9,14 +10,17 @@
   <body ng-app="App">
     <div class="container">
       <ul class="nav nav-pills">
-        <li role="presentation" class="active"><a href="#">Home</a></li>
-        <li role="presentation"><a href="#">Participants</a></li>
-        <li role="presentation"><a href="#">Games</a></li>
+        <li class="active"><a href="#/">Bienvenue</a></li>
+        <li><a href="#/users">Participants</a></li>
+        <li><a href="#/subscribe">Inscription</a></li>
+        <li><a href="#/games">Jeux</a></li>
       </ul>
-      <h1>Bienvenue au LAN Montmorency</h1>
+      <div ng-view></div>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="app.js"></script>
   </body>
 </html>
