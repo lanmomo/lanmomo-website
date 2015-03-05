@@ -18,6 +18,7 @@ module.exports = function(app){
   });
 
   app.post('/api/subscribe', function(req) {
+    //TODO verify fields from req
     req.body.active = false;
     //TODO make this more robuste
     var random = Math.random().toString();
@@ -54,7 +55,7 @@ module.exports = function(app){
         //TODO Create an error page instead of congratulations
         if(err) console.log(err);
         console.log(numAffected);
-        var url = config.server.hostname + config.server.port + '/#/congratulations';
+        var url = config.server.hostname + '/#/congratulations';
         res.redirect(url);
       });
     });
