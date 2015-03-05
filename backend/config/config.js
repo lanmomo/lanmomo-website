@@ -11,9 +11,10 @@ var transporter = nodemailer.createTransport({
 });
 
 var mail = {
-  from: 'Lan Montmorency',
-  subject: 'Vérification de courriel'
+  from: 'Lan Montmorency'
 };
+
+//TODO config = require('./config.' + process.env.NODE_ENV + '.js')
 
 switch(process.env.NODE_ENV) {
   case 'dev':

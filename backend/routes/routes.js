@@ -32,6 +32,7 @@ module.exports = function(app){
         //TODO hostname + port
         var hostname = "http://localhost:3000";
         var url = hostname + "/api/verify/" + emailVerification.emailId;
+        config.mail.subject = 'Vérification de courriel';
         config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
         config.transporter.sendMail(config.mail, function(err, info) {
           if(err) console.log(err);
