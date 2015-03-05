@@ -14,9 +14,8 @@ module.exports = function(app){
     });
   });
 
-  app.post('/api/subscribe', function(req) {
+  app.post('/api/subscribe', function(req, res) {
     req.body.active = false;
-    //TODO make this more robuste
     var random = Math.random().toString();
     var hash = crypto.createHash('sha1').update(random).digest('hex');
     User.create(req.body, function(err, user) {
@@ -25,18 +24,20 @@ module.exports = function(app){
         emailId: hash
       };
       EmailVerification.create(data, function(err, emailVerification) {
-        if(err) console.log(err);
-        config.mail.to = req.body.email;
-        //TODO change to the dns
-        //TODO hostname from config?
-        //TODO hostname + port
-        var hostname = "http://localhost:3000";
-        var url = hostname + "/api/verify/" + emailVerification.emailId;
-        config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
-        config.transporter.sendMail(config.mail, function(err, info) {
-          if(err) console.log(err);
-          console.log(info.response);
-        });
+        if (err == null) {
+          config.mail.to = req.body.email;
+          //TODO change to the dns
+          //TODO hostname from config?
+          //TODO hostname + port
+          var hostname = "http://localhost:3000";
+          var url = hostname + "/api/verify/" + emailVerification.emailId;
+          config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
+          config.transporter.sendMail(config.mail, function(err, info) {
+            if(err == null) {
+              res.json(info.response);
+            } else res.json(err);
+          });
+        } else res.json(err);
       });
     });
   });
