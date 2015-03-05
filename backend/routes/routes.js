@@ -3,6 +3,8 @@ var User = require('../models/user');
 var EmailVerification = require('../models/email-verification');
 var crypto = require('crypto');
 
+//TODO controllers
+
 module.exports = function(app){
   app.get('/', function(req, res) {
     res.send('public/index.html');
