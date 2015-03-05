@@ -11,15 +11,15 @@ module.exports = function(app){
   });
 
   app.get('/api/users', function(req, res) {
-    //TODO Send only specific fields
-    User.find({active:true}, function(err, users) {
-      //TODO Return 500 if err exists
+    //TODO Return 500 if err exists
+    User.find({active:true},'username firstname lastname', function(err, users) {
       res.json(users);
     });
   });
 
   app.post('/api/subscribe', function(req) {
     req.body.active = false;
+    //TODO make this more robuste
     var random = Math.random().toString();
     var hash = crypto.createHash('sha1').update(random).digest('hex');
     User.create(req.body, function(err, user) {
