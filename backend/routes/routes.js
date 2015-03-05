@@ -16,6 +16,7 @@ module.exports = function(app){
 
   app.post('/api/subscribe', function(req) {
     req.body.active = false;
+    //TODO make this more robuste
     var random = Math.random().toString();
     var hash = crypto.createHash('sha1').update(random).digest('hex');
     User.create(req.body, function(err, user) {
