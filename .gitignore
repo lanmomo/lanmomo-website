@@ -4,5 +4,7 @@ public/bower_components
 #nodejs
 node_modules
 
-#credentials
+#config
+backend/config/config.dev.js
+backend/config/config.prod.js
 backend/config/credentials.js

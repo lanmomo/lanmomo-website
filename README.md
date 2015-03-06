@@ -9,6 +9,7 @@ Website for LanMomo
  * Install the packages using `npm install`
  * Go in the public and install the frontend dependencies using `bower install`
  * Create a credentials.js file using credentials.skel as an example in the backend/config directory
+ * Create a config.env.file where env is either dev or prod using config.skel
 
 ### When working on the project
 
