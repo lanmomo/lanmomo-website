@@ -17,12 +17,7 @@ module.exports = function(app){
     });
   });
 
-<<<<<<< HEAD
   app.post('/api/subscribe', function(req, res) {
-=======
-  app.post('/api/subscribe', function(req) {
-    //TODO verify fields from req
->>>>>>> 06d3323ebdf8c90db99037827fefe1bc6d77d256
     req.body.active = false;
     var random = Math.random().toString();
     var hash = crypto.createHash('sha1').update(random).digest('hex');
@@ -32,42 +27,21 @@ module.exports = function(app){
         userId: user._id,
         emailId: hash
       };
-      EmailVerification.create(data, function(err, emailVerification) {
-<<<<<<< HEAD
-        if (err == null) {
-          config.mail.to = req.body.email;
-          //TODO change to the dns
-          //TODO hostname from config?
-          //TODO hostname + port
-          var hostname = "http://localhost:3000";
-          var url = hostname + "/api/verify/" + emailVerification.emailId;
-          config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
-          config.transporter.sendMail(config.mail, function(err, info) {
-            if(err == null) {
-              res.json(info.response);
-            } else res.status(500).json({message: "Une erreur interne est survenue"});
-          });
-<<<<<<< Updated upstream
-        } else res.json(err);
-=======
-        //TODO Return 500 internal error with err as response
-        if(err) console.log(err);
+    EmailVerification.create(data, function(err, emailVerification) {
+      if (err == null) {
         config.mail.to = req.body.email;
         var url = config.server.hostname + "/api/verify/" + emailVerification.emailId;
         config.mail.subject = 'Vérification de courriel';
         config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
         config.transporter.sendMail(config.mail, function(err, info) {
-          //TODO Return 500 internal with err as response
-          if(err) console.log(err);
-          console.log(info.response);
+          if (err == null) {
+            console.log(info.response);
+          } else res.status(500).json({message: "Une erreur interne est survenue"});
         });
->>>>>>> 06d3323ebdf8c90db99037827fefe1bc6d77d256
-=======
-        } else res.status(500).json({message: "Une erreur interne est survenue"});
->>>>>>> Stashed changes
-      });
+      } else res.status(500).json({message: "Une erreur interne est survenue"});
     });
   });
+});
 
   app.get('/api/verify/:emailId', function(req, res) {
     EmailVerification.findOne({emailId: req.param('emailId')}, function(err, emailVerification) {
