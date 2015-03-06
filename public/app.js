@@ -13,14 +13,19 @@ app.controller('UsersController', function($scope, $http) {
 
 app.controller('SubscriptionController', function($scope, $http) {
   $scope.subscribe = function(data) {
+    $scope.submitted = 0;
     $http.post('/api/subscribe', data)
       .success(function(data, status) {
         //TODO Do something with if 400 or 500
         console.log(status);
         console.log(data);
+        $scope.submitted = 1;
+        console.log($scope.submitted);
       })
       .error(function(data) {
         console.log(data);
+        $scope.submitted = -1;
+        console.log($scope.submitted);
       });
   };
 });
