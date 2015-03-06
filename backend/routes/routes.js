@@ -45,8 +45,9 @@ module.exports = function(app){
           config.transporter.sendMail(config.mail, function(err, info) {
             if(err == null) {
               res.json(info.response);
-            } else res.json(err);
+            } else res.status(500).json({message: "Une erreur interne est survenue"});
           });
+<<<<<<< Updated upstream
         } else res.json(err);
 =======
         //TODO Return 500 internal error with err as response
@@ -61,6 +62,9 @@ module.exports = function(app){
           console.log(info.response);
         });
 >>>>>>> 06d3323ebdf8c90db99037827fefe1bc6d77d256
+=======
+        } else res.status(500).json({message: "Une erreur interne est survenue"});
+>>>>>>> Stashed changes
       });
     });
   });
