@@ -24,8 +24,6 @@ module.exports = function(app){
   app.post('/api/subscribe', function(req, res) {
     if(validateBody(req.body)) {
       req.body.active = false;
-      //TODO make this more robuste
-      var random = Math.random().toString();
       var confirmId = crypto.randomBytes(42).toString('hex');
       User.create(req.body, function(err, user) {
         if (err) {
