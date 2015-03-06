@@ -26,14 +26,14 @@ module.exports = function(app){
       req.body.active = false;
       //TODO make this more robuste
       var random = Math.random().toString();
-      var hash = crypto.createHash('sha1').update(random).digest('hex');
+      var confirmId = crypto.randomBytes(42).toString('hex');
       User.create(req.body, function(err, user) {
         if (err) {
           res.status(500).json({message:"Une erreur est survenue lors de la création d'un participant"});
         } else {
           var data = {
             userId: user._id,
-            emailId: hash
+            emailId: confirmId
           };
           EmailVerification.create(data, function(err, emailVerification) {
             if (err) {
