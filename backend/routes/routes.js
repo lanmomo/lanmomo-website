@@ -37,7 +37,7 @@ module.exports = function(app){
           };
           EmailVerification.create(data, function(err, emailVerification) {
             if (err) {
-              res.status(500).json({message: "Une erreur interne est survenue"});
+              res.status(500).json({message: "Une erreur interne est survenue de la création du courriel de validation"});
             } else {
               config.mail.to = req.body.email;
               var url = config.server.hostname + "/api/verify/" + emailVerification.emailId;
@@ -45,7 +45,7 @@ module.exports = function(app){
               config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
               config.transporter.sendMail(config.mail, function(err, info) {
                 if (err) {
-                  res.status(500).json({message: "Une erreur interne est survenue"});
+                  res.status(500).json({message: "Une erreur interne est survenue lors de l'envoi du courriel de validation"});
                 } else {
                   //TODO Send feedback to user
                   console.log(info.response);
