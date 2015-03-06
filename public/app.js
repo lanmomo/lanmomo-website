@@ -14,7 +14,9 @@ app.controller('UsersController', function($scope, $http) {
 app.controller('SubscriptionController', function($scope, $http) {
   $scope.subscribe = function(data) {
     $http.post('/api/subscribe', data)
-      .success(function(data) {
+      .success(function(data, status) {
+        //TODO Do something with if 400 or 500
+        console.log(status);
         console.log(data);
       })
       .error(function(data) {
