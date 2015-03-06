@@ -13,12 +13,17 @@ app.controller('UsersController', function($scope, $http) {
 
 app.controller('SubscriptionController', function($scope, $http) {
   $scope.subscribe = function(data) {
+    $scope.submitted = 0;
     $http.post('/api/subscribe', data)
       .success(function(data) {
         console.log(data);
+        $scope.submitted = 1;
+        console.log($scope.submitted);
       })
       .error(function(data) {
         console.log(data);
+        $scope.submitted = -1;
+        console.log($scope.submitted);
       });
   };
 });
