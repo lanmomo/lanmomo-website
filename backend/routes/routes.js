@@ -4,6 +4,7 @@ var EmailVerification = require('../models/email-verification');
 var crypto = require('crypto');
 
 //TODO controllers
+//TODO Add logging for errors
 
 module.exports = function(app){
   app.get('/', function(req, res) {
@@ -11,9 +12,12 @@ module.exports = function(app){
   });
 
   app.get('/api/users', function(req, res) {
-    //TODO Return 500 if err exists
     User.find({active:true},'username firstname lastname', function(err, users) {
-      res.json(users);
+      if (err) {
+        res.status(500).json({message:"Une erreur interne est survenue lors de la recherche des participants"});
+      } else {
+        res.json(users);
+      }
     });
   });
 
@@ -24,13 +28,15 @@ module.exports = function(app){
       var random = Math.random().toString();
       var hash = crypto.createHash('sha1').update(random).digest('hex');
       User.create(req.body, function(err, user) {
-        //TODO Verify err and return 500 if it exists
-        var data = {
-          userId: user._id,
-          emailId: hash
-        };
-        EmailVerification.create(data, function(err, emailVerification) {
-          if (err === null) {
+        if (err) {
+          res.status(500).json({message:"Une erreur est survenue lors de la création d'un participant"});
+        } else {
+          var data = {
+            userId: user._id,
+            emailId: hash
+          };
+          EmailVerification.create(data, function(err, emailVerification) {
+            if (err === null) {
               config.mail.to = req.body.email;
               var url = config.server.hostname + "/api/verify/" + emailVerification.emailId;
               config.mail.subject = 'Vérification de courriel';
@@ -43,8 +49,11 @@ module.exports = function(app){
                   res.status(500).json({message: "Une erreur interne est survenue"});
                 }
               });
-          } else res.status(500).json({message: "Une erreur interne est survenue"});
-        });
+            } else {
+              res.status(500).json({message: "Une erreur interne est survenue"});
+            }
+          });
+        }
       });
     } else {
       return res.status(400).json({message:'Les informations données sont invalides ou incomplètes'});
