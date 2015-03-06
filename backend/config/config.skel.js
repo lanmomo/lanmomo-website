@@ -1,6 +1,6 @@
 module.exports = {
   server: {
-    hostname: 'hostname'
+    hostname: 'hostname',
     port: 3000
   },
   mail: {
