@@ -36,21 +36,21 @@ module.exports = function(app){
             emailId: hash
           };
           EmailVerification.create(data, function(err, emailVerification) {
-            if (err === null) {
+            if (err) {
+              res.status(500).json({message: "Une erreur interne est survenue"});
+            } else {
               config.mail.to = req.body.email;
               var url = config.server.hostname + "/api/verify/" + emailVerification.emailId;
               config.mail.subject = 'Vérification de courriel';
               config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
               config.transporter.sendMail(config.mail, function(err, info) {
-                if (err === null) {
+                if (err) {
+                  res.status(500).json({message: "Une erreur interne est survenue"});
+                } else {
                   //TODO Send feedback to user
                   console.log(info.response);
-                } else {
-                  res.status(500).json({message: "Une erreur interne est survenue"});
                 }
               });
-            } else {
-              res.status(500).json({message: "Une erreur interne est survenue"});
             }
           });
         }
@@ -63,8 +63,8 @@ module.exports = function(app){
   app.get('/api/verify/:emailId', function(req, res) {
     if(req.param('emailId')){
       EmailVerification.findOne({emailId: req.param('emailId')}, function(err, emailVerification) {
-        if(err || emailVerification === null) {
-            res.status(400).send('Mauvaise url');
+        if(err) {
+          res.status(400).send('Mauvaise url');
         } else {
           User.update({_id: emailVerification.userId}, {active: true}, function(err) {
             if (err) {
