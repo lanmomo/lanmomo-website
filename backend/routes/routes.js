@@ -33,8 +33,7 @@ module.exports = function(app){
         //TODO Return 500 internal error with err as response
         if(err) console.log(err);
         config.mail.to = req.body.email;
-        var hostname = config.server.hostname + config.server.port;
-        var url = hostname + "/api/verify/" + emailVerification.emailId;
+        var url = config.server.hostname + "/api/verify/" + emailVerification.emailId;
         config.mail.subject = 'Vérification de courriel';
         config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
         config.transporter.sendMail(config.mail, function(err, info) {
