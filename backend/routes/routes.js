@@ -5,7 +5,7 @@ var crypto = require('crypto');
 
 //TODO controllers
 
-module.exports = function(app){
+module.exports = function(app) {
   app.get('/', function(req, res) {
     res.send('public/index.html');
   });
@@ -22,7 +22,7 @@ module.exports = function(app){
   });
 
   app.post('/api/subscribe', function(req, res) {
-    if(validateBody(req.body)) {
+    if (validateBody(req.body)) {
       req.body.active = false;
       var confirmId = crypto.randomBytes(42).toString('hex');
       User.create(req.body, function(err, user) {
@@ -62,9 +62,9 @@ module.exports = function(app){
 });
 
   app.get('/api/verify/:emailId', function(req, res) {
-    if(req.param('emailId')){
+    if (req.param('emailId')) {
       EmailVerification.findOne({emailId: req.param('emailId')}, function(err, emailVerification) {
-        if(err) {
+        if (err) {
           console.log(err);
           res.status(400).send('Mauvaise url');
         } else {
@@ -85,6 +85,6 @@ module.exports = function(app){
   });
 };
 
-var validateBody = function(body){
+var validateBody = function(body) {
   return body.username && body.email && body.firstname && body.lastname;
 };
