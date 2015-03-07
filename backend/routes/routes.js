@@ -4,7 +4,6 @@ var EmailVerification = require('../models/email-verification');
 var crypto = require('crypto');
 
 //TODO controllers
-//TODO Add logging for errors
 
 module.exports = function(app){
   app.get('/', function(req, res) {
@@ -14,6 +13,7 @@ module.exports = function(app){
   app.get('/api/users', function(req, res) {
     User.find({active:true},'username firstname lastname', function(err, users) {
       if (err) {
+        console.log(err);
         res.status(500).json({message:"Une erreur interne est survenue lors de la recherche des participants"});
       } else {
         res.json(users);
@@ -27,6 +27,7 @@ module.exports = function(app){
       var confirmId = crypto.randomBytes(42).toString('hex');
       User.create(req.body, function(err, user) {
         if (err) {
+          console.log(err);
           res.status(500).json({message:"Une erreur est survenue lors de la création d'un participant"});
         } else {
           var data = {
@@ -35,6 +36,7 @@ module.exports = function(app){
           };
           EmailVerification.create(data, function(err, emailVerification) {
             if (err) {
+              console.log(err);
               res.status(500).json({message: "Une erreur interne est survenue de la création du courriel de validation"});
             } else {
               config.mail.to = req.body.email;
@@ -43,6 +45,7 @@ module.exports = function(app){
               config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
               config.transporter.sendMail(config.mail, function(err, info) {
                 if (err) {
+                  console.log(err);
                   res.status(500).json({message: "Une erreur interne est survenue lors de l'envoi du courriel de validation"});
                 } else {
                   //TODO Send feedback to user
@@ -62,10 +65,12 @@ module.exports = function(app){
     if(req.param('emailId')){
       EmailVerification.findOne({emailId: req.param('emailId')}, function(err, emailVerification) {
         if(err) {
+          console.log(err);
           res.status(400).send('Mauvaise url');
         } else {
           User.update({_id: emailVerification.userId}, {active: true}, function(err) {
             if (err) {
+              console.log(err);
               res.status(500).json({message:'Erreur lors de la modification de l\'utilisateur'});
             } else {
               var url = 'http://' + config.server.hostname + '/#/congratulations';
