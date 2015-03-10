@@ -12,13 +12,13 @@ exports.index = function(req, res) {
 };
 
 exports.getAll = function(req, res) {
-  User.find({active:true},'username firstname lastname', function(err, users) {
-    if (err) {
-      console.log(err);
-      res.status(500).json({message:"Une erreur interne est survenue lors de la recherche des participants"});
-    } else {
-      res.json(users);
-    }
+  User.find({active:true}).select('username firstname lastname').exec()
+  .then(function(users) {
+    res.json(users);
+  })
+  .reject(function(err) {
+    console.log(err);
+    res.status(500).json({message:"Une erreur interne est survenue lors de la recherche des participants"});
   });
 };
 
