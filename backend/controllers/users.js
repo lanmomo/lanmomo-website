@@ -26,36 +26,36 @@ exports.subscribe = function(req, res) {
   if (validateBody(req.body)) {
     req.body.active = false;
     var confirmId = crypto.randomBytes(42).toString('hex');
-    User.create(req.body, function(err, user) {
-      if (err) {
-        console.log(err);
-        res.status(500).json({message:"Une erreur est survenue lors de la création d'un participant"});
-      } else {
-        var data = {
-          userId: user._id,
-          emailId: confirmId
-        };
-        EmailVerification.create(data, function(err, emailVerification) {
-          if (err) {
-            console.log(err);
-            res.status(500).json({message: "Une erreur interne est survenue de la création du courriel de validation"});
-          } else {
-            config.mail.to = req.body.email;
-            var url = config.server.hostname + "/api/verify/" + emailVerification.emailId;
-            config.mail.subject = 'Vérification de courriel';
-            config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
-            config.transporter.sendMail(config.mail, function(err, info) {
-              if (err) {
-                console.log(err);
-                res.status(500).json({message: "Une erreur interne est survenue lors de l'envoi du courriel de validation"});
-              } else {
-                //TODO Send feedback to user
-                console.log(info.response);
-              }
-            });
-          }
+    User.create(req.body)
+    .then(function(user) {
+      var data = {
+        userId: user._id,
+        emailId: confirmId
+      };
+      EmailVerification.create(data)
+      .then(function(emailVerification) {
+        config.mail.to = req.body.email;
+        var url = config.server.hostname + "/api/verify/" + emailVerification.emailId;
+        config.mail.subject = 'Vérification de courriel';
+        config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
+        config.transporter.sendMail(config.mail)
+        .then(function(info) {
+          //TODO Send feedback to user
+          console.log(info);
+        })
+        .catch(function(err) {
+          console.log(err);
+          res.status(500).json({message: "Une erreur interne est survenue lors de l'envoi du courriel de validation"});
         });
-      }
+      })
+      .reject(function(err) {
+        console.log(err);
+        res.status(500).json({message: "Une erreur interne est survenue de la création du courriel de validation"});
+      });
+    })
+    .reject(function(err) {
+      console.log(err);
+      res.status(500).json({message:"Une erreur est survenue lors de la création d'un participant"});
     });
   } else {
     return res.status(400).json({message:'Les informations données sont invalides ou incomplètes'});
