@@ -1,28 +1,28 @@
 "use strict";
 var app = angular.module('App', ['ngRoute']);
 
-app.controller('UsersController', function($scope, $http) {
+app.controller('UsersController', function ($scope, $http) {
   $http.get('/api/users')
-    .success(function(data) {
+    .success(function (data) {
       $scope.data = data;
     })
-    .error(function(err, status) {
+    .error(function (err, status) {
       $scope.error = {message: err, status: status};
     });
 });
 
-app.controller('SubscriptionController', function($scope, $http) {
-  $scope.subscribe = function(data) {
+app.controller('SubscriptionController', function ($scope, $http) {
+  $scope.subscribe = function (data) {
     $scope.submitted = 0;
     $http.post('/api/subscribe', data)
-      .success(function(data, status) {
+      .success(function (data, status) {
         //TODO Do something with if 400 or 500
         console.log(status);
         console.log(data);
         $scope.submitted = 1;
         console.log($scope.submitted);
       })
-      .error(function(data) {
+      .error(function (data) {
         console.log(data);
         $scope.submitted = -1;
         console.log($scope.submitted);
@@ -31,7 +31,7 @@ app.controller('SubscriptionController', function($scope, $http) {
 });
 
 
-app.config(function($routeProvider) {
+app.config(function ($routeProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/home.html'
   })
