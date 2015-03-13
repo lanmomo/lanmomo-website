@@ -1,3 +1,3 @@
 exports.index = function (req, res) {
-  res.send('public/index.html');
+  res.sendFile('index.html', {root: __dirname + '/../../public/'});
 };

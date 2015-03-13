@@ -51,7 +51,7 @@ app.controller('SubscriptionController', function ($scope, $http) {
   };
 });
 
-app.config(function ($routeProvider) {
+app.config(function ($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/home.html'
   })
@@ -71,4 +71,6 @@ app.config(function ($routeProvider) {
   }).when('/congratulations', {
     templateUrl: 'partials/congratulations.html'
   });
+
+  $locationProvider.html5Mode(true);
 });

@@ -8,7 +8,7 @@ var validateBody = function (body) {
 };
 
 exports.index = function (req, res) {
-  res.send('public/index.html');
+  res.sendFile('index.html', {root: __dirname + '/../../public/'});
 };
 
 exports.getAll = function (req, res) {
@@ -87,7 +87,7 @@ exports.verify = function (req, res) {
       console.log(emailVerification);
       User.update({_id: emailVerification.userId}, {active: true}).exec()
       .then(function () {
-        var url = config.url.root + '/#/congratulations';
+        var url = config.url.root + '/congratulations';
         console.log(url);
         res.redirect(url);
       })
