@@ -40,7 +40,7 @@ exports.subscribe = function (req, res) {
         config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
         config.transporter.sendMailAsync(config.mail)
         .then(function (info) {
-          //TODO Send feedback to user
+          res.status(200).json({message:"Veuillez confirmer votre inscription en allant dans votre boîte de réception."})
           console.log(info);
         })
         .catch(function (err) {
