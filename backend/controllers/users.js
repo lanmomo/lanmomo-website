@@ -38,7 +38,7 @@ exports.subscribe = function (req, res) {
         var url = config.server.hostname + "/api/verify/" + emailVerification.emailId;
         config.mail.subject = 'Vérification de courriel';
         config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
-        config.transporter.sendMail(config.mail)
+        config.transporter.sendMailAsync(config.mail)
         .then(function (info) {
           //TODO Send feedback to user
           console.log(info);
