@@ -1,9 +1,19 @@
 <h1>Participants</h1>
-<!-- TODO Split the users in two columns -->
-<!-- TODO Style the border and the colors of ngRepeat elements-->
-<div ng-repeat="user in data" class="list-group">
-  <h3 class="list-group-item-heading">{{user.username}}</h3>
-  <p class="list-group-item-text">{{user.firstname}} {{user.lastname}}</p>
-  <p class="list-group-item-text">{{user.email}}</p>
-</div>
-<div ng-show="error" class="alert alert-danger">{{error.message}}</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Pseudonyme</th>
+      <th>Prénom</th>
+      <th>Nom</th>
+    </tr>
+  </thead>
+  <tbody ng-repeat="user in usersTest">
+    <tr>
+      <th>{{$index + 1}}</th>
+      <td>{{user.username}}</td>
+      <td>{{user.firstname}}</td>
+      <td>{{user.lastname}}</td>
+    </tr>
+  </tbody>
+</table>

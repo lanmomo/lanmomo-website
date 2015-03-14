@@ -42,10 +42,8 @@ app.config(function ($routeProvider) {
   .when('/subscribe', {
     templateUrl: 'partials/subscription.html',
     controller: 'SubscriptionController'
-  }).when('/games', {
-      templateUrl: 'partials/games.html',
-      controller: 'GamesController'
-  }).when('/congratulations', {
+  })
+  .when('/congratulations', {
     templateUrl: 'partials/congratulations.html'
   });
 });
