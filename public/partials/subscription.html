@@ -3,14 +3,14 @@
 <h1>Inscription</h1>
 <form name="userForm" ng-submit="submitForm(userForm.$vaild)" novalidate>
   <div class="row">
-    <div class="form-group col-md-6" ng-class="{ 'has-error' : userForm.name.$invalid && userForm.name.$dirty }">
+    <div class="form-group" ng-class="{ 'has-error' : userForm.name.$invalid && userForm.name.$dirty }">
       <label for="username">Nom d'utilisateur</label>
       <input type="text" name="name" ng-model="user.username" class="form-control" placeholder="Entrez votre nom d'utilisateur" required>
       <p ng-show="userForm.name.$invalid && userForm.name.$dirty" class="help-block">vous devez entrer un nom d'utilisateur</p>
     </div>
   </div>
   <div class="row">
-    <div class="form-group col-md-6" ng-class="{ 'has-error' : userForm.emai.$invalid && userForm.emai.$dirty }">
+    <div class="form-group" ng-class="{ 'has-error' : userForm.emai.$invalid && userForm.emai.$dirty }">
       <label for="email">Courriel</label>
       <input type="email" name="emai" ng-model="user.email" class="form-control" placeholder="Entrez votre courriel" required>
       <p ng-show="userForm.emai.$invalid && userForm.emai.$dirty" class="help-block">votre addresse courriel est invalide</p>
@@ -18,7 +18,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="form-group col-md-6" ng-class="{ 'has-error' : userForm.firstname.$invalid && userForm.firstname.$dirty }">
+    <div class="form-group" ng-class="{ 'has-error' : userForm.firstname.$invalid && userForm.firstname.$dirty }">
       <label for="firstname">Prénom</label>
       <input type="text" name="firstname" ng-model="user.firstname" class="form-control" placeholder="Entrez votre prénom" required>
       <p ng-show="userForm.firstname.$invalid && userForm.firstname.$dirty" class="help-block">vous devez entrer un prénom</p>
@@ -26,18 +26,18 @@
     </div>
   </div>
   <div class="row">
-    <div class="form-group col-md-6" ng-class="{ 'has-error' : userForm.lastname.$invalid && userForm.lastname.$dirty }">
+    <div class="form-group" ng-class="{ 'has-error' : userForm.lastname.$invalid && userForm.lastname.$dirty }">
       <label for="lastname">Nom</label>
       <input type="text" name="lastname" ng-model="user.lastname" class="form-control" placeholder="Entrez votre nom" required>
       <p ng-show="userForm.lastname.$invalid && userForm.lastname.$dirty" class="help-block">vous devez entrer un nom</p>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-6">
+    <div class="">
       <button type="submit" class="btn btn-primary"
-      ng-disabled="userForm.emai.$invalid || userForm.lastname.$invalid || userForm.firstname.$invalid || userForm.name.$invalid"
+      ng-disabled="userForm.emai.$invalid || userForm.lastname.$invalid || userForm.firstname.$invalid || userForm.name.$invalid || submitted == 1"
       ng-click="subscribe(user)">S'inscrire</button>
-      <img ng-show="submitted == 0" src="assets/spinner.gif" height="36px" width="36px"/>
+      <i ng-show="submitted == 0" style="font-size: 24px" class="fa fa-cog fa-spin"></i>
     </div>
   </div>
 </form>
