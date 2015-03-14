@@ -10,14 +10,35 @@
   </head>
   <body ng-app="App">
     <div class="container">
-      <ul class="nav nav-pills">
-        <li class="active"><a href="#/">Bienvenue</a></li>
-        <li><a href="#/users">Participants</a></li>
-        <li><a href="#/subscribe">Inscription</a></li>
-        <li><a href="#/games">Jeux</a></li>
+      <ul class="nav navbar-right">
+        <div class="btn-group" role="group" aria-label="...">
+          <a type="button" class="btn btn-default" href="#/"><i class="fa fa-home"></i></a>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+              Plus <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#/users"><i class="fa fa-users"></i> Participants</a></li>
+              <li><a href="#/games"><i class="fa fa-gamepad"></i> Jeux</a></li>
+              <li><a href=""><i class="fa fa-envelope"></i> Contact</a></li>
+            </ul>
+          </div>
       </ul>
-      <div ng-view></div>
+      <div id="intro" class="jumbotron">
+        <h1>Lan Montmorency</h1>
+        <small> 25 - 26 Avril 2015</small>
+        <br><br>
+        <p>Bienvenue sur le site du Lan Montmorency!</p>
+        <p><a class="btn btn-primary btn-lg" href="#/subscribe" role="button">S'inscrire</a>
+        <a class="btn btn-primary btn-lg" href="#/games" role="button">Jeux</a></p>
+      </div>
+      <div id="content" ng-view></div>
     </div>
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Footer</p>
+      </div>
+    </footer>
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/angular/angular.js"></script>
