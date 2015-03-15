@@ -1,5 +1,20 @@
 "use strict";
-var app = angular.module('App', ['ngRoute']);
+var app = angular.module('App', ['ngRoute', 'ui.bootstrap']);
+
+app.controller('GamerController', function ($scope, $http) {
+  $http.get('/api/games')
+    .success(function (data) {
+      $scope.data = data;
+    })
+    .error(function (err, status) {
+      $scope.error = {message: err, status: status};
+    });
+  $scope.isCollapsed = new Array;
+  for(var o in $scope.data) {
+    $scope.isCollapsed.push(false);
+}
+  console.log($scope.data);
+});
 
 app.controller('UsersController', function ($scope, $http) {
   $http.get('/api/users')
@@ -30,7 +45,6 @@ app.controller('SubscriptionController', function ($scope, $http) {
   };
 });
 
-
 app.config(function ($routeProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/home.html'
@@ -44,7 +58,7 @@ app.config(function ($routeProvider) {
     controller: 'SubscriptionController'
   }).when('/games', {
       templateUrl: 'partials/games.html',
-      controller: 'GamesController'
+      controller: 'GamerController'
   }).when('/congratulations', {
     templateUrl: 'partials/congratulations.html'
   });
