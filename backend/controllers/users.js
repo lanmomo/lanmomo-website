@@ -27,7 +27,7 @@ exports.subscribe = function (req, res) {
     User.where({active:true}).count().exec()
     .then(function (count) {
       if (count >= config.maximum) {
-        res.status(402).json({message:"Le nombre maximum de participants a été atteint. Des frais de 10$ devront être déboursés pour participer à l'évènement. Veuillez contacter les administrateurs du lan pour plus d'informations :^)."});
+        res.status(402).json({message:"Le nombre maximum de participants a été atteint."});
       } else {
         req.body.active = false;
         var confirmId = crypto.randomBytes(42).toString('hex');
