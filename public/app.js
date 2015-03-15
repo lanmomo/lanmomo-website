@@ -1,7 +1,7 @@
 "use strict";
 var app = angular.module('App', ['ngRoute', 'ui.bootstrap']);
 
-app.controller('GamerController', function ($scope, $http) {
+app.controller('GamesController', function ($scope, $http) {
   $http.get('/api/games')
     .success(function (data) {
       $scope.data = data;
@@ -58,7 +58,7 @@ app.config(function ($routeProvider) {
     controller: 'SubscriptionController'
   }).when('/games', {
       templateUrl: 'partials/games.html',
-      controller: 'GamerController'
+      controller: 'GamesController'
   }).when('/congratulations', {
     templateUrl: 'partials/congratulations.html'
   });
