@@ -26,8 +26,7 @@ exports.subscribe = function (req, res) {
   if (validateBody(req.body)) {
     User.where({active:true}).count().exec()
     .then(function (count) {
-      //TODO Hard coded value :(
-      if (count === 50) {
+      if (count === config.maximum) {
         res.status(200).json({message:"Le nombre maximum de participants a été atteint"});
       } else {
         req.body.active = false;
