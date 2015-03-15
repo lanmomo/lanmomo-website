@@ -41,7 +41,7 @@ exports.subscribe = function (req, res) {
         config.transporter.sendMailAsync(config.mail)
         .then(function (info) {
           console.log(info);
-          res.status(200).json({message:"Veuillez confirmer votre inscription en allant dans votre boîte de réception."})
+          res.status(200).json({message:"Veuillez confirmer votre inscription en allant dans votre boîte de réception."});
         })
         .catch(function (err) {
           console.log(err);

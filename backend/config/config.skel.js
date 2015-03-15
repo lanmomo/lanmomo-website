@@ -9,5 +9,7 @@ module.exports = {
   },
   db: {
     url: 'url'
-  }
+  },
+  maximum: 50,
+  token: 'token'
 };
