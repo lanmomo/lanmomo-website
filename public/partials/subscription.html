@@ -1,19 +1,19 @@
-<div ng-show="submitted == 1" class="alert alert-success" role="alert"><b>Bravo!</b> vous êtes inscript! Vérifier vos courriel pour le liens de confirmation!</div>
-<div ng-show="submitted == -1" class="alert alert-danger" role="alert"><b>Zut!</b> une erreur C'est produite avec le serveur, Veullier ressayer de nouveau.</div>
+<div ng-show="submitted == 1" class="alert alert-success" role="alert"><b>Bravo !</b> vous êtes inscrit ! Vérifiez votre boîte de courriels pour confirmer votre inscription !</div>
+<div ng-show="submitted == -1" class="alert alert-danger" role="alert"><b>Zut !</b> une erreur s'est produite avec le serveur. Veuillez réssayer de nouveau.</div>
 <h1>Inscription</h1>
 <form name="userForm" ng-submit="submitForm(userForm.$vaild)" novalidate>
   <div class="row">
     <div class="form-group" ng-class="{ 'has-error' : userForm.name.$invalid && userForm.name.$dirty }">
       <label for="username">Nom d'utilisateur</label>
       <input type="text" name="name" ng-model="user.username" class="form-control" placeholder="Entrez votre nom d'utilisateur" required>
-      <p ng-show="userForm.name.$invalid && userForm.name.$dirty" class="help-block">vous devez entrer un nom d'utilisateur</p>
+      <p ng-show="userForm.name.$invalid && userForm.name.$dirty" class="help-block">vous devez entrer un nom d'utilisateur.</p>
     </div>
   </div>
   <div class="row">
     <div class="form-group" ng-class="{ 'has-error' : userForm.emai.$invalid && userForm.emai.$dirty }">
       <label for="email">Courriel</label>
       <input type="email" name="emai" ng-model="user.email" class="form-control" placeholder="Entrez votre courriel" required>
-      <p ng-show="userForm.emai.$invalid && userForm.emai.$dirty" class="help-block">votre addresse courriel est invalide</p>
+      <p ng-show="userForm.emai.$invalid && userForm.emai.$dirty" class="help-block">votre addresse courriel est invalide.</p>
 
     </div>
   </div>
@@ -21,7 +21,7 @@
     <div class="form-group" ng-class="{ 'has-error' : userForm.firstname.$invalid && userForm.firstname.$dirty }">
       <label for="firstname">Prénom</label>
       <input type="text" name="firstname" ng-model="user.firstname" class="form-control" placeholder="Entrez votre prénom" required>
-      <p ng-show="userForm.firstname.$invalid && userForm.firstname.$dirty" class="help-block">vous devez entrer un prénom</p>
+      <p ng-show="userForm.firstname.$invalid && userForm.firstname.$dirty" class="help-block">vous devez entrer un prénom.</p>
 
     </div>
   </div>
@@ -29,7 +29,7 @@
     <div class="form-group" ng-class="{ 'has-error' : userForm.lastname.$invalid && userForm.lastname.$dirty }">
       <label for="lastname">Nom</label>
       <input type="text" name="lastname" ng-model="user.lastname" class="form-control" placeholder="Entrez votre nom" required>
-      <p ng-show="userForm.lastname.$invalid && userForm.lastname.$dirty" class="help-block">vous devez entrer un nom</p>
+      <p ng-show="userForm.lastname.$invalid && userForm.lastname.$dirty" class="help-block">vous devez entrer un nom.</p>
     </div>
   </div>
   <div class="row">
