@@ -1,19 +1,19 @@
 <div ng-show="submitted == 1" class="alert alert-success" role="alert">Vérifiez votre boîte de courriels pour <b>confirmer votre inscription !</b></div>
 <div ng-show="submitted == -1" class="alert alert-danger" role="alert"><b>Zut !</b> Une erreur s'est produite avec le serveur. Veuillez réssayer de nouveau.</div>
 <h1>Inscription</h1>
-<form name="userForm" ng-submit="submitForm(userForm.$vaild)" novalidate>
+<form name="userForm" ng-submit="submitForm(userForm.$valid)" novalidate>
   <div class="row">
     <div class="form-group" ng-class="{ 'has-error' : userForm.name.$invalid && userForm.name.$dirty }">
       <label for="username">Nom d'utilisateur</label>
       <input type="text" name="name" ng-model="user.username" class="form-control" placeholder="Entrez votre nom d'utilisateur" required>
-      <p ng-show="userForm.name.$invalid && userForm.name.$dirty" class="help-block">vous devez entrer un nom d'utilisateur.</p>
+      <p ng-show="userForm.name.$invalid && userForm.name.$dirty" class="help-block">Vous devez entrer un nom d'utilisateur.</p>
     </div>
   </div>
   <div class="row">
-    <div class="form-group" ng-class="{ 'has-error' : userForm.emai.$invalid && userForm.emai.$dirty }">
+    <div class="form-group" ng-class="{ 'has-error' : userForm.email.$invalid && userForm.email.$dirty }">
       <label for="email">Courriel</label>
-      <input type="email" name="emai" ng-model="user.email" class="form-control" placeholder="Entrez votre courriel" required>
-      <p ng-show="userForm.emai.$invalid && userForm.emai.$dirty" class="help-block">Votre addresse courriel est invalide.</p>
+      <input type="email" name="email" ng-model="user.email" class="form-control" placeholder="Entrez votre courriel" required>
+      <p ng-show="userForm.email.$invalid && userForm.email.$dirty" class="help-block">Votre addresse courriel est invalide.</p>
 
     </div>
   </div>
@@ -35,7 +35,7 @@
   <div class="row">
     <div class="">
       <button type="submit" class="btn btn-primary"
-      ng-disabled="userForm.emai.$invalid || userForm.lastname.$invalid || userForm.firstname.$invalid || userForm.name.$invalid || submitted == 1"
+      ng-disabled="userForm.email.$invalid || userForm.lastname.$invalid || userForm.firstname.$invalid || userForm.name.$invalid || submitted == 1"
       ng-click="subscribe(user)">S'inscrire</button>
       <i ng-show="submitted == 0" style="font-size: 24px" class="fa fa-cog fa-spin"></i>
     </div>
