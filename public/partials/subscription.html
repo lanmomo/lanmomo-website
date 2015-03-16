@@ -33,9 +33,15 @@
     </div>
   </div>
   <div class="row">
+    <div class="checkbox">
+      <label><input ng-model="checked" ng-init="checked = false" type="checkbox" value="false">
+        J'ai lu et j'accept <a target="_blank" href="#/rules">les règles</a> du LAN</label>
+    </div>
+  </div>
+  <div class="row">
     <div class="">
       <button type="submit" class="btn btn-primary"
-      ng-disabled="userForm.email.$invalid || userForm.lastname.$invalid || userForm.firstname.$invalid || userForm.name.$invalid || submitted == 1"
+      ng-disabled="!checked || userForm.email.$invalid || userForm.lastname.$invalid || userForm.firstname.$invalid || userForm.name.$invalid || submitted == 1"
       ng-click="subscribe(user)">S'inscrire</button>
       <i ng-show="submitted == 0" style="font-size: 24px" class="fa fa-cog fa-spin"></i>
     </div>
