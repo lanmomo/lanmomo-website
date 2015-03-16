@@ -1,14 +1,14 @@
 module.exports = {
   server: {
-    hostname: 'hostname',
+    hostname: 'localhost',
     port: 3000
   },
   mail: {
-    user: 'user',
-    password: 'password'
+    user: 'username@gmail.com',
+    password: 'lelthisisapassword'
   },
   db: {
-    url: 'url'
+    url: 'mongodb://localhost/dev'
   },
   maximum: 50
 };
