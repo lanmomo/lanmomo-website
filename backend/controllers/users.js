@@ -44,7 +44,7 @@ exports.subscribe = function (req, res) {
               from: config.mailer.from,
               to: req.body.email,
               subject: 'Vérification de courriel',
-              text: 'Veuillez confirmer votre courriel en cliquant <a href="' + url + '">ici</a>'
+              html: 'Veuillez confirmer votre courriel en cliquant <a href="' + url + '">ici</a>'
             };
             config.transporter.sendMailAsync(mail)
             .then(function (info) {
