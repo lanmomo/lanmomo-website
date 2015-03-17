@@ -39,11 +39,14 @@ exports.subscribe = function (req, res) {
           };
           EmailVerification.create(data)
           .then(function (emailVerification) {
-            config.mail.to = req.body.email;
             var url = config.url.root + '/api/verify/' + emailVerification.emailId;
-            config.mail.subject = 'Vérification de courriel';
-            config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
-            config.transporter.sendMailAsync(config.mail)
+            var mail = {
+              from: config.mailer.from,
+              to: req.body.email,
+              subject: 'Vérification de courriel',
+              text: 'Veuillez confirmer votre courriel en cliquant <a href="' + url + '">ici</a>'
+            };
+            config.transporter.sendMailAsync(mail)
             .then(function (info) {
               console.log(info);
               res.status(200).json({message:"Veuillez confirmer votre inscription en allant dans votre boîte de réception."});
