@@ -3,6 +3,9 @@ module.exports = {
     hostname: 'localhost',
     port: 3000
   },
+  url: {
+    root: 'http://localhost:3000'
+  },
   mail: {
     user: 'username@gmail.com',
     password: 'lelthisisapassword'

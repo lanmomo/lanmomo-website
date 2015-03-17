@@ -40,7 +40,7 @@ exports.subscribe = function (req, res) {
           EmailVerification.create(data)
           .then(function (emailVerification) {
             config.mail.to = req.body.email;
-            var url = config.server.hostname + "/api/verify/" + emailVerification.emailId;
+            var url = config.url.root + '/api/verify/' + emailVerification.emailId;
             config.mail.subject = 'Vérification de courriel';
             config.mail.html = 'Veuillez confirmer votre courriel en cliquant <a href=\"' + url + '\">ici</a>';
             config.transporter.sendMailAsync(config.mail)
@@ -82,7 +82,7 @@ exports.verify = function (req, res) {
       console.log(emailVerification);
       User.update({_id: emailVerification.userId}, {active: true}).exec()
       .then(function () {
-        var url = 'http://' + config.server.hostname + '/#/congratulations';
+        var url = config.url.root + '/#/congratulations';
         console.log(url);
         res.redirect(url);
       })
