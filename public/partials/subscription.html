@@ -1,5 +1,5 @@
-<div ng-show="submitted == 1" class="alert alert-warning" role="alert">Vérifiez votre boîte de courriels pour <b>confirmer votre inscription !</b></div>
-<div ng-show="submitted == -1" class="alert alert-danger" role="alert"><b>Zut !</b> Une erreur s'est produite avec le serveur. Veuillez réssayer de nouveau.</div>
+<div ng-show="submitted == 1" class="alert alert-warning" role="alert">{{data.message}}</div>
+<div ng-show="submitted == -1" class="alert alert-danger" role="alert">{{data.message}}</div>
 <h1>Inscription</h1>
 <form name="userForm" ng-submit="submitForm(userForm.$valid)" novalidate>
   <div class="row">
