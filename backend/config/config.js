@@ -1,18 +1,10 @@
 var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
 var P = require('bluebird');
 
 var config = require('./config.' + process.env.NODE_ENV + '.js');
 
-var options = {
-  service: 'Gmail',
-  auth: {
-    user: config.mail.username,
-    pass: config.mail.password
-  }
-};
-var transporter = P.promisifyAll(nodemailer.createTransport(options));
-
-config.mail.from = 'Lan Montmorency';
+var transporter = P.promisifyAll(nodemailer.createTransport(smtpTransport(config.mailer.transportOptions)));
 
 config.transporter = transporter;
 
