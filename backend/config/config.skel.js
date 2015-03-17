@@ -1,15 +1,20 @@
 module.exports = {
   server: {
-    hostname: 'hostname',
+    hostname: 'localhost',
     port: 3000
   },
   mail: {
-    user: 'user',
-    password: 'password'
+    user: 'username@gmail.com',
+    password: 'lelthisisapassword'
   },
   db: {
-    url: 'url'
+    url: 'mongodb://localhost/dev'
   },
   maximum: 50,
-  token: 'token'
+  games: [{
+    title: 'Team Fortress 2',
+    description: 'PVP et Mann Versus Machine',
+    imagePath: 'assets/game_banners/tf2.jpg'
+  }],
+  token: 'token',
 };
