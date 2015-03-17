@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "angular": "~1.3.13",
-    "bootstrap": "~3.3.2",
+    "bootswatch-dist": "slate",
     "angular-route": "~1.3.14",
     "components-font-awesome": "~4.3.0",
     "angular-bootstrap": "~0.12.1"
