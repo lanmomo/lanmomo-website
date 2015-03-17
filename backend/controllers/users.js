@@ -79,8 +79,8 @@ exports.subscribe = function (req, res) {
 };
 
 exports.verify = function (req, res) {
-  if (req.param('emailId')) {
-    EmailVerification.findOne({emailId: req.param('emailId')}).exec()
+  if (req.params.emailId) {
+    EmailVerification.findOne({emailId: req.params.emailId}).exec()
     .then(function (emailVerification) {
       console.log(emailVerification);
       User.update({_id: emailVerification.userId}, {active: true}).exec()
