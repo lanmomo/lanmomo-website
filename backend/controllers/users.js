@@ -22,6 +22,10 @@ exports.getAll = function (req, res) {
   });
 };
 
+exports.getMax = function (req, res) {
+  res.json({maxUsers:config.maximum})
+}
+
 exports.subscribe = function (req, res) {
   if (validateBody(req.body)) {
     User.where({active:true}).count().exec()
