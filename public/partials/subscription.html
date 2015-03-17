@@ -33,6 +33,13 @@
     </div>
   </div>
   <div class="row">
+    <div class="form-group" ng-class="{ 'has-error' : userForm.phone.$invalid && userForm.phone.$dirty && userForm.phone.$error.pattern }">
+      <label for="phone">Numéro de téléphone</label>
+      <input type="text" name="phone" ng-model="user.phone" ng-pattern="/[0-9]{3}-[0-9]{3}-[0-9]{4}/i" class="form-control" placeholder="Entrez votre numéro de téléphone" required>
+      <p ng-show="userForm.phone.$invalid && userForm.phone.$dirty && userForm.phone.$error.pattern" class="help-block">vous devez entrer un numéro de téléphone.</p>
+    </div>
+  </div>
+  <div class="row">
     <div class="checkbox">
       <label><input ng-model="checked" ng-init="checked = false" type="checkbox" value="false">
         J'ai lu et j'accept <a target="_blank" href="#/rules">les règles</a> du LAN</label>
