@@ -68,8 +68,6 @@ exports.subscribe = function (req, res) {
       console.log(err);
       res.status(500).json({message: "Une erreur est survenue lors de la recherche des participants"});
     });
-
-
   } else {
     return res.status(400).json({message:'Les informations données sont invalides ou incomplètes'});
   }

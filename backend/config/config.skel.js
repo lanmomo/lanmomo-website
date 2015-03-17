@@ -15,5 +15,6 @@ module.exports = {
     title: 'Team Fortress 2',
     description: 'PVP et Mann Versus Machine',
     imagePath: 'assets/game_banners/tf2.jpg'
-  }]
+  }],
+  token: 'token',
 };
