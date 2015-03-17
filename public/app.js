@@ -24,6 +24,13 @@ app.controller('UsersController', function ($scope, $http) {
     .error(function (err, status) {
       $scope.error = {message: err, status: status};
     });
+  $http.get('/api/users/max')
+    .success(function (max) {
+      $scope.max = max;
+    })
+    .error(function (err, status) {
+      $scope.error = {message: err, status: status};
+    });
 });
 
 app.controller('SubscriptionController', function ($scope, $http) {

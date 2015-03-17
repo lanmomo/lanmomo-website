@@ -1,4 +1,11 @@
 <h1>Participants</h1>
+<span class="text-muted"> Places occupées:</span>
+<div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="{{data.length}}"
+    aria-valuemin="0" aria-valuemax="{{max.maxUsers}}" style=" min-width:3em; width: {{data.length / max.maxUsers * 100}}%">
+    {{data.length}} / {{max.maxUsers}}
+  </div>
+</div>
 <table class="table">
   <thead>
     <tr>
@@ -11,7 +18,7 @@
   <tbody ng-repeat="user in data">
     <tr>
       <th>{{$index + 1}}</th>
-      <td>{{user.username}}</td>
+      <td><b>{{user.username}}</b></td>
       <td>{{user.firstname}}</td>
       <td>{{user.lastname}}</td>
     </tr>
