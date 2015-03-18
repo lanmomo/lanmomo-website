@@ -9,6 +9,8 @@ server {
 
     server_name lanmomo.ca www.lanmomo.ca;
 
+    rewrite ^/(rules|users|subscribe|games|congratulations)$ / last;
+
     location /api/ {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

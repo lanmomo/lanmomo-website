@@ -8,31 +8,33 @@
     <link href="bower_components/bootswatch-dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="bower_components/components-font-awesome/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/main.css">
+    <base href="/">
   </head>
   <body ng-app="App">
     <div class="container">
       <ul class="nav navbar-right">
         <div class="btn-group" role="group" aria-label="...">
-          <a type="button" class="btn btn-default" href="#/"><i class="fa fa-home"></i></a>
+          <a type="button" class="btn btn-default" href="/"><i class="fa fa-home"></i></a>
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
               Plus <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-              <li><a href="#/users"><i class="fa fa-users"></i> Participants</a></li>
-              <li><a href="#/rules"><i class="fa fa-book"></i></i> Règles</a></li>
-              <li><a href="#/games"><i class="fa fa-gamepad"></i> Jeux</a></li>
+              <li><a href="/users"><i class="fa fa-users"></i> Participants</a></li>
+              <li><a href="/rules"><i class="fa fa-book"></i></i> Règles</a></li>
+              <li><a href="/games"><i class="fa fa-gamepad"></i> Jeux</a></li>
               <li><a href=""><i class="fa fa-envelope"></i> Contact</a></li>
             </ul>
           </div>
+        </div>
       </ul>
       <div id="intro" class="jumbotron">
         <h1>Lan Montmorency</h1>
         <small> 25 - 26 Avril 2015</small>
         <br><br>
         <p>Bienvenue sur le site du Lan Montmorency!</p>
-        <p><a class="btn btn-primary btn-lg" href="#/subscribe" role="button">S'inscrire</a>
-        <a class="btn btn-primary btn-lg" href="#/games" role="button">Jeux</a></p>
+        <p><a class="btn btn-primary btn-lg" href="/subscribe" role="button">S'inscrire</a>
+        <a class="btn btn-primary btn-lg" href="/games" role="button">Jeux</a></p>
       </div>
       <div id="content" ng-view></div>
     </div>
