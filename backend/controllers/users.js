@@ -1,4 +1,5 @@
 var config = require('../config/config');
+var logger = require('../lib/logger');
 var User = require('../models/user');
 var EmailVerification = require('../models/email-verification');
 var crypto = require('crypto');
@@ -21,6 +22,7 @@ var verifyUniqueEmail = function(req, res) {
     }
   })
   .reject(function(err) {
+    logger.error('Error occured while finding users matching username or email: %s', err, req.body);
     res.status(500).json({message: "Une erreur interne est survenue lors de la recherche du courriel et du nom d'utilisateur"})
   });
 };
@@ -36,7 +38,7 @@ var verifyMaximum = function(req, res) {
     }
   })
   .reject(function(err) {
-    console.log(err);
+    logger.error('Error occured while finding active users matching type: %s', err, req.body);
     res.status(500).json({message: "Une erreur est survenue lors de la recherche des participants"});
   });
 };
@@ -48,7 +50,7 @@ var createUser = function(req, res) {
     createEmailVerification(req, res, user);
   })
   .reject(function(err) {
-    console.log(err);
+    logger.error('Error occured while creating user: %s', err, req.body);
     res.status(500).json({message:"Une erreur est survenue lors de la création d'un participant"});
   });
 };
@@ -64,7 +66,7 @@ var createEmailVerification = function(req, res, user) {
     sendMail(req, res, emailVerification);
   })
   .reject(function(err) {
-    console.log(err);
+    logger.error('Error occured while creating mail: %s', err, data);
     res.status(500).json({message: "Une erreur interne est survenue de la création du courriel de validation"});
   });
 };
@@ -79,25 +81,25 @@ var sendMail = function(req, res, emailVerification) {
   };
   config.transporter.sendMailAsync(mail)
   .then(function(info) {
-    console.log(info);
+    logger.debug(info);
     res.status(200).json({message:"Veuillez confirmer votre inscription en allant dans votre boîte de réception."});
   })
   .catch(function(err) {
-    console.log(err);
+    logger.error('Error occured while sending mail: %s', err, mail);
     res.status(500).json({message: "Une erreur interne est survenue lors de l'envoi du courriel de validation"});
   });
 };
 
 var updateUser = function(req, res, emailVerification) {
-  console.log(emailVerification);
+  logger.debug(emailVerification);
   User.update({_id: emailVerification.userId}, {active: true}).exec()
   .then(function() {
     var url = config.url.root + '/congratulations';
-    console.log(url);
+    logger.debug(url);
     res.redirect(url);
   })
   .reject(function(err) {
-    console.log(err);
+    logger.error('Error occured while activation user: %s', err, emailVerification);
     res.status(500).json({message:"Erreur lors de la modification de l'utilisateur"});
   });
 };
@@ -112,7 +114,7 @@ exports.getAll = function(req, res) {
     res.json(users);
   })
   .reject(function(err) {
-    console.log(err);
+    logger.error('Error occured while finding users: %s', err);
     res.status(500).json({message:"Une erreur interne est survenue lors de la recherche des participants"});
   });
 };
@@ -137,7 +139,7 @@ exports.verify = function(req, res) {
       updateUser(req, res, emailVerification);
     })
     .reject(function(err) {
-      console.log(err);
+      logger.warn('Error occured while finding emailVerification `%s`: %s', req.params.emailId, err);
       res.status(400).send('Mauvaise url');
     });
   } else {
