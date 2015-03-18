@@ -6,6 +6,9 @@ module.exports = {
   url: {
     root: 'http://localhost:3000'
   },
+  logger: {
+    level: 'debug'
+  },
   mailer: {
     from: {
       name: 'LAN Montmorency',
