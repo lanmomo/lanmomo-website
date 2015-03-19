@@ -80,20 +80,28 @@ app.config(function ($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/home.html'
   })
-  .when('/rules', {
-    templateUrl: 'partials/rules.html',
-  })
   .when('/users', {
     templateUrl: 'partials/users.html',
     controller: 'UsersController'
   })
+  .when('/games', {
+    templateUrl: 'partials/games.html',
+    controller: 'GamesController'
+  })
+  .when('/about', {
+    templateUrl: 'partials/about.html'
+  })
+  .when('/rules', {
+    templateUrl: 'partials/rules.html'
+  })
+  .when('/contact', {
+    templateUrl: 'partials/contact.html'
+  })
   .when('/subscribe', {
     templateUrl: 'partials/subscription.html',
     controller: 'SubscriptionController'
-  }).when('/games', {
-      templateUrl: 'partials/games.html',
-      controller: 'GamesController'
-  }).when('/congratulations', {
+  })
+  .when('/congratulations', {
     templateUrl: 'partials/congratulations.html'
   });
 
