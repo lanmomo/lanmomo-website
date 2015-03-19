@@ -36,8 +36,18 @@ footer .spacer {
 /* END NAVBAR */
 
 /* BEGIN HOME */
-.featurette:first-of-type {
-  margin-top: 50px; /* this + jumbotron margin = 80px */
+.jumbotron {
+  background-image: url('featurette/jumbo.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  text-align: center;
+}
+.jumbotron h1,
+.jumbotron h3 {
+  text-shadow: 2px 2px 10px black;
+}
+.featurette {
+  margin-top: 80px; /* this + jumbotron margin = 80px */
 }
 .featurette-divider {
   margin: 80px 0; /* Space out the Bootstrap <hr> more */
