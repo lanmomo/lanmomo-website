@@ -4,7 +4,7 @@ var gamesController = require('../controllers/games');
 var serversController = require('../controllers/servers');
 
 module.exports = function (app) {
-  app.get(/^\/(rules|users|subscribe|games|congratulations)?$/, mainController.index);
+  app.get(/^\/(users|games|about|rules|contact|subscribe|congratulations)?$/, mainController.index);
   app.get('/api/users', usersController.getAll);
   app.get('/api/users/max/:type', usersController.getMax);
   app.post('/api/subscribe', usersController.subscribe);

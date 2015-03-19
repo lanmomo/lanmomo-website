@@ -1,6 +1,12 @@
 "use strict";
 var app = angular.module('App', ['ngRoute', 'ui.bootstrap']);
 
+app.controller('NavbarController', function ($scope, $location) {
+  $scope.isActive = function (url) {
+    return $location.path() === url;
+  };
+});
+
 app.controller('GamesController', function ($scope, $http) {
   $http.get('/api/games')
     .success(function (data) {
@@ -50,19 +56,28 @@ app.controller('UsersController', function ($scope, $http) {
 });
 
 app.controller('SubscriptionController', function ($scope, $http) {
+  $scope.state = {
+    submitted: false,
+    loading: false,
+    success: false,
+    error: false
+  };
   $scope.subscribe = function (data) {
-    $scope.submitted = 0;
+    $scope.state.loading = true;
+    $scope.state.submitted = true;
     $http.post('/api/subscribe', data)
       .success(function (data, status) {
         console.log(status);
         console.log(data);
         $scope.data = data;
-        $scope.submitted = 1;
+        $scope.state.loading = false;
+        $scope.state.success = true;
       })
       .error(function (data) {
         console.log(data);
         $scope.data = data;
-        $scope.submitted = -1;
+        $scope.state.loading = false;
+        $scope.state.error = true;
       });
   };
 });
@@ -71,20 +86,28 @@ app.config(function ($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/home.html'
   })
-  .when('/rules', {
-    templateUrl: 'partials/rules.html',
-  })
   .when('/users', {
     templateUrl: 'partials/users.html',
     controller: 'UsersController'
   })
+  .when('/games', {
+    templateUrl: 'partials/games.html',
+    controller: 'GamesController'
+  })
+  .when('/about', {
+    templateUrl: 'partials/about.html'
+  })
+  .when('/rules', {
+    templateUrl: 'partials/rules.html'
+  })
+  .when('/contact', {
+    templateUrl: 'partials/contact.html'
+  })
   .when('/subscribe', {
     templateUrl: 'partials/subscription.html',
     controller: 'SubscriptionController'
-  }).when('/games', {
-      templateUrl: 'partials/games.html',
-      controller: 'GamesController'
-  }).when('/congratulations', {
+  })
+  .when('/congratulations', {
     templateUrl: 'partials/congratulations.html'
   });
 

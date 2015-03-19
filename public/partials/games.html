@@ -1,11 +1,20 @@
-<h1>Jeux</h1>
-<div class="row" >
-  <div class="col-xs-6 col-md-3" ng-repeat="game in data">
-    <div class="thumbnail" ng-click="isCollapsed = !isCollapsed">
-      <img src="{{game.imagePath}}" alt="{{game.title}}">
-      <div class="caption" collapse="isCollapsed">
-        <h3>{{game.title}}</h3>
-        <p>{{game.description}}</p>
+<div class="container">
+  <div class="page-header">
+    <h1>Jeux</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6" ng-repeat="game in data">
+      <div class="well">
+        <div class="row">
+          <div class="col-xs-6" ng-class-even="'col-xs-push-6'">
+            <img ng-src="{{game.imagePath}}" alt="{{game.title}}" class="img-responsive" />
+          </div>
+          <div class="col-xs-6" ng-class-even="'col-xs-pull-6'">
+            <h3 class="media-heading">{{game.title}}</h3>
+            {{game.description}}
+          </div>
+        </div>
       </div>
     </div>
   </div>

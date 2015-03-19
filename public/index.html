@@ -2,47 +2,61 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="assets/logo.jpeg">
-    <title>LAN Montmorency</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>LAN Montmorency</title>
+
     <link href="bower_components/bootswatch-dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="bower_components/components-font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/main.css">
+    <link href="assets/main.css" rel="stylesheet">
+    <link href="assets/logo.jpeg" rel="icon">
+
     <base href="/">
   </head>
   <body ng-app="App">
-    <div class="container">
-      <ul class="nav navbar-right">
-        <div class="btn-group" role="group" aria-label="...">
-          <a type="button" class="btn btn-default" href="/"><i class="fa fa-home"></i></a>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-              Plus <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/users"><i class="fa fa-users"></i> Participants</a></li>
-              <li><a href="/rules"><i class="fa fa-book"></i></i> Règles</a></li>
-              <li><a href="/games"><i class="fa fa-gamepad"></i> Jeux</a></li>
-              <li><a href=""><i class="fa fa-envelope"></i> Contact</a></li>
-            </ul>
+    <div class="wrapper">
+      <header>
+        <nav class="navbar navbar-default navbar-fixed-top">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="/">LAN Montmorency</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar" ng-controller="NavbarController">
+              <ul class="nav navbar-nav">
+                <li ng-class="{ active: isActive('/') }"><a href="/"><i class="fa fa-home"></i> Accueil</a></li>
+                <li ng-class="{ active: isActive('/users') }"><a href="/users"><i class="fa fa-users"></i> Participants</a></li>
+                <li ng-class="{ active: isActive('/games') }"><a href="/games"><i class="fa fa-gamepad"></i> Jeux</a></li>
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                <li ng-class="{ active: isActive('/subscribe') }"><a href="/subscribe"><i class="fa fa-pencil-square-o"></i> Inscription</a></li>
+              </ul>
+            </div>
           </div>
+        </nav>
+      </header>
+
+      <div class="body" ng-view></div>
+
+      <footer>
+        <div class="container">
+          <p class="pull-left">&copy; LAN Montmorency 2015</p>
+          <p class="text-center">
+            <a href="/about"><i class="fa fa-question-circle"></i> À propos</a><span class="spacer"></span>
+            <a href="/rules"><i class="fa fa-book"></i> Règles</a><span class="spacer"></span>
+            <a href="/contact"><i class="fa fa-envelope"></i> Nous joindre</a><span class="spacer"></span>
+            <a href="https://github.com/LanMomo/LanMomo-Website"><i class="fa fa-github"></i> Source</a>
+          </p>
         </div>
-      </ul>
-      <div id="intro" class="jumbotron">
-        <h1>Lan Montmorency</h1>
-        <h3> 25 - 26 Avril 2015</h3>
-        <br>
-        <p>Bienvenue sur le site du Lan Montmorency!</p>
-        <p><a class="btn btn-primary btn-lg" href="/subscribe" role="button">S'inscrire</a>
-        <a class="btn btn-primary btn-lg" href="/games" role="button">Jeux</a></p>
-      </div>
-      <div id="content" ng-view></div>
+      </footer>
     </div>
-    <footer class="footer" style="height: 40px">
-      <div class="container">
-        <p class="text-muted" style="padding-top:10px">Lan Montmorency - <a target="_blank" href="https://github.com/LanMomo/LanMomo-Website">Source <i class="fa fa-github"></i></a></p>
-      </div>
-    </footer>
+
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>

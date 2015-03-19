@@ -1,62 +1,112 @@
-<div ng-show="submitted == 1" class="alert alert-warning" role="alert">{{data.message}}</div>
-<div ng-show="submitted == -1" class="alert alert-danger" role="alert">{{data.message}}</div>
-<h1>Inscription</h1>
-<form name="userForm" ng-submit="submitForm(userForm.$valid)" novalidate>
-  <div class="row">
-    <div class="form-group" ng-class="{ 'has-error' : userForm.name.$invalid && userForm.name.$dirty }">
-      <label for="username">Nom d'utilisateur</label>
-      <input type="text" name="name" ng-model="user.username" class="form-control" placeholder="Entrez votre nom d'utilisateur" required>
-      <p ng-show="userForm.name.$invalid && userForm.name.$dirty" class="help-block">Vous devez entrer un nom d'utilisateur.</p>
-    </div>
+<div class="container">
+  <div class="page-header">
+    <h1>Inscription <small>pour le LAN du 25 et 26 avril 2015</small></h1>
   </div>
-  <div class="row">
-    <div class="form-group" ng-class="{ 'has-error' : userForm.email.$invalid && userForm.email.$dirty }">
-      <label for="email">Courriel</label>
-      <input type="email" name="email" ng-model="user.email" class="form-control" placeholder="Entrez votre courriel" required>
-      <p ng-show="userForm.email.$invalid && userForm.email.$dirty" class="help-block">Votre addresse courriel est invalide.</p>
 
+  <div ng-show="state.success" class="alert alert-warning" role="alert"><i class="fa fa-exclamation-circle"></i> {{data.message}}</div>
+  <div ng-show="state.error" class="alert alert-danger" role="alert"><i class="fa fa-exclamation-triangle"></i> {{data.message}}</div>
+  <div ng-show="state.loading" class="progress progress-striped active">
+    <div class="progress-bar progress-bar-loading">
+      Chargement
     </div>
   </div>
-  <div class="row">
-    <div class="form-group" ng-class="{ 'has-error' : userForm.firstname.$invalid && userForm.firstname.$dirty }">
-      <label for="firstname">Prénom</label>
-      <input type="text" name="firstname" ng-model="user.firstname" class="form-control" placeholder="Entrez votre prénom" required>
-      <p ng-show="userForm.firstname.$invalid && userForm.firstname.$dirty" class="help-block">Vous devez entrer un prénom.</p>
 
+  <form class="form-horizontal" name="form" ng-submit="submitForm(form.$valid)" ng-hide="state.submitted" novalidate>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : form.username.$invalid && form.username.$dirty, 'has-success' : form.username.$valid && form.username.$touched }">
+      <label for="username" class="col-sm-4 col-md-3 col-lg-2 control-label">Pseudonyme</label>
+      <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
+        <input type="text" name="username" id="username" ng-model="user.username" class="form-control" placeholder="Saisissez votre pseudonyme (username ou gamertag qui vous représente)" required>
+        <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+        <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
+        <label for="username" class="control-label">Vous devez saisir un nom d'utilisateur.</label>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="form-group" ng-class="{ 'has-error' : userForm.lastname.$invalid && userForm.lastname.$dirty }">
-      <label for="lastname">Nom</label>
-      <input type="text" name="lastname" ng-model="user.lastname" class="form-control" placeholder="Entrez votre nom" required>
-      <p ng-show="userForm.lastname.$invalid && userForm.lastname.$dirty" class="help-block">Vous devez entrer un nom.</p>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : form.firstname.$invalid && form.firstname.$dirty, 'has-success' : form.firstname.$valid && form.firstname.$touched }">
+      <label for="firstname" class="col-sm-4 col-md-3 col-lg-2 control-label">Prénom</label>
+      <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
+        <input type="text" name="firstname" id="firstname" ng-model="user.firstname" class="form-control" placeholder="Saisissez votre prénom" required>
+        <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+        <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
+        <label for="firstname" class="control-label">Vous devez saisir un prénom.</label>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="form-group" ng-class="{ 'has-error' : userForm.phone.$invalid && userForm.phone.$dirty && userForm.phone.$error.pattern }">
-      <label for="phone">Numéro de téléphone</label>
-      <input type="text" name="phone" ng-model="user.phone" ng-pattern="/[0-9]{3}-[0-9]{3}-[0-9]{4}/i" class="form-control" placeholder="Entrez votre numéro de téléphone" required>
-      <p ng-show="userForm.phone.$invalid && userForm.phone.$dirty && userForm.phone.$error.pattern" class="help-block">vous devez entrer un numéro de téléphone.</p>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : form.lastname.$invalid && form.lastname.$dirty, 'has-success' : form.lastname.$valid && form.lastname.$touched }">
+      <label for="lastname" class="col-sm-4 col-md-3 col-lg-2 control-label">Nom</label>
+      <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
+        <input type="text" name="lastname" id="lastname" ng-model="user.lastname" class="form-control" placeholder="Saisissez votre nom" required>
+        <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+        <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
+        <label for="lastname" class="control-label">Vous devez saisir un nom.</label>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="form-group" ng-class="{ 'has-error' : userForm.type.$invalid && userForm.type.$dirty && userForm.type.$error.pattern }">
-      <label for="type">Type de siège <small class="text-muted">vous pouvez seulement choisir l'un des deux</small></label>
-      <select type="text" name="type" ng-model="user.type" class="form-control" ng-init="user.type = 'pc'" ng-options="type for type in ['pc','console']" required></select>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : form.email.$invalid && form.email.$dirty, 'has-success' : form.email.$valid && form.email.$touched }">
+      <label for="email" class="col-sm-4 col-md-3 col-lg-2 control-label">Courriel</label>
+      <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
+        <input type="email" name="email" id="email" ng-model="user.email" class="form-control" placeholder="Saisissez votre courriel (un code de confirmation vous y sera envoyé)" required>
+        <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+        <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
+        <label for="email" class="control-label">Vous devez saisir une adresse courriel valide.</label>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="checkbox">
-      <label><input ng-model="checked" ng-init="checked = false" type="checkbox" value="false">
-        J'ai lu et j'accept <a target="_blank" href="#/rules">les règles</a> du LAN</label>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.phone.$invalid || form.phone.$error.pattern) && form.phone.$dirty, 'has-success' : form.phone.$valid }">
+      <label for="phone" class="col-sm-4 col-md-3 col-lg-2 control-label">Numéro de téléphone</label>
+      <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
+        <input type="text" name="phone" id="phone" ng-model="user.phone" ng-pattern="/^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i" class="form-control" placeholder="Saisissez votre numéro de téléphone (requis par les autorités du cégep)" required>
+        <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+        <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
+        <label for="phone" class="control-label">Vous devez saisir un numéro de téléphone valide.</label>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="">
-      <button type="submit" class="btn btn-primary"
-      ng-disabled="!checked || userForm.email.$invalid || userForm.lastname.$invalid || userForm.firstname.$invalid || userForm.name.$invalid || userForm.phone.$invalid || submitted == 1"
-      ng-click="subscribe(user)">S'inscrire</button>
-      <i ng-show="submitted == 0" style="font-size: 24px" class="fa fa-cog fa-spin"></i>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : form.type.$invalid && form.type.$dirty, 'has-success' : form.type.$valid }">
+      <label for="type" class="col-sm-4 col-md-3 col-lg-2 control-label">Type de siège</label>
+      <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
+        <select type="text" name="type" id="type" ng-model="user.type" class="form-control" required>
+          <option value="" disabled>Choisissez votre type de siège (vous pouvez seulement choisir l'un des deux)</option>
+          <option value="pc">PC</option>
+          <option value="console">Console</option>
+        </select>
+        <span class="glyphicon glyphicon-remove form-control-feedback feedback-error feedback-select"></span>
+        <span class="glyphicon glyphicon-ok form-control-feedback feedback-success feedback-select"></span>
+        <label for="type" class="control-label">Vous devez choisir un type de siège.</label>
+      </div>
     </div>
-  </div>
-</form>
+
+    <div class="form-group">
+      <div class="col-sm-offset-4 col-md-offset-3 col-lg-offset-2 col-sm-8 col-md-9 col-lg-10">
+        <div ng-show="user.type == 'pc'" class="alert alert-info" role="alert">
+          <i class="fa fa-info-circle"></i>
+          En choisissant un siège de type PC, tu es responsable d'apporter tout ce dont tu as besoin, incluant, mais non limité à: ton ordinateur, ton écran, ton clavier, ta sourie, ton casque d'écoute, ton câble réseau et ta barre d'alimentation. Nous te fournissons une seule prise d'alimentation, l'accès à Internet et une place assise. Inévitablement, tu ne pourras pas participer au LAN si tu n'as pas tout ton matériel.
+        </div>
+        <div ng-show="user.type == 'console'" class="alert alert-info" role="alert">
+          <i class="fa fa-info-circle"></i>
+          Info Console
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-sm-offset-4 col-md-offset-3 col-lg-offset-2 col-sm-8 col-md-9 col-lg-10">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="checked" ng-model="checked" ng-init="checked = false">
+            J'ai lu et j'accepte <a target="_blank" href="/rules">les règles</a> du LAN Montmorency et les conditions ci-dessus.
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-sm-offset-4 col-md-offset-3 col-lg-offset-2 col-sm-8 col-md-9 col-lg-10">
+        <button type="submit" class="btn btn-primary"
+                ng-disabled="!checked || form.email.$invalid || form.lastname.$invalid || form.firstname.$invalid || form.username.$invalid || form.phone.$invalid || form.type.$invalid || state.submitted"
+                ng-click="subscribe(user)"><i class="fa fa-pencil"></i> S'inscrire</button>
+      </div>
+    </div>
+  </form>
+</div>
