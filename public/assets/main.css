@@ -98,6 +98,9 @@ footer .spacer {
 .has-feedback .form-control-feedback.feedback-select {
   right: 30px;
 }
+.form-group .alert {
+  margin: 0;
+}
 .progress .progress-bar-loading {
   width: 100%;
   text-shadow: 1px 1px 4px black;
