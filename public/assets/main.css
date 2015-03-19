@@ -62,8 +62,6 @@ footer .spacer {
 }
 .featurette-image {
   margin: 0 auto;
-  height: 500px;
-  width: 500px;
   background-color: #000000;
 }
 @media (min-width: 768px) {
