@@ -28,3 +28,16 @@ footer {
   width: 100%;
   background-color: #1C1E22;
 }
+
+
+/* Subscription form */
+.control-label-hidden .control-label {
+  display: none;
+}
+.control-label-hidden.has-error .control-label {
+  display: inline-block;
+}
+.progress .progress-bar-loading {
+  width: 100%;
+  text-shadow: 1px 1px 4px black;
+}

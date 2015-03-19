@@ -50,19 +50,28 @@ app.controller('UsersController', function ($scope, $http) {
 });
 
 app.controller('SubscriptionController', function ($scope, $http) {
+  $scope.state = {
+    submitted: false,
+    loading: false,
+    success: false,
+    error: false
+  };
   $scope.subscribe = function (data) {
-    $scope.submitted = 0;
+    $scope.state.loading = true;
+    $scope.state.submitted = true;
     $http.post('/api/subscribe', data)
       .success(function (data, status) {
         console.log(status);
         console.log(data);
         $scope.data = data;
-        $scope.submitted = 1;
+        $scope.state.loading = false;
+        $scope.state.success = true;
       })
       .error(function (data) {
         console.log(data);
         $scope.data = data;
-        $scope.submitted = -1;
+        $scope.state.loading = false;
+        $scope.state.error = true;
       });
   };
 });
