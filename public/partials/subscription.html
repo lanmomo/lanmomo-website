@@ -12,54 +12,66 @@
 
 <form class="form-horizontal" name="form" ng-submit="submitForm(form.$valid)" ng-hide="state.submitted" novalidate>
 
-  <div class="form-group">
+  <div class="form-group has-feedback" ng-class="{ 'has-error' : form.username.$invalid && form.username.$dirty, 'has-success' : form.username.$valid && form.username.$touched }">
     <label for="username" class="col-sm-4 col-md-3 col-lg-2 control-label">Nom d'utilisateur</label>
-    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden" ng-class="{ 'has-error' : form.username.$invalid && form.username.$dirty }">
+    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
       <input type="text" name="username" id="username" ng-model="user.username" class="form-control" placeholder="Saisissez votre nom d'utilisateur (username ou gamertag qui vous représente)" required>
+      <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+      <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
       <label for="username" class="control-label">Vous devez saisir un nom d'utilisateur.</label>
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group has-feedback" ng-class="{ 'has-error' : form.firstname.$invalid && form.firstname.$dirty, 'has-success' : form.firstname.$valid && form.firstname.$touched }">
     <label for="firstname" class="col-sm-4 col-md-3 col-lg-2 control-label">Prénom</label>
-    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden" ng-class="{ 'has-error' : form.firstname.$invalid && form.firstname.$dirty }">
+    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
       <input type="text" name="firstname" id="firstname" ng-model="user.firstname" class="form-control" placeholder="Saisissez votre prénom" required>
+      <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+      <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
       <label for="firstname" class="control-label">Vous devez saisir un prénom.</label>
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group has-feedback" ng-class="{ 'has-error' : form.lastname.$invalid && form.lastname.$dirty, 'has-success' : form.lastname.$valid && form.lastname.$touched }">
     <label for="lastname" class="col-sm-4 col-md-3 col-lg-2 control-label">Nom</label>
-    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden" ng-class="{ 'has-error' : form.lastname.$invalid && form.lastname.$dirty }">
+    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
       <input type="text" name="lastname" id="lastname" ng-model="user.lastname" class="form-control" placeholder="Saisissez votre nom" required>
+      <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+      <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
       <label for="lastname" class="control-label">Vous devez saisir un nom.</label>
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group has-feedback" ng-class="{ 'has-error' : form.email.$invalid && form.email.$dirty, 'has-success' : form.email.$valid && form.email.$touched }">
     <label for="email" class="col-sm-4 col-md-3 col-lg-2 control-label">Courriel</label>
-    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden" ng-class="{ 'has-error' : form.email.$invalid && form.email.$dirty }">
+    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
       <input type="email" name="email" id="email" ng-model="user.email" class="form-control" placeholder="Saisissez votre courriel (un code de confirmation vous y sera envoyé)" required>
+      <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+      <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
       <label for="email" class="control-label">Vous devez saisir une adresse courriel valide.</label>
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.phone.$invalid || form.phone.$error.pattern) && form.phone.$dirty, 'has-success' : form.phone.$valid }">
     <label for="phone" class="col-sm-4 col-md-3 col-lg-2 control-label">Numéro de téléphone</label>
-    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden" ng-class="{ 'has-error' : (form.phone.$invalid || form.phone.$error.pattern) && form.phone.$dirty }">
+    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
       <input type="text" name="phone" id="phone" ng-model="user.phone" ng-pattern="/[0-9]{3}-[0-9]{3}-[0-9]{4}/i" class="form-control" placeholder="Saisissez votre numéro de téléphone (requis par les autorités du cégep)" required>
+      <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+      <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
       <label for="phone" class="control-label">Vous devez saisir un numéro de téléphone valide.</label>
     </div>
   </div>
 
-  <div class="form-group">
+  <div class="form-group has-feedback" ng-class="{ 'has-error' : form.type.$invalid && form.type.$dirty, 'has-success' : form.type.$valid }">
     <label for="type" class="col-sm-4 col-md-3 col-lg-2 control-label">Type de siège</label>
-    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden" ng-class="{ 'has-error' : form.type.$invalid && form.type.$dirty }">
+    <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
       <select type="text" name="type" id="type" ng-model="user.type" class="form-control" required>
         <option value="" disabled>Choisissez votre type de siège (vous pouvez seulement choisir l'un des deux)</option>
         <option value="pc">PC</option>
         <option value="console">Console</option>
       </select>
+      <span class="glyphicon glyphicon-remove form-control-feedback feedback-error feedback-select"></span>
+      <span class="glyphicon glyphicon-ok form-control-feedback feedback-success feedback-select"></span>
       <label for="type" class="control-label">Vous devez choisir un type de siège.</label>
     </div>
   </div>

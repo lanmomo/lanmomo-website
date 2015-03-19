@@ -31,11 +31,19 @@ footer {
 
 
 /* Subscription form */
-.control-label-hidden .control-label {
+.has-feedback .control-label-hidden .control-label,
+.has-feedback .form-control-feedback {
   display: none;
 }
-.control-label-hidden.has-error .control-label {
+.has-feedback.has-error .control-label-hidden .control-label {
   display: inline-block;
+}
+.has-feedback.has-error .form-control-feedback.feedback-error,
+.has-feedback.has-success .form-control-feedback.feedback-success {
+  display: block;
+}
+.has-feedback .form-control-feedback.feedback-select {
+  right: 30px;
 }
 .progress .progress-bar-loading {
   width: 100%;
