@@ -2,9 +2,9 @@
 <h3>PC</h3>
 <span class="text-muted"> Places occupées:</span>
 <div class="progress">
-  <div class="progress-bar" role="progressbar" aria-valuenow="{{data.length}}"
-    aria-valuemin="0" aria-valuemax="{{maxPc.maxUsers}}" style=" min-width:3em; width: {{data.length / maxPc.maxUsers * 100}}%">
-    {{data.length}} / {{maxPc.maxUsers}}
+  <div class="progress-bar" role="progressbar" aria-valuenow="{{pcUsers.length}}"
+    aria-valuemin="0" aria-valuemax="{{maxPc.maxUsers}}" style=" min-width:3em; width: {{pcUsers.length / maxPc.maxUsers * 100}}%">
+    {{pcUsers.length}} / {{maxPc.maxUsers}}
   </div>
 </div>
 <table class="table">
@@ -16,7 +16,33 @@
       <th>Nom</th>
     </tr>
   </thead>
-  <tbody ng-repeat="user in data">
+  <tbody ng-repeat="user in pcUsers">
+    <tr>
+      <th>{{$index + 1}}</th>
+      <td><b>{{user.username}}</b></td>
+      <td>{{user.firstname}}</td>
+      <td>{{user.lastname}}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Console</h3>
+<span class="text-muted"> Places occupées:</span>
+<div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="{{consoleUsers.length}}"
+    aria-valuemin="0" aria-valuemax="{{maxConsole.maxUsers}}" style=" min-width:3em; width: {{consoleUsers.length / maxConsole.maxUsers * 100}}%">
+    {{consoleUsers.length}} / {{maxConsole.maxUsers}}
+  </div>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Pseudonyme</th>
+      <th>Prénom</th>
+      <th>Nom</th>
+    </tr>
+  </thead>
+  <tbody ng-repeat="user in consoleUsers">
     <tr>
       <th>{{$index + 1}}</th>
       <td><b>{{user.username}}</b></td>

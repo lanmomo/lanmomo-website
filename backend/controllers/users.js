@@ -4,7 +4,7 @@ var EmailVerification = require('../models/email-verification');
 var crypto = require('crypto');
 
 var validateBody = function (body) {
-  return body.username && body.email && body.firstname && body.lastname;
+  return body.username && body.email && body.firstname && body.lastname && body.phone && body.type;
 };
 
 exports.index = function (req, res) {
@@ -12,7 +12,7 @@ exports.index = function (req, res) {
 };
 
 exports.getAll = function (req, res) {
-  User.find({active:true}).select('username firstname lastname').exec()
+  User.find({active:true}).select('username firstname lastname type').exec()
   .then(function (users) {
     res.json(users);
   })
@@ -25,14 +25,15 @@ exports.getAll = function (req, res) {
 exports.getMax = function (req, res) {
   var type = req.params.type;
   res.json({maxUsers:config.maximum[type]});
-}
+};
 
 exports.subscribe = function (req, res) {
   if (validateBody(req.body)) {
-    User.where({active:true}).count().exec()
+    var type = req.body.type;
+    User.where({active:true}, {"type":type}).count().exec()
     .then(function (count) {
-      if (count >= config.maximum.pc) {
-        res.status(402).json({message:"Le nombre maximum de participants sur PC a été atteint."});
+      if (count >= config.maximum[type]) {
+        res.status(402).json({message:"Le nombre maximum de participants sur " + type + " a été atteint."});
       } else {
         req.body.active = false;
         var confirmId = crypto.randomBytes(42).toString('hex');

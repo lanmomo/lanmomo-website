@@ -40,6 +40,12 @@
     </div>
   </div>
   <div class="row">
+    <div class="form-group" ng-class="{ 'has-error' : userForm.type.$invalid && userForm.type.$dirty && userForm.type.$error.pattern }">
+      <label for="type">Type de siège <small class="text-muted">vous pouvez seulement choisir l'un des deux</small></label>
+      <select type="text" name="type" ng-model="user.type" class="form-control" ng-init="user.type = 'pc'" ng-options="type for type in ['pc','console']" required></select>
+    </div>
+  </div>
+  <div class="row">
     <div class="checkbox">
       <label><input ng-model="checked" ng-init="checked = false" type="checkbox" value="false">
         J'ai lu et j'accept <a target="_blank" href="#/rules">les règles</a> du LAN</label>
