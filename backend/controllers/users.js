@@ -4,7 +4,11 @@ var EmailVerification = require('../models/email-verification');
 var crypto = require('crypto');
 
 var validateBody = function (body) {
-  return body.username && body.email && body.firstname && body.lastname && body.phone && body.type;
+  var emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  var phoneRegex = /^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i;
+
+  return emailRegex.test(body.email) && phoneRegex.test(body.phone)
+    && body.username && body.firstname && body.lastname && config.types.indexOf(body.type) >= 0
 };
 
 exports.index = function (req, res) {

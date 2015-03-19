@@ -25,6 +25,7 @@ module.exports = {
   db: {
     url: 'mongodb://localhost/dev'
   },
+  types: ['pc', 'console'],
   maximum: {
     pc: 50,
     console: 15
