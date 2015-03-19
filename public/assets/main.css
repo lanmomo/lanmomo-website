@@ -1,36 +1,78 @@
-html {
+/* BEGIN FOOTER */
+html, body {
+  height: 100%
+}
+.wrapper {
   position: relative;
   min-height: 100%;
 }
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+.body {
+  padding-top: 70px; /* navbar height + padding */
+  padding-bottom: 130px; /* footer height + padding */
 }
-
-.nav {
-  padding-top: 5px;
-  padding-right: 20px;
+.body > .body-nopadding {
+  position: relative;
+  top: -20px;
 }
-
-#intro {
-  text-align: center;
-}
-
-#content {
-  padding-left: 25px;
-  padding-right: 25px;
-  margin-bottom: 25px;
-}
-
 footer {
   position: absolute;
   bottom: 0;
-  width: 100%;
+  left: 0;
+  right: 0;
+  height: 80px;
+  padding: 30px 0;
+  border-top: 1px solid #0C0D0E;
   background-color: #1C1E22;
 }
+footer .spacer {
+  padding-left: 25px;
+}
+/* END FOOTER */
 
+/* BEGIN NAVBAR */
+.navbar-right {
+  margin: 0; /* fix alignment inside container */
+}
+/* END NAVBAR */
 
-/* Subscription form */
+/* BEGIN HOME */
+.featurette:first-of-type {
+  margin-top: 50px; /* this + jumbotron margin = 80px */
+}
+.featurette-divider {
+  margin: 80px 0; /* Space out the Bootstrap <hr> more */
+}
+.featurette-heading {
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -1px; /* Thin out the marketing headings */
+}
+.featurette-image {
+  margin: 0 auto;
+  height: 500px;
+  width: 500px;
+  background-color: #000000;
+}
+@media (min-width: 768px) {
+  .featurette-heading {
+    font-size: 50px;
+  }
+}
+
+@media (min-width: 992px) {
+  .featurette-heading {
+    margin-top: 120px;
+  }
+  .featurette-image-pull-right {
+     float: right !important;
+  }
+  .featurette-image-pull-left {
+    float: left !important;
+  }
+}
+/* END HOME */
+
+/* BEGIN SUBSCRIPTION */
 .has-feedback .control-label-hidden .control-label,
 .has-feedback .form-control-feedback {
   display: none;
@@ -49,3 +91,4 @@ footer {
   width: 100%;
   text-shadow: 1px 1px 4px black;
 }
+/* END SUBSCRIPTION */

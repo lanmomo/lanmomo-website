@@ -1,6 +1,12 @@
 "use strict";
 var app = angular.module('App', ['ngRoute', 'ui.bootstrap']);
 
+app.controller('NavbarController', function ($scope, $location) {
+  $scope.isActive = function (url) {
+    return $location.path() === url;
+  };
+});
+
 app.controller('GamesController', function ($scope, $http) {
   $http.get('/api/games')
     .success(function (data) {
