@@ -25,7 +25,10 @@ module.exports = {
   db: {
     url: 'mongodb://localhost/dev'
   },
-  maximum: 50,
+  maximum: {
+    pc: 50,
+    console: 15
+  },
   games: [{
     title: 'Team Fortress 2',
     description: 'PVP et Mann Versus Machine',

@@ -24,9 +24,9 @@ app.controller('UsersController', function ($scope, $http) {
     .error(function (err, status) {
       $scope.error = {message: err, status: status};
     });
-  $http.get('/api/users/max')
+  $http.get('/api/users/max/pc')
     .success(function (max) {
-      $scope.max = max;
+      $scope.maxPc = max;
     })
     .error(function (err, status) {
       $scope.error = {message: err, status: status};

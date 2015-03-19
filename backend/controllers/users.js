@@ -23,15 +23,16 @@ exports.getAll = function (req, res) {
 };
 
 exports.getMax = function (req, res) {
-  res.json({maxUsers:config.maximum})
+  var type = req.params.type;
+  res.json({maxUsers:config.maximum[type]});
 }
 
 exports.subscribe = function (req, res) {
   if (validateBody(req.body)) {
     User.where({active:true}).count().exec()
     .then(function (count) {
-      if (count >= config.maximum) {
-        res.status(402).json({message:"Le nombre maximum de participants a été atteint."});
+      if (count >= config.maximum.pc) {
+        res.status(402).json({message:"Le nombre maximum de participants sur PC a été atteint."});
       } else {
         req.body.active = false;
         var confirmId = crypto.randomBytes(42).toString('hex');
