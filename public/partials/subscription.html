@@ -55,7 +55,7 @@
   <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.phone.$invalid || form.phone.$error.pattern) && form.phone.$dirty, 'has-success' : form.phone.$valid }">
     <label for="phone" class="col-sm-4 col-md-3 col-lg-2 control-label">Numéro de téléphone</label>
     <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-      <input type="text" name="phone" id="phone" ng-model="user.phone" ng-pattern="/[0-9]{3}-[0-9]{3}-[0-9]{4}/i" class="form-control" placeholder="Saisissez votre numéro de téléphone (requis par les autorités du cégep)" required>
+      <input type="text" name="phone" id="phone" ng-model="user.phone" ng-pattern="/^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i" class="form-control" placeholder="Saisissez votre numéro de téléphone (requis par les autorités du cégep)" required>
       <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
       <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
       <label for="phone" class="control-label">Vous devez saisir un numéro de téléphone valide.</label>
