@@ -1,0 +1,24 @@
+#!/bin/bash -e
+
+# Script to bootstrap a clean linux installation with the website
+
+INST_PATH="/opt/lanmomo"
+
+apt-get update
+apt-get install -y curl mongodb git
+
+curl -sL https://deb.nodesource.com/setup | bash -
+apt-get install -y nodejs
+
+npm install -g bower forever
+
+adduser lanmomo
+
+mkdir /var/log/lanmomo/
+chown lanmomo: /var/log/lanmomo/
+
+mkdir "$INST_PATH"
+chown lanmomo: "$INST_PATH"
+
+su - lanmomo -c "git clone https://github.com/LanMomo/LanMomo-Website.git $INST_PATH"
+su - lanmomo -c "(cd "${INST_PATH}/public" && bower install)"
