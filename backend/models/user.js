@@ -7,6 +7,7 @@ var userSchema = new Schema({
   lastname: String,
   email: String,
   phone: String,
+  type: String,
   active: Boolean
 });
 

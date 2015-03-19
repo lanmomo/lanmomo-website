@@ -17,16 +17,32 @@ app.controller('GamesController', function ($scope, $http) {
 });
 
 app.controller('UsersController', function ($scope, $http) {
+  $scope.pcUsers = [];
+  $scope.consoleUsers = [];
   $http.get('/api/users')
     .success(function (data) {
       $scope.data = data;
+      $scope.data.forEach(function (user) {
+        if (user.type == "pc") {
+          $scope.pcUsers.push(user);
+        } else if (user.type == "console"){
+          $scope.consoleUsers.push(user);
+        }
+      });
     })
     .error(function (err, status) {
       $scope.error = {message: err, status: status};
     });
-  $http.get('/api/users/max')
+  $http.get('/api/users/max/pc')
     .success(function (max) {
-      $scope.max = max;
+      $scope.maxPc = max;
+    })
+    .error(function (err, status) {
+      $scope.error = {message: err, status: status};
+    });
+  $http.get('/api/users/max/console')
+    .success(function (max) {
+      $scope.maxConsole = max;
     })
     .error(function (err, status) {
       $scope.error = {message: err, status: status};
