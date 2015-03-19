@@ -39,20 +39,18 @@ footer .spacer {
 
 /* BEGIN HOME */
 .jumbotron {
+  text-align: center;
+}
+.jumbotron-home {
   background-image: url('featurette/jumbo.png');
   background-repeat: no-repeat;
   background-position: center;
-  text-align: center;
 }
-.jumbotron h1,
-.jumbotron h3 {
+.jumbotron-home h1,
+.jumbotron-home h3 {
   text-shadow: 2px 2px 10px black;
 }
-.featurette {
-  margin-top: 80px;
-  margin-bottom: 30px; /* this + footer margin = 80px */
-}
-.featurette-divider {
+.featurette, .featurette-divider {
   margin: 80px 0; /* Space out the Bootstrap <hr> more */
 }
 .featurette-heading {
