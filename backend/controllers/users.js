@@ -11,6 +11,97 @@ var validateBody = function (body) {
     && body.username && body.firstname && body.lastname && config.types.indexOf(body.type) >= 0
 };
 
+var verifyUniqueEmail = function(req, res) {
+  User.count().or([{username:req.body.username}, {email:req.body.email}]).exec()
+  .then(function (count) {
+    if (count > 0) {
+      res.status(402).json({message:"Votre courriel ou votre nom d'utilisateur sont déjà utilisés."})
+    } else {
+      verifyMaximum(req, res);
+    }
+  })
+  .reject(function (err) {
+    res.status(500).json({message: "Une erreur interne est survenue lors de la recherche du courriel et du nom d'utilisateur"})
+  });
+};
+
+var verifyMaximum = function(req, res) {
+  var type = req.body.type;
+  User.where({active:true}, {"type":type}).count().exec()
+  .then(function (count) {
+    if (count >= config.maximum[type]) {
+      res.status(402).json({message:"Le nombre maximum de participants sur " + type + " a été atteint."});
+    } else {
+      createUser(req, res);
+    }
+  })
+  .reject(function (err) {
+    console.log(err);
+    res.status(500).json({message: "Une erreur est survenue lors de la recherche des participants"});
+  });
+};
+
+var createUser = function(req, res) {
+  req.body.active = false;
+  User.create(req.body)
+  .then(function (user) {
+    createEmailVerification(req, res, user);
+  })
+  .reject(function (err) {
+    console.log(err);
+    res.status(500).json({message:"Une erreur est survenue lors de la création d'un participant"});
+  });
+};
+
+var createEmailVerification = function(req, res, user) {
+  var confirmId = crypto.randomBytes(42).toString('hex');
+  var data = {
+    userId: user._id,
+    emailId: confirmId
+  };
+  EmailVerification.create(data)
+  .then(function (emailVerification) {
+    sendMail(req, res, emailVerification);
+  })
+  .reject(function (err) {
+    console.log(err);
+    res.status(500).json({message: "Une erreur interne est survenue de la création du courriel de validation"});
+  });
+};
+
+var sendMail = function(req, res, emailVerification) {
+  var url = config.url.root + '/api/verify/' + emailVerification.emailId;
+  var mail = {
+    from: config.mailer.from,
+    to: req.body.email,
+    subject: 'Vérification de courriel',
+    html: 'Veuillez confirmer votre courriel en cliquant <a href="' + url + '">ici</a>'
+  };
+  config.transporter.sendMailAsync(mail)
+  .then(function (info) {
+    console.log(info);
+    res.status(200).json({message:"Veuillez confirmer votre inscription en allant dans votre boîte de réception."});
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).json({message: "Une erreur interne est survenue lors de l'envoi du courriel de validation"});
+  });
+};
+
+var updateUser = function(req, res, emailVerification) {
+  console.log(emailVerification);
+  User.update({_id: emailVerification.userId}, {active: true}).exec()
+  .then(function () {
+    var url = config.url.root + '/congratulations';
+    console.log(url);
+    res.redirect(url);
+  })
+  .reject(function (err) {
+    console.log(err);
+    res.status(500).json({message:"Erreur lors de la modification de l'utilisateur"});
+  });
+};
+
 exports.index = function (req, res) {
   res.sendFile('index.html', {root: __dirname + '/../../public/'});
 };
@@ -33,64 +124,7 @@ exports.getMax = function (req, res) {
 
 exports.subscribe = function (req, res) {
   if (validateBody(req.body)) {
-    var type = req.body.type;
-    User.count().or([{username:req.body.username}, {email:req.body.email}]).exec()
-    .then(function (count) {
-      if (count > 0) {
-        res.status(402).json({message:"Votre courriel ou votre nom d'utilisateur sont déjà utilisés."})
-      } else {
-        User.where({active:true}, {"type":type}).count().exec()
-        .then(function (count) {
-          if (count >= config.maximum[type]) {
-            res.status(402).json({message:"Le nombre maximum de participants sur " + type + " a été atteint."});
-          } else {
-            req.body.active = false;
-            var confirmId = crypto.randomBytes(42).toString('hex');
-            User.create(req.body)
-            .then(function (user) {
-              var data = {
-                userId: user._id,
-                emailId: confirmId
-              };
-              EmailVerification.create(data)
-              .then(function (emailVerification) {
-                var url = config.url.root + '/api/verify/' + emailVerification.emailId;
-                var mail = {
-                  from: config.mailer.from,
-                  to: req.body.email,
-                  subject: 'Vérification de courriel',
-                  html: 'Veuillez confirmer votre courriel en cliquant <a href="' + url + '">ici</a>'
-                };
-                config.transporter.sendMailAsync(mail)
-                .then(function (info) {
-                  console.log(info);
-                  res.status(200).json({message:"Veuillez confirmer votre inscription en allant dans votre boîte de réception."});
-                })
-                .catch(function (err) {
-                  console.log(err);
-                  res.status(500).json({message: "Une erreur interne est survenue lors de l'envoi du courriel de validation"});
-                });
-              })
-              .reject(function (err) {
-                console.log(err);
-                res.status(500).json({message: "Une erreur interne est survenue de la création du courriel de validation"});
-              });
-            })
-            .reject(function (err) {
-              console.log(err);
-              res.status(500).json({message:"Une erreur est survenue lors de la création d'un participant"});
-            });
-          }
-        })
-        .reject(function (err) {
-          console.log(err);
-          res.status(500).json({message: "Une erreur est survenue lors de la recherche des participants"});
-        });
-      }
-    })
-    .reject(function (err) {
-      res.status(500).json({message: "Une erreur interne est survenue lors de la recherche du courriel et du nom d'utilisateur"})
-    });
+    verifyUniqueEmail(req, res);
   } else {
     return res.status(400).json({message:'Les informations données sont invalides ou incomplètes'});
   }
@@ -100,17 +134,7 @@ exports.verify = function (req, res) {
   if (req.params.emailId) {
     EmailVerification.findOne({emailId: req.params.emailId}).exec()
     .then(function (emailVerification) {
-      console.log(emailVerification);
-      User.update({_id: emailVerification.userId}, {active: true}).exec()
-      .then(function () {
-        var url = config.url.root + '/congratulations';
-        console.log(url);
-        res.redirect(url);
-      })
-      .reject(function (err) {
-        console.log(err);
-        res.status(500).json({message:'Erreur lors de la modification de l\'utilisateur'});
-      });
+      updateUser(req, res, emailVerification);
     })
     .reject(function (err) {
       console.log(err);
