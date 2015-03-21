@@ -1,18 +1,18 @@
 "use strict";
 var app = angular.module('App', ['ngRoute', 'ui.bootstrap']);
 
-app.controller('NavbarController', function ($scope, $location) {
-  $scope.isActive = function (url) {
+app.controller('NavbarController', function($scope, $location) {
+  $scope.isActive = function(url) {
     return $location.path() === url;
   };
 });
 
-app.controller('GamesController', function ($scope, $http) {
+app.controller('GamesController', function($scope, $http) {
   $http.get('/api/games')
-    .success(function (data) {
+    .success(function(data) {
       $scope.data = data;
     })
-    .error(function (err, status) {
+    .error(function(err, status) {
       $scope.error = {message: err, status: status};
     });
   $scope.isCollapsed = new Array;
@@ -22,13 +22,13 @@ app.controller('GamesController', function ($scope, $http) {
   console.log($scope.data);
 });
 
-app.controller('UsersController', function ($scope, $http) {
+app.controller('UsersController', function($scope, $http) {
   $scope.pcUsers = [];
   $scope.consoleUsers = [];
   $http.get('/api/users')
-    .success(function (data) {
+    .success(function(data) {
       $scope.data = data;
-      $scope.data.forEach(function (user) {
+      $scope.data.forEach(function(user) {
         if (user.type == "pc") {
           $scope.pcUsers.push(user);
         } else if (user.type == "console"){
@@ -36,44 +36,44 @@ app.controller('UsersController', function ($scope, $http) {
         }
       });
     })
-    .error(function (err, status) {
+    .error(function(err, status) {
       $scope.error = {message: err, status: status};
     });
   $http.get('/api/users/max/pc')
-    .success(function (max) {
+    .success(function(max) {
       $scope.maxPc = max;
     })
-    .error(function (err, status) {
+    .error(function(err, status) {
       $scope.error = {message: err, status: status};
     });
   $http.get('/api/users/max/console')
-    .success(function (max) {
+    .success(function(max) {
       $scope.maxConsole = max;
     })
-    .error(function (err, status) {
+    .error(function(err, status) {
       $scope.error = {message: err, status: status};
     });
 });
 
-app.controller('SubscriptionController', function ($scope, $http) {
+app.controller('SubscriptionController', function($scope, $http) {
   $scope.state = {
     submitted: false,
     loading: false,
     success: false,
     error: false
   };
-  $scope.subscribe = function (data) {
+  $scope.subscribe = function(data) {
     $scope.state.loading = true;
     $scope.state.submitted = true;
     $http.post('/api/subscribe', data)
-      .success(function (data, status) {
+      .success(function(data, status) {
         console.log(status);
         console.log(data);
         $scope.data = data;
         $scope.state.loading = false;
         $scope.state.success = true;
       })
-      .error(function (data) {
+      .error(function(data) {
         console.log(data);
         $scope.data = data;
         $scope.state.loading = false;
@@ -82,7 +82,7 @@ app.controller('SubscriptionController', function ($scope, $http) {
   };
 });
 
-app.config(function ($routeProvider, $locationProvider) {
+app.config(function($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/home.html'
   })
