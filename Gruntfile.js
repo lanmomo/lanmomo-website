@@ -29,5 +29,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('serve', ['env:dev', 'nodemon']);
-  grunt.registerTask('lint', ['watch']);
+  grunt.registerTask('lint-watch', ['watch']);
+  grunt.registerTask('lint', ['jshint']);
 };
