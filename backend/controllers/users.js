@@ -98,7 +98,7 @@ var updateUser = function(req, res, emailVerification) {
   })
   .reject(function (err) {
     console.log(err);
-    res.status(500).json({message:'Erreur lors de la modification de l\'utilisateur'});
+    res.status(500).json({message:"Erreur lors de la modification de l'utilisateur"});
   });
 };
 
