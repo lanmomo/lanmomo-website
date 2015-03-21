@@ -88,6 +88,20 @@ var sendMail = function(req, res, emailVerification) {
   });
 };
 
+var updateUser = function(req, res, emailVerification) {
+  console.log(emailVerification);
+  User.update({_id: emailVerification.userId}, {active: true}).exec()
+  .then(function () {
+    var url = config.url.root + '/congratulations';
+    console.log(url);
+    res.redirect(url);
+  })
+  .reject(function (err) {
+    console.log(err);
+    res.status(500).json({message:'Erreur lors de la modification de l\'utilisateur'});
+  });
+};
+
 exports.index = function (req, res) {
   res.sendFile('index.html', {root: __dirname + '/../../public/'});
 };
@@ -120,17 +134,7 @@ exports.verify = function (req, res) {
   if (req.params.emailId) {
     EmailVerification.findOne({emailId: req.params.emailId}).exec()
     .then(function (emailVerification) {
-      console.log(emailVerification);
-      User.update({_id: emailVerification.userId}, {active: true}).exec()
-      .then(function () {
-        var url = config.url.root + '/congratulations';
-        console.log(url);
-        res.redirect(url);
-      })
-      .reject(function (err) {
-        console.log(err);
-        res.status(500).json({message:'Erreur lors de la modification de l\'utilisateur'});
-      });
+      updateUser(req, res, emailVerification);
     })
     .reject(function (err) {
       console.log(err);
