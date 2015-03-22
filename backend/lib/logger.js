@@ -1,23 +1,14 @@
-var winston = require('winston');
-var moment = require('moment');
+var log4js = require('log4js');
 
 var config = require('./../config/config');
 
-var logger = new (winston.Logger)({
-  transports: [
-    new (winston.transports.Console)({
-      level: config.logger.level,
-      timestamp: function () {
-        return moment().format('HH:mm:ss,SSS');
-      },
-      // Format: TIMESTAMP [LEVEL] MESSAGE META
-      formatter: function(options) {
-        return options.timestamp() + ' [' + options.level.toUpperCase() + '] ' +
-               (undefined !== options.message ? options.message : '') +
-               (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta) : '');
-      }
-    })
-  ]
-});
+var layout = log4js.layouts.layout('pattern', config.logger.layout);
+var console = log4js.appenders.console(layout);
+
+log4js.configure({}); // Resetting default configuration
+log4js.addAppender(console);
+log4js.setGlobalLogLevel(config.logger.level);
+
+var logger = log4js.getLogger();
 
 module.exports = logger;

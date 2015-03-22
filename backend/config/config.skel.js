@@ -7,7 +7,10 @@ module.exports = {
     root: 'http://localhost:3000'
   },
   logger: {
-    level: 'debug'
+    level: 'debug',
+    layout: {
+      pattern: '%d{ABSOLUTE} %[[%p]%] %m'
+    }
   },
   mailer: {
     from: {
