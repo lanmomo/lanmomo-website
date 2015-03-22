@@ -5,7 +5,6 @@ var app = express();
 
 var config = require('./backend/config/config');
 var logger = require('./backend/lib/logger');
-var morgan = require('./backend/lib/morgan');
 
 //Database
 mongoose.connect(config.db.url);
@@ -14,7 +13,12 @@ mongoose.connect(config.db.url);
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(morgan);
+
+//DEV only
+if (process.env.NODE_ENV == 'dev') {
+  var morgan = require('./backend/lib/morgan');
+  app.use(morgan);
+}
 
 //Routing
 require('./backend/routes/routes')(app);
