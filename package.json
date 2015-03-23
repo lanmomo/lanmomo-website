@@ -1,14 +1,14 @@
 {
-  "name": "LanMomo-Website",
+  "name": "lanmomo-website",
   "version": "0.0.0",
-  "description": "Website for LanMomo",
+  "description": "Website for LAN Montmorency",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/LanMomo/LanMomo-Website.git"
+    "url": "git://github.com/lanmomo/website.git"
   },
   "keywords": [
     "express",
@@ -18,7 +18,7 @@
   "author": "Lanmomo organization",
   "license": "GPL",
   "bugs": {
-    "url": "https://github.com/LanMomo/LanMomo-Website/issues"
+    "url": "https://github.com/lanmomo/website/issues"
   },
   "dependencies": {
     "bluebird": "^2.9.14",
