@@ -132,8 +132,8 @@ app.config(function($routeProvider, $locationProvider) {
   .when('/about', {
     templateUrl: 'partials/about.html'
   })
-  .when('/rules', {
-    templateUrl: 'partials/rules.html'
+  .when('/terms', {
+    templateUrl: 'partials/terms.html'
   })
   .when('/contact', {
     templateUrl: 'partials/contact.html'
