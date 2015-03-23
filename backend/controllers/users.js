@@ -123,6 +123,36 @@ exports.getMax = function(req, res) {
   res.json({maxUsers:config.maximum[type]});
 };
 
+exports.hasUsername = function(req, res) {
+  User.where({username:req.body.username}).count().exec()
+    .then(function(count) {
+      if (count > 0) {
+        res.status(200).json({exists: true});
+      } else {
+        res.status(200).json({exists: false});
+      }
+    })
+    .reject(function(err) {
+      logger.error('Error occured while finding users matching username: %s', err, req.body);
+      res.status(500).send('Une erreur interne est survenue');
+    });
+};
+
+exports.hasEmail = function(req, res) {
+  User.where({email:req.body.email}).count().exec()
+    .then(function(count) {
+      if (count > 0) {
+        res.status(200).json({exists: true});
+      } else {
+        res.status(200).json({exists: false});
+      }
+    })
+    .reject(function(err) {
+      logger.error('Error occured while finding users matching email: %s', err, req.body);
+      res.status(500).send('Une erreur interne est survenue');
+    });
+};
+
 exports.subscribe = function(req, res) {
   if (validateBody(req.body)) {
     verifyUniqueEmail(req, res);

@@ -55,7 +55,11 @@ app.controller('SubscriptionController', function($scope, $http) {
     submitted: false,
     loading: false,
     success: false,
-    error: false
+    error: false,
+    usernameChanged: false,
+    emailChanged: false,
+    usernameAvailable: false,
+    emailAvailable: false
   };
   $scope.subscribe = function(data) {
     $scope.state.loading = true;
@@ -74,6 +78,36 @@ app.controller('SubscriptionController', function($scope, $http) {
         $scope.state.loading = false;
         $scope.state.error = true;
       });
+  };
+  $scope.isUsernameAvailable = function(user) {
+    $http.post('/api/users/has/username', {username: user.username})
+      .success(function(data, status) {
+        $scope.state.usernameAvailable = !data.exists;
+        $scope.state.usernameChanged = true;
+      })
+      .error(function(data) {
+        console.log(data);
+        $scope.state.usernameAvailable = false;
+        $scope.state.usernameChanged = true;
+      });
+  };
+  $scope.resetUsernameChanged = function() {
+    $scope.state.usernameChanged = false;
+  };
+  $scope.isEmailAvailable = function(user) {
+    $http.post('/api/users/has/email', {email: user.email})
+      .success(function(data, status) {
+        $scope.state.emailAvailable = !data.exists;
+        $scope.state.emailChanged = true;
+      })
+      .error(function(data) {
+        console.log(data);
+        $scope.state.emailAvailable = false;
+        $scope.state.emailChanged = true;
+      });
+  };
+  $scope.resetEmailChanged = function() {
+    $scope.state.emailChanged = false;
   };
 });
 
