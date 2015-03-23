@@ -56,6 +56,7 @@ app.controller('UsersController', function($scope, $http) {
 });
 
 app.controller('SubscriptionController', function($scope, $http) {
+  $('[data-toggle="tooltip"]').tooltip();
   $scope.state = {
     submitted: false,
     loading: false,

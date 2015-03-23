@@ -14,9 +14,9 @@
   <form class="form-horizontal" name="form" ng-submit="submitForm(form.$valid)" ng-hide="state.submitted" novalidate>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.username.$invalid && form.username.$dirty) || (!state.usernameAvailable && state.usernameChanged), 'has-success' : form.username.$valid && state.usernameChanged && state.usernameAvailable }">
-      <label for="username" class="col-sm-4 col-md-3 col-lg-2 control-label">Pseudonyme</label>
+      <label for="username" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Saisissez un username ou gamertag qui vous représente">Pseudonyme <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <input type="text" name="username" id="username" ng-model="user.username" ng-blur="isUsernameAvailable(user)" ng-change="resetUsernameChanged()" class="form-control" placeholder="Saisissez votre pseudonyme (username ou gamertag qui vous représente)" required>
+        <input type="text" name="username" id="username" ng-model="user.username" ng-blur="isUsernameAvailable(user)" ng-change="resetUsernameChanged()" class="form-control" placeholder="Saisissez votre pseudonyme" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="username" class="control-label" ng-show="form.username.$invalid">Vous devez saisir un nom d'utilisateur.</label>
@@ -45,9 +45,9 @@
     </div>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.email.$invalid && form.email.$dirty) || (!state.emailAvailable && state.emailChanged), 'has-success' : form.email.$valid && state.emailChanged && state.emailAvailable }">
-      <label for="email" class="col-sm-4 col-md-3 col-lg-2 control-label">Courriel</label>
+      <label for="email" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Un code de confirmation sera envoyé à l'adresse courriel saisie">Courriel <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <input type="email" name="email" id="email" ng-model="user.email" ng-blur="isEmailAvailable(user)" ng-change="resetEmailChanged()" class="form-control" placeholder="Saisissez votre courriel (un code de confirmation vous y sera envoyé)" required>
+        <input type="email" name="email" id="email" ng-model="user.email" ng-blur="isEmailAvailable(user)" ng-change="resetEmailChanged()" class="form-control" placeholder="Saisissez votre courriel" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="email" class="control-label" ng-show="form.email.$invalid">Vous devez saisir une adresse courriel valide.</label>
@@ -56,9 +56,9 @@
     </div>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.phone.$invalid || form.phone.$error.pattern) && form.phone.$dirty, 'has-success' : form.phone.$valid }">
-      <label for="phone" class="col-sm-4 col-md-3 col-lg-2 control-label">Numéro de téléphone</label>
+      <label for="phone" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Le numéro de téléphone est requis par les autorités du cégep">Numéro de téléphone <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <input type="text" name="phone" id="phone" ng-model="user.phone" ng-pattern="/^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i" class="form-control" placeholder="Saisissez votre numéro de téléphone (requis par les autorités du cégep)" required>
+        <input type="text" name="phone" id="phone" ng-model="user.phone" ng-pattern="/^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i" class="form-control" placeholder="Saisissez votre numéro de téléphone" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="phone" class="control-label">Vous devez saisir un numéro de téléphone valide.</label>
@@ -66,10 +66,10 @@
     </div>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : form.type.$invalid && form.type.$dirty, 'has-success' : form.type.$valid }">
-      <label for="type" class="col-sm-4 col-md-3 col-lg-2 control-label">Type de siège</label>
+      <label for="type" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Vous pouvez choisir qu'un seul type de siège">Type de siège <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
         <select type="text" name="type" id="type" ng-model="user.type" class="form-control" required>
-          <option value="" disabled>Choisissez votre type de siège (vous pouvez seulement choisir l'un des deux)</option>
+          <option value="" disabled>Choisissez votre type de siège</option>
           <option value="pc">PC</option>
           <option value="console">Console</option>
         </select>
