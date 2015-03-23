@@ -5,6 +5,7 @@ var EmailVerification = require('../models/email-verification');
 var crypto = require('crypto');
 var util = require('util');
 var P = require('bluebird');
+var template = require('../templates/mail');
 
 var validateBody = function(body) {
   var emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -99,10 +100,6 @@ var sendMail = function(req, res, emailVerification, user) {
 };
 
 var createEmail = function(url, emailVerification, user) {
-  var template = 'Bonjour %s, <br><br>Veuillez confirmer votre courriel en ' +
-    'cliquant sur le lien suivant:<br><a href="%s">%s</a><br><br>Merci ' +
-    'et à bientôt!<br><br><small>Ceci est un courriel envoyé ' +
-    'automatiquement. Veuillez ne pas y répondre.</small>';
   return new P(function(resolve) {
     logger.debug('Sending email to %s', user);
     var html = util.format(template, user.firstname, url, url);
