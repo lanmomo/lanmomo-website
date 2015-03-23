@@ -77,6 +77,20 @@ module.exports = {
       title: 'League of Legends',
       description: 'Arène de bataille multijoueur développée par Riot Games.',
       imagePath: 'assets/game_banners/lol.jpg'
-    }
-  ]
+    },
+    {
+      title: 'TowerFall',
+      description: 'Jeux de combat en arène développé par Matt Thorson dans lequel les joueurs  s\'affrontent à l\'aide de flèches et de sauts sur la tête de l\'ennemi',
+      imagePath: 'assets/game_banners/towerfall.jpg'
+    },
+    {
+      title: 'Super Smash Bros. Melee',
+      description: 'Jeu de combat populaire développé par nintendo mettant en vedette des personnages vennant de divers séries de jeux videos',
+      imagePath: 'assets/game_banners/melee.jpg'
+    },
+    {
+      title: 'ProjectM',
+      description: 'Mod du jeux de combat Super Smash Bros. Brawl, Conçu pour ressembler plus au style de combat du jeu de la même série: Super Smash Bros. Melee',
+      imagePath: 'assets/game_banners/projectM.jpg'
+    }]
 };
