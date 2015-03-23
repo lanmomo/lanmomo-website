@@ -1,4 +1,3 @@
-var Game = require('../models/game.js');
 var config = require('../config/config');
 
 exports.getAll = function(req, res) {

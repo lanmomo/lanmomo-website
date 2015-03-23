@@ -15,11 +15,6 @@ app.controller('GamesController', function($scope, $http) {
     .error(function(err, status) {
       $scope.error = {message: err, status: status};
     });
-  $scope.isCollapsed = new Array;
-  for(var o in $scope.data) {
-    $scope.isCollapsed.push(false);
-}
-  console.log($scope.data);
 });
 
 app.controller('UsersController', function($scope, $http) {
@@ -29,9 +24,9 @@ app.controller('UsersController', function($scope, $http) {
     .success(function(data) {
       $scope.data = data;
       $scope.data.forEach(function(user) {
-        if (user.type == "pc") {
+        if (user.type === "pc") {
           $scope.pcUsers.push(user);
-        } else if (user.type == "console"){
+        } else if (user.type === "console"){
           $scope.consoleUsers.push(user);
         }
       });
