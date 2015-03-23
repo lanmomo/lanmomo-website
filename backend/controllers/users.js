@@ -64,7 +64,7 @@ var createEmailVerification = function(req, res, user) {
   };
   EmailVerification.create(data)
   .then(function(emailVerification) {
-    sendMail(req, res, emailVerification);
+    sendMail(req, res, emailVerification, user);
   })
   .reject(function(err) {
     logger.error('Error occured while creating mail: %s', err, data);
@@ -72,9 +72,9 @@ var createEmailVerification = function(req, res, user) {
   });
 };
 
-var sendMail = function(req, res, emailVerification) {
+var sendMail = function(req, res, emailVerification, user) {
   var url = config.url.root + '/api/verify/' + emailVerification.emailId;
-  createEmail(url, emailVerification)
+  createEmail(url, emailVerification, user)
   .then(function(html) {
     var mail = {
       from: config.mailer.from,
@@ -98,21 +98,15 @@ var sendMail = function(req, res, emailVerification) {
   });
 };
 
-var createEmail = function(url, emailVerification) {
+var createEmail = function(url, emailVerification, user) {
   var template = 'Bonjour %s, <br><br>Veuillez confirmer votre courriel en ' +
     'cliquant sur le lien suivant:<br><a href="%s">%s</a><br><br>Merci ' +
     'et à bientôt!<br><br><small>Ceci est un courriel envoyé ' +
     'automatiquement. Veuillez ne pas y répondre.</small>';
-  return new P(function(resolve, reject) {
-    User.findOne({_id: emailVerification.userId}).select('firstname').exec()
-    .then(function(user) {
-      logger.debug('Sending email to %s', user);
-      var html = util.format(template, user.firstname, url, url);
-      resolve(html);
-    })
-    .reject(function(err) {
-      reject(err);
-    });
+  return new P(function(resolve) {
+    logger.debug('Sending email to %s', user);
+    var html = util.format(template, user.firstname, url, url);
+    resolve(html);
   });
 };
 
