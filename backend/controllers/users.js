@@ -3,6 +3,8 @@ var logger = require('../lib/logger');
 var User = require('../models/user');
 var EmailVerification = require('../models/email-verification');
 var crypto = require('crypto');
+var util = require('util');
+var P = require('bluebird');
 
 var validateBody = function(body) {
   var emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -72,20 +74,45 @@ var createEmailVerification = function(req, res, user) {
 
 var sendMail = function(req, res, emailVerification) {
   var url = config.url.root + '/api/verify/' + emailVerification.emailId;
-  var mail = {
-    from: config.mailer.from,
-    to: req.body.email,
-    subject: 'Vérification de courriel',
-    html: 'Veuillez confirmer votre courriel en cliquant <a href="' + url + '">ici</a>'
-  };
-  config.transporter.sendMailAsync(mail)
-  .then(function(info) {
-    logger.debug(info);
-    res.status(200).json({message:"Veuillez confirmer votre inscription en allant dans votre boîte de réception."});
+  createEmail(url, emailVerification)
+  .then(function(html) {
+    var mail = {
+      from: config.mailer.from,
+      to: req.body.email,
+      subject: 'Vérification de courriel',
+      html: html
+    };
+    config.transporter.sendMailAsync(mail)
+    .then(function(info) {
+      logger.debug(info);
+      res.status(200).json({message:"Veuillez confirmer votre inscription en allant dans votre boîte de réception."});
+    })
+    .catch(function(err) {
+      logger.error('Error occured while sending mail: %s', err, mail);
+      res.status(500).json({message: "Une erreur interne est survenue lors de l'envoi du courriel de validation"});
+    });
   })
   .catch(function(err) {
-    logger.error('Error occured while sending mail: %s', err, mail);
+    logger.error('Error occured while creating email html template : %s', err);
     res.status(500).json({message: "Une erreur interne est survenue lors de l'envoi du courriel de validation"});
+  });
+};
+
+var createEmail = function(url, emailVerification) {
+  var template = 'Bonjour %s, <br><br>Veuillez confirmer votre courriel en' +
+    'cliquant sur le lien suivant:<br><a href="%s">%s</a><br><br>Merci' +
+    'et à bientôt!<br><br><small>Ceci est un courriel envoyé' +
+    'automatiquement. Veuillez ne pas y répondre.</small>';
+  return new P(function(resolve, reject) {
+    User.findOne({_id: emailVerification.userId}).select('firstname').exec()
+    .then(function(user) {
+      console.log(user);
+      var html = util.format(template, user.firstname, url, url);
+      resolve(html);
+    })
+    .reject(function(err) {
+      reject(err);
+    });
   });
 };
 
