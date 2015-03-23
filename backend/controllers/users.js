@@ -106,7 +106,7 @@ var createEmail = function(url, emailVerification) {
   return new P(function(resolve, reject) {
     User.findOne({_id: emailVerification.userId}).select('firstname').exec()
     .then(function(user) {
-      logger.debug('Sending email to ' + user);
+      logger.debug('Sending email to %s', user);
       var html = util.format(template, user.firstname, url, url);
       resolve(html);
     })
