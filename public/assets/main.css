@@ -27,12 +27,6 @@ footer {
 footer a {
   white-space: nowrap;
 }
-footer .spacer {
-  padding-left: 25px;
-}
-footer .spacer:first-child {
-  padding-left: 0;
-}
 @media (max-width: 768px) {
   .body {
     padding-bottom: 210px;
@@ -40,12 +34,9 @@ footer .spacer:first-child {
   footer {
     height: 160px;
   }
-  footer p.text-center {
+  footer ul {
     margin-top: 45px;
     line-height: 2.5em;
-  }
-  footer .spacer {
-    padding-left: 20px;
   }
 }
 /* END FOOTER */

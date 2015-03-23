@@ -56,6 +56,7 @@ app.controller('UsersController', function($scope, $http) {
 });
 
 app.controller('SubscriptionController', function($scope, $http) {
+  $('[data-toggle="tooltip"]').tooltip();
   $scope.state = {
     submitted: false,
     loading: false,
@@ -131,8 +132,8 @@ app.config(function($routeProvider, $locationProvider) {
   .when('/about', {
     templateUrl: 'partials/about.html'
   })
-  .when('/rules', {
-    templateUrl: 'partials/rules.html'
+  .when('/terms', {
+    templateUrl: 'partials/terms.html'
   })
   .when('/contact', {
     templateUrl: 'partials/contact.html'
