@@ -8,22 +8,21 @@ var validateBody = function(body) {
   var emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   var phoneRegex = /^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i;
 
-  return emailRegex.test(body.email) && phoneRegex.test(body.phone)
-    && body.username && body.firstname && body.lastname && config.types.indexOf(body.type) >= 0
+  return emailRegex.test(body.email) && phoneRegex.test(body.phone) && body.username && body.firstname && body.lastname && config.types.indexOf(body.type) >= 0;
 };
 
 var verifyUniqueEmail = function(req, res) {
   User.count().or([{username:req.body.username}, {email:req.body.email}]).exec()
   .then(function(count) {
     if (count > 0) {
-      res.status(402).json({message:"Votre courriel ou votre nom d'utilisateur sont déjà utilisés."})
+      res.status(402).json({message:"Votre courriel ou votre nom d'utilisateur sont déjà utilisés."});
     } else {
       verifyMaximum(req, res);
     }
   })
   .reject(function(err) {
     logger.error('Error occured while finding users matching username or email: %s', err, req.body);
-    res.status(500).json({message: "Une erreur interne est survenue lors de la recherche du courriel et du nom d'utilisateur"})
+    res.status(500).json({message: "Une erreur interne est survenue lors de la recherche du courriel et du nom d'utilisateur"});
   });
 };
 
