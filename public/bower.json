@@ -1,11 +1,11 @@
 {
-  "name": "public",
+  "name": "lanmomo-website",
   "version": "0.0.0",
-  "homepage": "https://github.com/LanMomo/LanMomo-Website",
+  "homepage": "https://github.com/lanmomo/website",
   "authors": [
     "Felix Leblanc <felix.leblanc1305@gmail.com>"
   ],
-  "description": "Lanmomo front end",
+  "description": "Frontend for LAN Montmorency website",
   "main": "index.html",
   "keywords": [
     "angular"
