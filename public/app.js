@@ -87,7 +87,7 @@ app.controller('SubscriptionController', function($scope, $http) {
   };
   $scope.isUsernameAvailable = function(user) {
     $http.post('/api/users/has/username', {username: user.username})
-      .success(function(data, status) {
+      .success(function(data) {
         $scope.state.usernameAvailable = !data.exists;
         $scope.state.usernameChanged = true;
       })
@@ -102,7 +102,7 @@ app.controller('SubscriptionController', function($scope, $http) {
   };
   $scope.isEmailAvailable = function(user) {
     $http.post('/api/users/has/email', {email: user.email})
-      .success(function(data, status) {
+      .success(function(data) {
         $scope.state.emailAvailable = !data.exists;
         $scope.state.emailChanged = true;
       })
