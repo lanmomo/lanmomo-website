@@ -148,3 +148,9 @@ app.config(function($routeProvider, $locationProvider) {
 
   $locationProvider.html5Mode(true);
 });
+
+app.filter('capitalize', function() {
+  return function(input) {
+    return input.substring(0, 1).toUpperCase() + input.substring(1);
+  };
+});
