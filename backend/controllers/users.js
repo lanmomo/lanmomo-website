@@ -31,7 +31,7 @@ var verifyUniqueEmail = function(req, res) {
 
 var verifyMaximum = function(req, res) {
   var type = req.body.type;
-  User.where({active:true}, {"type":type}).count().exec()
+  User.count().and([{active:true}, {"type":type}]).exec()
   .then(function(count) {
     if (count >= config.maximum[type]) {
       res.status(402).json({message:"Le nombre maximum de participants sur " + type + " a été atteint."});
