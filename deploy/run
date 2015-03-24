@@ -5,4 +5,4 @@ if [[ $EUID -eq 0 ]]; then
     exit 1
 fi
 
-(NODE_ENV=production cd /opt/lanmomo/ && forever start app.js)
+(cd /opt/lanmomo/ && NODE_ENV=prod forever start -a -l /var/log/lanmomo/forver.log -o /var/log/lanmomo/stdout.log -e /var/log/lanmomo/stderr.log app.js)
