@@ -40,7 +40,7 @@ module.exports = {
   games: [
     {
       title: 'Team Fortress 2',
-      description: 'FPS multijoueur développé par Valve. Les modes de jeux PVP et Mann Versus Machine seront offert.',
+      description: 'FPS multijoueur développé par Valve. Les modes de jeux PVP et Mann Versus Machine seront offerts.',
       imagePath: 'assets/game_banners/tf2.jpg'
     },
     {
@@ -65,7 +65,7 @@ module.exports = {
     },
     {
       title: 'TrackMania Nations Forever',
-      description: 'Jeux de course multijoueur développé par Nadeo.',
+      description: 'Jeu de course multijoueur développé par Nadeo.',
       imagePath: 'assets/game_banners/tmnations.jpg'
     },
     {
@@ -85,7 +85,7 @@ module.exports = {
     },
     {
       title: 'Super Smash Bros. Melee',
-      description: 'Jeu de combat populaire développé par Nintendo mettant en vedette des personnages vennant de divers jeux videos.',
+      description: 'Jeu de combat populaire développé par Nintendo mettant en vedette des personnages provenant de divers jeux vidéos.',
       imagePath: 'assets/game_banners/melee.jpg'
     },
     {
