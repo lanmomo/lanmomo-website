@@ -25,8 +25,8 @@
       <tr ng-repeat="user in pcUsers">
         <td>{{$index + 1}}</th>
         <td>{{user.username}}</td>
-        <td>{{user.firstname}}</td>
-        <td>{{user.lastname}}</td>
+        <td>{{user.firstname | capitalize}}</td>
+        <td>{{user.lastname | capitalize}}</td>
       </tr>
     </tbody>
   </table>
@@ -55,8 +55,8 @@
       <tr ng-repeat="user in consoleUsers">
         <td>{{$index + 1}}</th>
         <td>{{user.username}}</td>
-        <td>{{user.firstname}}</td>
-        <td>{{user.lastname}}</td>
+        <td>{{user.firstname | capitalize}}</td>
+        <td>{{user.lastname | capitalize}}</td>
       </tr>
     </tbody>
   </table>
