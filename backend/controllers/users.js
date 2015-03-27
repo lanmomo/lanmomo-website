@@ -47,6 +47,7 @@ var verifyMaximum = function(req, res) {
 
 var createUser = function(req, res) {
   req.body.active = false;
+  req.body.phone = req.body.phone.replace(/\D+/g, ''); // Remove all none-digit characters
   User.create(req.body)
   .then(function(user) {
     createEmailVerification(req, res, user);
