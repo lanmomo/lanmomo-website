@@ -14,8 +14,8 @@ app.controller('NavbarController', function($scope, $location) {
 
 app.controller('GamesController', function($scope, $http) {
   $http.get('/api/games')
-    .success(function(data) {
-      $scope.data = data;
+    .success(function(games) {
+      $scope.games = games;
     })
     .error(function(err, status) {
       $scope.error = {message: err, status: status};
