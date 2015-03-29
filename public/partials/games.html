@@ -1,17 +1,42 @@
 <div class="container">
   <div class="page-header">
-    <h1>Jeux</h1>
+    <h2>Jeux PC</h2>
+  </div>
+
+  <div class="alert alert-info">
+    <i class="fa fa-info-circle"></i>
+    <strong>Les jeux suivants sont organisés par l'équipe.</strong>
+    Des serveurs locaux seront à votre disposition, lorsque possible.
   </div>
 
   <div class="row">
-    <div class="col-lg-12">
-      <h3>Les jeux suivants seront organisés par l'équipe.</h3>
-      <div class="well well-sm text-info">Des serveurs locaux seront disponibles au LAN, lorsque possible.</div>
+    <div class="col-lg-6" ng-repeat="game in games.pc">
+      <div class="well">
+        <div class="row">
+          <div class="col-xs-6" ng-class-even="'col-xs-push-6'">
+            <img ng-src="{{game.imagePath}}" alt="{{game.title}}" class="img-responsive" />
+          </div>
+          <div class="col-xs-6" ng-class-even="'col-xs-pull-6'">
+            <h3 class="media-heading">{{game.title}}</h3>
+            {{game.description}}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
+  <div class="page-header">
+    <h2>Jeux console</h2>
+  </div>
+
+  <div class="alert alert-info">
+    <i class="fa fa-info-circle"></i>
+    <strong>Les jeux suivants sont organisés par l'équipe.</strong>
+    Des consoles et des téléviseurs seront à votre disposition.
+  </div>
+
   <div class="row">
-    <div class="col-lg-6" ng-repeat="game in data">
+    <div class="col-lg-6" ng-repeat="game in games.console">
       <div class="well">
         <div class="row">
           <div class="col-xs-6" ng-class-even="'col-xs-push-6'">
