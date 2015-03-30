@@ -62,11 +62,28 @@ app.controller('SubscriptionController', function($scope, $http) {
     loading: false,
     success: false,
     error: false,
+    max: {
+      pc: false,
+      console: false,
+      both: false
+    },
     usernameChanged: false,
     emailChanged: false,
+    typeChanged: false,
     usernameAvailable: false,
-    emailAvailable: false
+    emailAvailable: false,
+    typeAvailable: false
   };
+  $http.get('/api/users/max')
+    .success(function(data) {
+      console.log(data);
+      $scope.state.max = data.max;
+    })
+    .error(function(data) {
+      console.log(data);
+      $scope.data = data;
+      $scope.state.error = true;
+    });
   $scope.subscribe = function(data) {
     $scope.state.loading = true;
     $scope.state.submitted = true;
@@ -114,6 +131,10 @@ app.controller('SubscriptionController', function($scope, $http) {
   };
   $scope.resetEmailChanged = function() {
     $scope.state.emailChanged = false;
+  };
+  $scope.isTypeAvailable = function(user) {
+    $scope.state.typeChanged = true;
+    $scope.state.typeAvailable = user.type && !$scope.state.max[user.type];
   };
 });
 

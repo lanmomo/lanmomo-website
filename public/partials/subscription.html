@@ -10,8 +10,20 @@
       Chargement
     </div>
   </div>
+  <div ng-show="state.max.pc && !state.max.both && !state.submitted" class="alert alert-warning" role="alert">
+    <i class="fa fa-exclamation-circle"></i>
+    <strong>Toutes les places PC sont réservées!</strong> Heureusement, vous pouvez vous inscrire pour une place Console.
+  </div>
+  <div ng-show="state.max.console && !state.max.both && !state.submitted" class="alert alert-warning" role="alert">
+    <i class="fa fa-exclamation-circle"></i>
+    <strong>Toutes les places Console sont réservées!</strong> Heureusement, vous pouvez vous inscrire pour une place PC.
+  </div>
+  <div ng-show="state.max.both && !state.submitted" class="alert alert-danger" role="alert">
+    <i class="fa fa-exclamation-triangle"></i>
+    <strong>Toutes les places sont réservées!</strong> Dès qu'une place ce libère, vous serez à nouveau en mesure de vous inscrire.
+  </div>
 
-  <form class="form-horizontal" name="form" ng-submit="submitForm(form.$valid)" ng-hide="state.submitted" novalidate>
+  <form class="form-horizontal" name="form" ng-submit="submitForm(form.$valid)" ng-hide="state.submitted || state.max.both" novalidate>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.username.$invalid && form.username.$dirty) || (!state.usernameAvailable && state.usernameChanged), 'has-success' : form.username.$valid && state.usernameChanged && state.usernameAvailable }">
       <label for="username" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Saisissez un username ou gamertag qui vous représente">Pseudonyme <i class="fa fa-info-circle"></i></label>
@@ -65,17 +77,17 @@
       </div>
     </div>
 
-    <div class="form-group has-feedback" ng-class="{ 'has-error' : form.type.$invalid && form.type.$dirty, 'has-success' : form.type.$valid }">
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.type.$invalid && form.type.$dirty) || (state.typeChanged && !state.typeAvailable), 'has-success' : form.type.$valid && state.typeChanged && state.typeAvailable }">
       <label for="type" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Vous pouvez choisir qu'un seul type de siège">Type de siège <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <select type="text" name="type" id="type" ng-model="user.type" class="form-control" required>
+        <select name="type" id="type" ng-model="user.type" ng-change="isTypeAvailable(user)" class="form-control" required>
           <option value="" disabled>Choisissez votre type de siège</option>
           <option value="pc">PC</option>
           <option value="console">Console</option>
         </select>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error feedback-select"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success feedback-select"></span>
-        <label for="type" class="control-label">Vous devez choisir un type de siège.</label>
+        <label for="type" class="control-label">Vous devez choisir un type de siège valide.</label>
       </div>
     </div>
 
