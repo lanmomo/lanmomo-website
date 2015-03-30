@@ -4,7 +4,7 @@
   </div>
 
   <h3>PC</h3>
-  <span class="text-muted"> Places occupées:</span>
+  <span class="text-muted">Places occupées:</span>
   <div class="progress">
     <div class="progress-bar" role="progressbar" aria-valuenow="{{pcUsers.length}}"
          aria-valuemin="0" aria-valuemax="{{maxPc.maxUsers}}" style=" min-width:3em; width: {{pcUsers.length / maxPc.maxUsers * 100}}%">
@@ -23,7 +23,7 @@
     </thead>
     <tbody>
       <tr ng-repeat="user in pcUsers">
-        <td>{{$index + 1}}</th>
+        <td>{{$index + 1}}</td>
         <td>{{user.username}}</td>
         <td>{{user.firstname | capitalize}}</td>
         <td>{{user.lastname | capitalize}}</td>
@@ -34,7 +34,7 @@
   <hr />
 
   <h3>Console</h3>
-  <span class="text-muted"> Places occupées:</span>
+  <span class="text-muted">Places occupées:</span>
   <div class="progress">
     <div class="progress-bar" role="progressbar" aria-valuenow="{{consoleUsers.length}}"
          aria-valuemin="0" aria-valuemax="{{maxConsole.maxUsers}}" style=" min-width:3em; width: {{consoleUsers.length / maxConsole.maxUsers * 100}}%">
@@ -53,7 +53,7 @@
     </thead>
     <tbody>
       <tr ng-repeat="user in consoleUsers">
-        <td>{{$index + 1}}</th>
+        <td>{{$index + 1}}</td>
         <td>{{user.username}}</td>
         <td>{{user.firstname | capitalize}}</td>
         <td>{{user.lastname | capitalize}}</td>
