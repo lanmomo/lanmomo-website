@@ -142,6 +142,32 @@ exports.getMax = function(req, res) {
   res.json({maxUsers:config.maximum[type]});
 };
 
+exports.isMax = function(req, res) {
+  var max = {
+    pc: false,
+    console: false,
+    both: false
+  };
+  User.where({active:true}).and({type:'pc'}).count().exec()
+    .then(function(count) {
+      max.pc = (count >= config.maximum.pc);
+      User.where({active:true}).and({type:'console'}).count().exec()
+        .then(function(count) {
+          max.console = (count >= config.maximum.console);
+          max.both = (max.pc && max.console);
+          res.json({max:max});
+        })
+        .reject(function(err) {
+          logger.error('Error occured while finding active users matching type: %s', err);
+          res.status(500).json({message: "Une erreur est survenue lors de la recherche des participants"});
+        });
+    })
+    .reject(function(err) {
+      logger.error('Error occured while finding active users matching type: %s', err);
+      res.status(500).json({message: "Une erreur est survenue lors de la recherche des participants"});
+    });
+};
+
 exports.hasUsername = function(req, res) {
   User.where({username:req.body.username}).count().exec()
     .then(function(count) {

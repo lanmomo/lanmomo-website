@@ -9,6 +9,7 @@ module.exports = function(app) {
 
   app.get(/^\/(users|games|about|terms|contact|subscribe|congratulations)?$/, mainController.index);
   app.get('/api/users', usersController.getAll);
+  app.get('/api/users/max', usersController.isMax);
   app.get('/api/users/max/:type', usersController.getMax);
   app.post('/api/users/has/username', usersController.hasUsername);
   app.post('/api/users/has/email', usersController.hasEmail);
