@@ -192,6 +192,9 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   .when('/terms', {
     templateUrl: 'partials/terms.html'
   })
+  .when('/faq', {
+    templateUrl: 'partials/faq.html'
+  })
   .when('/contact', {
     templateUrl: 'partials/contact.html'
   })
