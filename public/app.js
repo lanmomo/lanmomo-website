@@ -22,19 +22,21 @@ app.controller('GamesController', function($scope, $http) {
     });
 });
 
-app.controller('ServersController', function($scope, $http) {
+app.controller('ServersController', function($scope, $http, $interval) {
   $scope.state = {
     loading: true
   };
-  $http.get('/api/servers')
-    .success(function(servers) {
-      $scope.servers = servers;
-      $scope.state.loading = false;
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err, status: status};
-      $scope.state.loading = false;
-    });
+  $scope.refresh = function() {
+    $http.get('/api/servers')
+      .success(function(servers) {
+        $scope.servers = servers;
+        $scope.state.loading = false;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err, status: status};
+        $scope.state.loading = false;
+      });
+  };
   $scope.isEmpty = function(obj) {
     for (var key in obj) {
       if (obj.hasOwnProperty(key)) {
@@ -43,6 +45,13 @@ app.controller('ServersController', function($scope, $http) {
     }
     return true;
   };
+  $scope.refresh();
+  $scope.intervalPromise = $interval(function() {
+    $scope.refresh();
+  }, 10000);
+  $scope.$on('$destroy', function() {
+    $interval.cancel($scope.intervalPromise);
+  });
 });
 
 app.controller('UsersController', function($scope, $http) {

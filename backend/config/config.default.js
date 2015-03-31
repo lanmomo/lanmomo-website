@@ -32,6 +32,20 @@ module.exports = {
     pc: 50,
     console: 15
   },
+  servers: {
+    games: {
+      csgo: 'Counter Strike: Global Offensive',
+      css: 'Counter Strike: Source',
+      gmod: 'Garry\'s Mod',
+      mc: 'Minecraft',
+      mvm: 'Team Fortress 2: Mann vs. Machine',
+      ph: 'Garry\'s Mod: Prop Hunt',
+      tf2: 'Team Fortress 2',
+      ttt: 'Garry\'s Mod: Trouble in Terrorist Town',
+      tmnf: 'TrackMania Nations Forever',
+      ut2004: 'Unreal Tournament 2004'
+    }
+  },
   games: {
     pc: [
       {
