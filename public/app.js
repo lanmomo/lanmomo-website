@@ -22,6 +22,16 @@ app.controller('GamesController', function($scope, $http) {
     });
 });
 
+app.controller('ServersController', function($scope, $http) {
+  $http.get('/api/servers')
+    .success(function(servers) {
+      $scope.servers = servers;
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err, status: status};
+    });
+});
+
 app.controller('UsersController', function($scope, $http) {
   $scope.pcUsers = [];
   $scope.consoleUsers = [];
@@ -128,6 +138,10 @@ app.config(function($routeProvider, $locationProvider) {
   .when('/games', {
     templateUrl: 'partials/games.html',
     controller: 'GamesController'
+  })
+  .when('/servers', {
+    templateUrl: 'partials/servers.html',
+    controller: 'ServersController'
   })
   .when('/about', {
     templateUrl: 'partials/about.html'

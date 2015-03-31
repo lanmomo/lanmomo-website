@@ -9,7 +9,7 @@ server {
 
     server_name lanmomo.ca www.lanmomo.ca;
 
-    rewrite ^/(users|games|about|terms|contact|subscribe|congratulations)$ / last;
+    rewrite ^/(users|games|servers|about|terms|contact|subscribe|congratulations)$ / last;
 
     access_log off;
     error_log off;
