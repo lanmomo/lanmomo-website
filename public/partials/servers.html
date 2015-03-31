@@ -3,4 +3,26 @@
     <h1>Serveurs</h1>
   </div>
 
+  <div ng-show="!state.loading && isEmpty(servers)" class="alert alert-warning text-center" role="alert">
+    Aucune donnée disponible
+  </div>
+
+  <table ng-show="!state.loading && !isEmpty(servers)" class="table table-striped table-hover">
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>Jeu</th>
+      <th>Nom d'hôte</th>
+      <th>Adresse IP</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="server in servers">
+      <td>{{$index + 1}}</td>
+      <td>{{server.game}}</td>
+      <td>{{server.host}}</td>
+      <td>{{server.ip}}</td>
+    </tr>
+    </tbody>
+  </table>
 </div>

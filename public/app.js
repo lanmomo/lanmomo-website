@@ -23,13 +23,26 @@ app.controller('GamesController', function($scope, $http) {
 });
 
 app.controller('ServersController', function($scope, $http) {
+  $scope.state = {
+    loading: true
+  };
   $http.get('/api/servers')
     .success(function(servers) {
       $scope.servers = servers;
+      $scope.state.loading = false;
     })
     .error(function(err, status) {
       $scope.error = {message: err, status: status};
+      $scope.state.loading = false;
     });
+  $scope.isEmpty = function(obj) {
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        return false;
+      }
+    }
+    return true;
+  };
 });
 
 app.controller('UsersController', function($scope, $http) {
