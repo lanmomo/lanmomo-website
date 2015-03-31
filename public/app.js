@@ -1,5 +1,5 @@
 "use strict";
-var app = angular.module('App', ['ngRoute', 'ui.bootstrap']);
+var app = angular.module('App', ['ngRoute', 'ui.bootstrap', 'angularMoment']);
 
 app.controller('NavbarController', function($scope, $location) {
   $scope.isActive = function(url) {
@@ -174,6 +174,8 @@ app.config(function($routeProvider, $locationProvider) {
   });
 
   $locationProvider.html5Mode(true);
+
+  moment.locale('fr');
 });
 
 app.filter('capitalize', function() {
