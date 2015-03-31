@@ -48,14 +48,26 @@ var verifyMaximum = function(req, res) {
 var createUser = function(req, res) {
   req.body.active = false;
   req.body.phone = req.body.phone.replace(/\D+/g, ''); // Remove all none-digit characters
-  User.create(req.body)
-  .then(function(user) {
-    createEmailVerification(req, res, user);
-  })
-  .reject(function(err) {
-    logger.error('Error occured while creating user: %s', err, req.body);
-    res.status(500).json({message:"Une erreur est survenue lors de la création d'un participant"});
-  });
+  if (validateUser(req.body)) {
+    User.create(req.body)
+    .then(function(user) {
+      createEmailVerification(req, res, user);
+    })
+    .reject(function(err) {
+      logger.error('Error occured while creating user: %s', err, req.body);
+      res.status(500).json({message:"Une erreur est survenue lors de la création d'un participant"});
+    });
+  } else {
+    res.status(400).json({message:"La requête contient des données non conformes."});
+  }
+};
+
+var validateUser = function(user) {
+  return validateLength(user.username, 4, 32) && validateLength(user.firstname, 2, 32) && validateLength(user.lastname, 2, 32);
+};
+
+var validateLength = function(field, min, max) {
+  return field.length <= max && field.length >= min;
 };
 
 var createEmailVerification = function(req, res, user) {
