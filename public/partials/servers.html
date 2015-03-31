@@ -19,8 +19,8 @@
     <tbody>
     <tr ng-repeat="server in servers">
       <td>{{$index + 1}}</td>
-      <td>{{server.game}}</td>
-      <td>{{server.host}}</td>
+      <td>{{server.game.name}}</td>
+      <td>{{server.hostname}}</td>
       <td>{{server.ip}}</td>
     </tr>
     </tbody>
