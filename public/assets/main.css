@@ -49,6 +49,12 @@ footer a {
 }
 /* END NAVBAR */
 
+/* BEGIN LOADING-BAR */
+#loading-bar .bar {
+  top: 52px; /* right below the navbar (height + borders) */
+}
+/* END LOADING-BAR */
+
 /* BEGIN HOME */
 .jumbotron {
   text-align: center;
