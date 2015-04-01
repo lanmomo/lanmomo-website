@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="page-header">
+    <h1>Serveurs</h1>
+  </div>
+
+  <div ng-show="!state.loading && isEmpty(servers)" class="alert alert-warning text-center" role="alert">
+    Aucune donnée disponible
+  </div>
+
+  <table ng-show="!state.loading && !isEmpty(servers)" class="table table-striped table-hover">
+    <thead>
+    <tr>
+      <th>Jeu</th>
+      <th>Nom d'hôte</th>
+      <th>Adresse IP</th>
+      <th>Dernière mise à jour</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="server in servers">
+      <td>{{server.game.name}}</td>
+      <td>{{server.hostname}}</td>
+      <td>{{server.ip}}</td>
+      <td am-time-ago="server.lastUpdate"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>

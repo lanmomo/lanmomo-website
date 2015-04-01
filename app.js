@@ -6,6 +6,8 @@ var app = express();
 var config = require('./backend/config/config');
 var logger = require('./backend/lib/logger');
 
+var serversController = require('./backend/controllers/servers');
+
 //Database
 mongoose.connect(config.db.url);
 
@@ -25,4 +27,6 @@ require('./backend/routes/routes')(app);
 
 app.listen(config.server.port, function() {
   logger.info('Server listening on port %s', config.server.port);
+
+  serversController.purgeTimer();
 });

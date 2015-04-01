@@ -1,5 +1,5 @@
 "use strict";
-var app = angular.module('App', ['ngRoute', 'ui.bootstrap']);
+var app = angular.module('App', ['ngRoute', 'ui.bootstrap', 'angularMoment']);
 
 app.controller('NavbarController', function($scope, $location) {
   $scope.isActive = function(url) {
@@ -20,6 +20,38 @@ app.controller('GamesController', function($scope, $http) {
     .error(function(err, status) {
       $scope.error = {message: err, status: status};
     });
+});
+
+app.controller('ServersController', function($scope, $http, $interval) {
+  $scope.state = {
+    loading: true
+  };
+  $scope.refresh = function() {
+    $http.get('/api/servers')
+      .success(function(servers) {
+        $scope.servers = servers;
+        $scope.state.loading = false;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err, status: status};
+        $scope.state.loading = false;
+      });
+  };
+  $scope.isEmpty = function(obj) {
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        return false;
+      }
+    }
+    return true;
+  };
+  $scope.refresh();
+  $scope.intervalPromise = $interval(function() {
+    $scope.refresh();
+  }, 10000);
+  $scope.$on('$destroy', function() {
+    $interval.cancel($scope.intervalPromise);
+  });
 });
 
 app.controller('UsersController', function($scope, $http) {
@@ -150,6 +182,10 @@ app.config(function($routeProvider, $locationProvider) {
     templateUrl: 'partials/games.html',
     controller: 'GamesController'
   })
+  .when('/servers', {
+    templateUrl: 'partials/servers.html',
+    controller: 'ServersController'
+  })
   .when('/about', {
     templateUrl: 'partials/about.html'
   })
@@ -168,6 +204,8 @@ app.config(function($routeProvider, $locationProvider) {
   });
 
   $locationProvider.html5Mode(true);
+
+  moment.locale('fr');
 });
 
 app.filter('capitalize', function() {
