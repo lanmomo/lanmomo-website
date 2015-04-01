@@ -1,5 +1,6 @@
 var config = require('../config/config');
 var logger = require('../lib/logger');
+var moment = require('moment');
 
 var servers = {};
 
@@ -31,4 +32,23 @@ exports.updateServers = function(req, res) {
 
 exports.getAll = function(req, res) {
   res.status(200).json(servers);
+};
+
+exports.purgeTimer = function() {
+  setInterval(function() {
+    try {
+      var limit = moment().subtract(5, 'minutes'); // Five minutes ago
+      for (var key in servers) {
+        if (servers.hasOwnProperty(key)) {
+          var server = servers[key];
+          if (limit.isAfter(server.lastUpdate)) {
+            logger.debug('Removing server from list: %s', server.hostname);
+            delete servers[server.hostname];
+          }
+        }
+      }
+    } catch (err) {
+      logger.error('Error occurred while running purgeTimer:', err);
+    }
+  }, 60000); // One minute
 };
