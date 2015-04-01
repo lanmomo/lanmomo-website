@@ -1,5 +1,5 @@
 "use strict";
-var app = angular.module('App', ['ngRoute', 'ui.bootstrap', 'angularMoment']);
+var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment']);
 
 app.controller('NavbarController', function($scope, $location) {
   $scope.isActive = function(url) {
@@ -170,7 +170,7 @@ app.controller('SubscriptionController', function($scope, $http) {
   };
 });
 
-app.config(function($routeProvider, $locationProvider) {
+app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/home.html'
   })
@@ -204,6 +204,8 @@ app.config(function($routeProvider, $locationProvider) {
   });
 
   $locationProvider.html5Mode(true);
+
+  cfpLoadingBarProvider.includeSpinner = false;
 
   moment.locale('fr');
 });
