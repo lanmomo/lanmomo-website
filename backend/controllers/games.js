@@ -1,6 +1,6 @@
 var config = require('../config/config');
 
-exports.getAll = function(req, res) {
+exports.getAll = function getAll(req, res) {
   if (config.games) {
     res.status(200).json(config.games);
   } else {
