@@ -16,7 +16,7 @@ var createServer = function(server) {
   };
 };
 
-exports.updateServers = function(req, res) {
+exports.updateServers = function updateServers(req, res) {
   logger.debug('Received update request', req.body);
   var server = req.body;
   var token = req.body.token;
@@ -30,11 +30,11 @@ exports.updateServers = function(req, res) {
   }
 };
 
-exports.getAll = function(req, res) {
+exports.getAll = function getAll(req, res) {
   res.status(200).json(servers);
 };
 
-exports.purgeTimer = function() {
+exports.purgeTimer = function purgeTimer() {
   setInterval(function() {
     try {
       var limit = moment().subtract(5, 'minutes'); // Five minutes ago

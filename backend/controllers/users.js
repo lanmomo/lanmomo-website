@@ -7,14 +7,14 @@ var util = require('util');
 var P = require('bluebird');
 var template = require('../templates/mail');
 
-var validateBody = function(body) {
+function validateBody(body) {
   var emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   var phoneRegex = /^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i;
 
   return emailRegex.test(body.email) && phoneRegex.test(body.phone) && body.username && body.firstname && body.lastname && config.types.indexOf(body.type) >= 0;
 };
 
-var verifyUniqueEmail = function(req, res) {
+function verifyUniqueEmail(req, res) {
   User.count().or([{username:req.body.username}, {email:req.body.email}]).exec()
   .then(function(count) {
     if (count > 0) {
@@ -29,7 +29,7 @@ var verifyUniqueEmail = function(req, res) {
   });
 };
 
-var verifyMaximum = function(req, res) {
+function verifyMaximum(req, res) {
   var type = req.body.type;
   User.count().and([{active:true}, {"type":type}]).exec()
   .then(function(count) {
@@ -45,7 +45,7 @@ var verifyMaximum = function(req, res) {
   });
 };
 
-var createUser = function(req, res) {
+function createUser(req, res) {
   req.body.active = false;
   req.body.phone = req.body.phone.replace(/\D+/g, ''); // Remove all none-digit characters
   if (validateUser(req.body)) {
@@ -62,15 +62,15 @@ var createUser = function(req, res) {
   }
 };
 
-var validateUser = function(user) {
+function validateUser(user) {
   return validateLength(user.username, 4, 32) && validateLength(user.firstname, 2, 32) && validateLength(user.lastname, 2, 32);
 };
 
-var validateLength = function(field, min, max) {
+function validateLength(field, min, max) {
   return field.length <= max && field.length >= min;
 };
 
-var createEmailVerification = function(req, res, user) {
+function createEmailVerification(req, res, user) {
   var confirmId = crypto.randomBytes(42).toString('hex');
   var data = {
     userId: user._id,
@@ -86,7 +86,7 @@ var createEmailVerification = function(req, res, user) {
   });
 };
 
-var sendMail = function(req, res, emailVerification, user) {
+function sendMail(req, res, emailVerification, user) {
   var url = config.url.root + '/api/verify/' + emailVerification.emailId;
   createEmail(url, emailVerification, user)
   .then(function(html) {
@@ -112,7 +112,7 @@ var sendMail = function(req, res, emailVerification, user) {
   });
 };
 
-var createEmail = function(url, emailVerification, user) {
+function createEmail(url, emailVerification, user) {
   return new P(function(resolve) {
     logger.debug('Sending email to %s', user);
     var html = util.format(template, user.firstname, url, url);
@@ -120,7 +120,7 @@ var createEmail = function(url, emailVerification, user) {
   });
 };
 
-var updateUser = function(req, res, emailVerification) {
+function updateUser(req, res, emailVerification) {
   logger.debug(emailVerification);
   User.update({_id: emailVerification.userId}, {active: true}).exec()
   .then(function() {
@@ -134,11 +134,11 @@ var updateUser = function(req, res, emailVerification) {
   });
 };
 
-exports.index = function(req, res) {
+exports.index = function index(req, res) {
   res.sendFile('index.html', {root: __dirname + '/../../public/'});
 };
 
-exports.getAll = function(req, res) {
+exports.getAll = function getAll(req, res) {
   User.find({active:true}).select('username firstname lastname type').exec()
   .then(function(users) {
     res.json(users);
@@ -149,12 +149,12 @@ exports.getAll = function(req, res) {
   });
 };
 
-exports.getMax = function(req, res) {
+exports.getMax = function getMax(req, res) {
   var type = req.params.type;
   res.json({maxUsers:config.maximum[type]});
 };
 
-exports.isMax = function(req, res) {
+exports.isMax = function isMax(req, res) {
   var max = {
     pc: false,
     console: false,
@@ -180,7 +180,7 @@ exports.isMax = function(req, res) {
     });
 };
 
-exports.hasUsername = function(req, res) {
+exports.hasUsername = function hasUsername(req, res) {
   User.where({username:req.body.username}).count().exec()
     .then(function(count) {
       if (count > 0) {
@@ -195,7 +195,7 @@ exports.hasUsername = function(req, res) {
     });
 };
 
-exports.hasEmail = function(req, res) {
+exports.hasEmail = function hasEmail(req, res) {
   User.where({email:req.body.email}).count().exec()
     .then(function(count) {
       if (count > 0) {
@@ -210,7 +210,7 @@ exports.hasEmail = function(req, res) {
     });
 };
 
-exports.subscribe = function(req, res) {
+exports.subscribe = function subscribe(req, res) {
   if (validateBody(req.body)) {
     verifyUniqueEmail(req, res);
   } else {
@@ -218,7 +218,7 @@ exports.subscribe = function(req, res) {
   }
 };
 
-exports.verify = function(req, res) {
+exports.verify = function verify(req, res) {
   if (req.params.emailId) {
     EmailVerification.findOne({emailId: req.params.emailId}).exec()
     .then(function(emailVerification) {
