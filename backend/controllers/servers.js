@@ -37,7 +37,7 @@ exports.getAll = function getAll(req, res) {
 exports.purgeTimer = function purgeTimer() {
   setInterval(function() {
     try {
-      var limit = moment().subtract(5, 'minutes'); // Five minutes ago
+      var limit = moment().subtract(2, 'minutes'); // Two minutes ago
       for (var key in servers) {
         if (servers.hasOwnProperty(key)) {
           var server = servers[key];
@@ -50,5 +50,5 @@ exports.purgeTimer = function purgeTimer() {
     } catch (err) {
       logger.error('Error occurred while running purgeTimer:', err);
     }
-  }, 60000); // One minute
+  }, 30000); // 30 seconds
 };

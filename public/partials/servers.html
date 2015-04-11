@@ -4,7 +4,11 @@
   </div>
 
   <div ng-show="!state.loading && isEmpty(servers)" class="alert alert-warning text-center" role="alert">
-    Aucune donnée disponible
+    Aucune donnée disponible. Revenez pendant le LAN !
+  </div>
+
+  <div ng-show="!isEmpty(servers)" class="alert alert-info text-center" role="alert">
+    Vous souhaitez voir un serveur supplémentaire ? Contactez les admins !
   </div>
 
   <table ng-show="!state.loading && !isEmpty(servers)" class="table table-striped table-hover">
