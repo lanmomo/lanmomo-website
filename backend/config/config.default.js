@@ -38,6 +38,8 @@ module.exports = {
       csgo-gg: 'CS:GO: Arms race',
       csgo-comp: 'CS:GO: Competitive',
       css: 'Counter Strike: Source',
+      kf: 'Killing Floor',
+      mumble: 'Serveur mumble pour les jeux',
       mc: 'Minecraft',
       mvm: 'TF2: Mann vs. Machine',
       ph: 'TF2: Prop Hunt',
