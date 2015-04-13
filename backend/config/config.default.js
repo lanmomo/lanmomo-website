@@ -35,11 +35,14 @@ module.exports = {
   servers: {
     games: {
       csgo: 'Counter Strike: Global Offensive',
+      csgo-gg: 'CS:GO: Arms race',
+      csgo-comp: 'CS:GO: Competitive',
       css: 'Counter Strike: Source',
-      gmod: 'Garry\'s Mod',
+      kf: 'Killing Floor',
+      mumble: 'Serveur mumble pour les jeux',
       mc: 'Minecraft',
-      mvm: 'Team Fortress 2: Mann vs. Machine',
-      ph: 'Garry\'s Mod: Prop Hunt',
+      mvm: 'TF2: Mann vs. Machine',
+      ph: 'TF2: Prop Hunt',
       tf2: 'Team Fortress 2',
       ttt: 'Garry\'s Mod: Trouble in Terrorist Town',
       tmnf: 'TrackMania Nations Forever',
