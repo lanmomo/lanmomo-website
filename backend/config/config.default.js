@@ -79,9 +79,19 @@ module.exports = {
         imagePath: 'assets/game_banners/tmnations.jpg'
       },
       {
+        title: 'Killing Floor',
+        description: 'FPS multijoueur coopératif développé par Tripwire Interactive où vous devez éliminer des hordes de zombies.',
+        imagePath: 'assets/game_banners/kf.jpg'
+      },
+      {
         title: 'Unreal Tournament 2004',
         description: 'FPS futuriste développé par Epic Games et Digital Extremes.',
         imagePath: 'assets/game_banners/ut2004.jpg'
+      },
+      {
+        title: 'Hearthstone',
+        description: 'Hearthstone: Heroes of Warcraft est un jeu de cartes à collectionner en ligne, édité et développé par Blizzard Entertainment.',
+        imagePath: 'assets/game_banners/hs.jpg'
       },
       {
         title: 'League of Legends',
