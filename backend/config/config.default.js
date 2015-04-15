@@ -35,8 +35,8 @@ module.exports = {
   servers: {
     games: {
       csgo: 'Counter Strike: Global Offensive',
-      csgo-gg: 'CS:GO: Arms race',
-      csgo-comp: 'CS:GO: Competitive',
+      'csgo-gg': 'CS:GO: Arms race',
+      'csgo-comp': 'CS:GO: Competitive',
       css: 'Counter Strike: Source',
       kf: 'Killing Floor',
       mumble: 'Serveur mumble pour les jeux',
