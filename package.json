@@ -1,6 +1,6 @@
 {
   "name": "lanmomo-website",
-  "version": "0.0.0",
+  "version": "1.2.0",
   "description": "Website for LAN Montmorency",
   "main": "app.js",
   "scripts": {
