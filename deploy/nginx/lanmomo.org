@@ -7,7 +7,7 @@ server {
     root /opt/lanmomo/public/;
     index index.html;
 
-    server_name lanmomo.ca www.lanmomo.ca;
+    server_name lanmomo.org www.lanmomo.org;
 
     rewrite ^/(users|games|servers|about|terms|faq|contact|subscribe|congratulations)$ / last;
 
