@@ -15,10 +15,27 @@ function validateBody(body) {
 };
 
 function verifyUniqueEmail(req, res) {
-  User.count().or([{username:req.body.username}, {email:req.body.email}]).exec()
-  .then(function(count) {
-    if (count > 0) {
-      res.status(402).json({message:"Votre courriel ou votre nom d'utilisateur sont déjà utilisés."});
+  var email = req.body.email;
+  User.findOneByEmail(email)
+  .then(function(user) {
+    if(user) {
+      res.status(402).json({message:"Votre courriel est déjà utilisé."});
+    } else {
+      verifyUniqueUsername(req, res);
+    }
+  })
+  .reject(function(err) {
+    logger.error('Error occured while finding users matching username or email: %s', err, req.body);
+    res.status(500).json({message: "Une erreur interne est survenue lors de la recherche du courriel et du nom d'utilisateur"});
+  });
+}
+
+function verifyUniqueUsername(req, res) {
+  var username = req.body.username;
+  User.findOneByUsername(username)
+  .then(function(user) {
+    if(user) {
+      res.status(402).json({message:"Votre nom d'utilisateur est déjà utilisé."});
     } else {
       verifyMaximum(req, res);
     }
@@ -27,7 +44,7 @@ function verifyUniqueEmail(req, res) {
     logger.error('Error occured while finding users matching username or email: %s', err, req.body);
     res.status(500).json({message: "Une erreur interne est survenue lors de la recherche du courriel et du nom d'utilisateur"});
   });
-};
+}
 
 function verifyMaximum(req, res) {
   var type = req.body.type;
