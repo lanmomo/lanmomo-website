@@ -204,6 +204,9 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   })
   .when('/congratulations', {
     templateUrl: 'partials/congratulations.html'
+  })
+  .when('/confirmed', {
+    templateUrl: 'partials/confirmed.html'
   });
 
   $locationProvider.html5Mode(true);
