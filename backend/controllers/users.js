@@ -141,15 +141,19 @@ function updateUser(req, res, emailVerification) {
   logger.debug(emailVerification);
   User.update({_id: emailVerification.userId}, {active: true}).exec()
   .then(function() {
-    var url = config.url.root + '/congratulations';
-    logger.debug(url);
-    res.redirect(url);
+    redirect(res, 'congratulations');
   })
   .reject(function(err) {
     logger.error('Error occured while activation user: %s', err, emailVerification);
     res.status(500).json({message:"Erreur lors de la modification de l'utilisateur"});
   });
 };
+
+function redirect(res, partial) {
+  var url = config.url.root + '/' + partial;
+  logger.debug(url);
+  res.redirect(url);
+}
 
 exports.index = function index(req, res) {
   res.sendFile('index.html', {root: __dirname + '/../../public/'});
@@ -239,7 +243,11 @@ exports.verify = function verify(req, res) {
   if (req.params.emailId) {
     EmailVerification.findOne({emailId: req.params.emailId}).exec()
     .then(function(emailVerification) {
-      updateUser(req, res, emailVerification);
+      if (emailVerification.confirmed) {
+        redirect(res, 'confirmed');
+      } else {
+        updateEmailVerification(req, res, emailVerification);
+      }
     })
     .reject(function(err) {
       logger.warn('Error occured while finding emailVerification `%s`: %s', req.params.emailId, err);
@@ -249,3 +257,10 @@ exports.verify = function verify(req, res) {
     res.status(400).send('Mauvais paramètre');
   }
 };
+
+function updateEmailVerification(req, res, emailVerification) {
+  emailVerification.confirmed = true;
+  emailVerification.save(function(err) {
+    updateUser(req, res, emailVerification);
+  });
+}

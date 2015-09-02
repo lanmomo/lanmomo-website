@@ -7,7 +7,7 @@ var logger = require('../lib/logger');
 module.exports = function(app) {
   logger.info('Initializing routes');
 
-  app.get(/^\/(users|games|servers|about|terms|faq|contact|subscribe|congratulations)?$/, mainController.index);
+  app.get(/^\/(users|games|servers|about|terms|faq|contact|subscribe|congratulations|confirmed)?$/, mainController.index);
   app.get('/api/users', usersController.getAll);
   app.get('/api/users/max', usersController.isMax);
   app.get('/api/users/max/:type', usersController.getMax);
