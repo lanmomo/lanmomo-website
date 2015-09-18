@@ -170,6 +170,30 @@ app.controller('SubscriptionController', function($scope, $http) {
   };
 });
 
+app.controller('PreSubscriptionController', function($scope, $http) {
+  $scope.state = {};
+
+  $scope.registerEmail = function() {
+    var email = $scope.email;
+    $scope.state.loading = true;
+    $scope.state.submitted = true;
+    $http.post('/api/subscribe_pre', {'email': email})
+      .success(function(data, status) {
+        $scope.conf = data.message;
+        console.log($scope.conf);
+        $scope.data = data;
+        $scope.state.loading = false;
+        $scope.state.success = true;
+      })
+      .error(function(data) {
+        console.log(data);
+        $scope.data = data;
+        $scope.state.loading = false;
+        $scope.state.error = true;
+      });
+  };
+});
+
 app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/home.html'
@@ -199,8 +223,8 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
     templateUrl: 'partials/contact.html'
   })
   .when('/subscribe', {
-    templateUrl: 'partials/subscription.html',
-    controller: 'SubscriptionController'
+    templateUrl: 'partials/subscription_pre.html',
+    controller: 'PreSubscriptionController'
   })
   .when('/congratulations', {
     templateUrl: 'partials/congratulations.html'

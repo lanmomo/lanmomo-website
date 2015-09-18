@@ -2,6 +2,7 @@ var config = require('../config/config');
 var logger = require('../lib/logger');
 var User = require('../models/user');
 var EmailVerification = require('../models/email-verification');
+var EmailSubcription = require('../models/email-subscription');
 var crypto = require('crypto');
 var util = require('util');
 var P = require('bluebird');
@@ -234,6 +235,33 @@ exports.hasEmail = function hasEmail(req, res) {
 exports.subscribe = function subscribe(req, res) {
   if (validateBody(req.body)) {
     verifyUniqueEmail(req, res);
+  } else {
+    return res.status(400).json({message:'Les informations données sont invalides ou incomplètes'});
+  }
+};
+
+exports.subscribePre = function subscribe(req, res) {
+  var emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (req.body.email && emailRegex.test(req.body.email)) {
+    EmailSubcription.where({email:req.body.email}).count().exec()
+      .then(function(count) {
+        if (count > 0) {
+          res.status(200).json({message: "Votre courriel est déjà sur la liste !"});
+        } else {
+          EmailSubcription.create(req.body)
+          .then(function(emailSubcription) {
+            res.status(200).json({message: "Merci, vous receverez un courriel dès que possible !"});
+          })
+          .reject(function(err) {
+            logger.error('Error occured while creating mail: %s', err, data);
+            res.status(500).json({message: "Une erreur interne est survenue de l'enregistrement du courriel."});
+          });
+        }
+      })
+      .reject(function(err) {
+        logger.error('Error occured while finding users matching email: %s', err, req.body);
+        res.status(500).send('Une erreur interne est survenue');
+      });
   } else {
     return res.status(400).json({message:'Les informations données sont invalides ou incomplètes'});
   }
