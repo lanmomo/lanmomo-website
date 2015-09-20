@@ -14,6 +14,7 @@ module.exports = function(app) {
   app.post('/api/users/has/username', usersController.hasUsername);
   app.post('/api/users/has/email', usersController.hasEmail);
   app.post('/api/subscribe', usersController.subscribe);
+  app.post('/api/subscribe_pre', usersController.subscribePre);
   app.get('/api/verify/:emailId', usersController.verify);
   app.get('/api/games', gamesController.getAll);
   app.get('/api/servers', serversController.getAll);
