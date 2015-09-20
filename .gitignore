@@ -5,8 +5,14 @@ backend/config/config.prod.js
 # Bower components
 public/bower_components
 
-# Node.js dependency directory
-node_modules
+# virtualenv
+bin/
+lib/
+include/
+
+# python
+*.pyc
+*.pyo
 
 # Logs
 logs
