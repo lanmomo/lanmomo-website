@@ -1,2 +1,2 @@
 DEBUG = False
-DATABASE_URI = 'sqlite:////tmp/test.db'
+DATABASE_URI = 'mysql://lanmomo@localhost/lanmomo'
