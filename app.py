@@ -39,17 +39,16 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 
-if __name__ == '__main__':
-    app.config.from_pyfile('config/default_config.py')
-
-    if len(sys.argv) == 2:
-        conf = sys.argv[1]
-        print('Loading additionnal config ' + conf)
-        app.config.from_pyfile('config/' + conf + '_config.py')
+def setup(conf_path):
+    global app, games
+    app.config.from_pyfile(conf_path)
+    init_engine(app.config['DATABASE_URI'])
+    init_db()
 
     with open('config/games.json') as data_file:
         games = json.load(data_file)
 
-    init_engine(app.config['DATABASE_URI'])
-    init_db()
-    app.run()
+    return app
+
+if __name__ == '__main__':
+    setup('config/default_config.py').run()
