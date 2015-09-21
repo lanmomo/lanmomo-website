@@ -1,0 +1,12 @@
+; systemd config file
+[Service]
+Type=simple
+ExecStart=uwsgi /opt/lanmomo/deploy/lanmomo.ini
+
+; should probably run uwsgi as a non root user
+;User=...
+;Group=...
+
+; uwsgi shouldn't crash, but you never know
+Restart=always
+RestartSec=60
