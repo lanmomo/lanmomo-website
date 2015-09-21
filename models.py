@@ -1,7 +1,17 @@
-from sqlalchemy import Table, Column, Integer, String, Binary, Boolean
+from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, ForeignKey, Date
 from sqlalchemy.orm import mapper
 
 from database import metadata, db_session
+
+
+class Subscribtion():
+    query = db_session.query_property()
+
+    def __init__(self, email):
+        self.email = email
+
+    def __repr__(self):
+        return '<Subscribtion %r>' % (self.email)
 
 
 class User():
@@ -31,6 +41,12 @@ class Ticket():
     def __repr__(self):
         return '<Ticket %r>' % (self.id)
 
+subcribtions = Table('subcribtions', metadata,
+                     Column('id', Integer, primary_key=True),
+                     Column('email', String(1000), nullable=False)
+                     )
+
+
 users = Table('users', metadata,
               Column('id', Integer, primary_key=True),
               Column('username', String(1000), nullable=False),
@@ -44,13 +60,14 @@ tickets = Table('tickets', metadata,
                 # pc or console
                 Column('type_id', Integer, nullable=False),
                 # avoid n-n for now...
-                Column('owner_id', Interger, ForeignKey("user.id"),
+                Column('owner_id', Integer, ForeignKey("users.id"),
                        nullable=False),
                 # Look for related payment and remove this field ?
                 Column('paid', Boolean, default=False, nullable=False),
                 Column('reserved_until', Date, nullable=False),
-                Column('reserved_at', Date, default=_get_date, nullable=False)
+                Column('reserved_at', Date, nullable=False)
                 )
 
+mapper(Subscribtion, subcribtions)
 mapper(User, users)
 mapper(Ticket, tickets)

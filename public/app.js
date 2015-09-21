@@ -177,17 +177,17 @@ app.controller('PreSubscriptionController', function($scope, $http) {
     var email = $scope.email;
     $scope.state.loading = true;
     $scope.state.submitted = true;
-    $http.post('/api/subscribe_pre', {'email': email})
+    $http.post('/api/subscribe', {'email': email})
       .success(function(data, status) {
-        $scope.conf = data.message;
-        console.log($scope.conf);
-        $scope.data = data;
+        $scope.message = data.message;
         $scope.state.loading = false;
         $scope.state.success = true;
       })
       .error(function(data) {
-        console.log(data);
-        $scope.data = data;
+        $scope.message = data.message;
+        if (!data.message) {
+            $scope.message = 'Une erreur interne est survenue. Veuillez réessayer plus tard.';
+        }
         $scope.state.loading = false;
         $scope.state.error = true;
       });

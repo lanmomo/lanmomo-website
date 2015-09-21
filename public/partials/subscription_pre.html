@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div ng-hide="conf">
+  <div ng-hide="message">
   <div class="alert alert-warning" role="alert"><i class="fa fa-exclamation-circle"></i> Malheuresement, les billets ne sont pas encore en vente !</div>
     <p>Vous pouvez enregistrer votre courriel et vous receverez un message dès que les billets seront en vente.</p>
     <form class="form-horizontal" name="form" ng-hide="state.submitted" novalidate>
@@ -30,8 +30,11 @@
       </div>
     </form>
   </div>
-  <div ng-show="conf">
-    <div class="alert alert-info" role="alert">{{conf}}</div>
+  <div ng-show="state.success">
+    <div class="alert alert-success" role="alert">{{message}}</div>
+  </div>
+  <div ng-show="state.error">
+    <div class="alert alert-danger" role="alert">{{message}}</div>
   </div>
 
 </div>
