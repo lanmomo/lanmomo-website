@@ -1,7 +1,7 @@
 ; systemd config file
 [Service]
 Type=simple
-ExecStart=/usr/bin/uwsgi /opt/lanmomo/deploy/lanmomo.ini
+ExecStart=/usr/bin/uwsgi /opt/lanmomo-website/deploy/lanmomo.ini
 
 ; should probably run uwsgi as a non root user
 ;User=lanmomo
