@@ -1,5 +1,4 @@
 {
-  "games": {
     "pc": [
       {
         "title": "Team Fortress 2",
@@ -69,5 +68,4 @@
         "imagePath": "assets/game_banners/projectM.jpg"
       }
     ]
-  }
 }
