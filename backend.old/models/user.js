@@ -11,4 +11,12 @@ var userSchema = new Schema({
   active: Boolean
 });
 
+userSchema.statics.findOneByEmail = function(email) {
+  return this.findOne({email: new RegExp('^' + email + '$', 'i')}).exec();
+};
+
+userSchema.statics.findOneByUsername = function(username) {
+  return this.findOne({username: new RegExp('^' + username + '$', 'i')}).exec();
+};
+
 module.exports = mongoose.model('User', userSchema);

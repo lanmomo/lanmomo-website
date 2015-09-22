@@ -1,25 +1,16 @@
-upstream app_lanmomo {
-    server 127.0.0.1:3000;
-    keepalive 16;
-}
-
 server {
-    root /opt/lanmomo/public/;
+    root /opt/lanmomo-website/public/;
     index index.html;
 
     server_name lanmomo.org www.lanmomo.org;
 
-    rewrite ^/(users|games|servers|about|terms|faq|contact|subscribe|congratulations)$ / last;
+    rewrite ^/(users|games|servers|about|terms|faq|contact|subscribe|congratulations|confirmed)$ / last;
 
     access_log off;
     error_log off;
 
     location /api/ {
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-NginX-Proxy true;
-
-        proxy_pass http://app_lanmomo/api/;
+        include uwsgi_params;
+        uwsgi_pass 127.0.0.1:9090;
     }
 }

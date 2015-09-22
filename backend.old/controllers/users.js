@@ -2,6 +2,7 @@ var config = require('../config/config');
 var logger = require('../lib/logger');
 var User = require('../models/user');
 var EmailVerification = require('../models/email-verification');
+var EmailSubcription = require('../models/email-subscription');
 var crypto = require('crypto');
 var util = require('util');
 var P = require('bluebird');
@@ -15,10 +16,27 @@ function validateBody(body) {
 };
 
 function verifyUniqueEmail(req, res) {
-  User.count().or([{username:req.body.username}, {email:req.body.email}]).exec()
-  .then(function(count) {
-    if (count > 0) {
-      res.status(402).json({message:"Votre courriel ou votre nom d'utilisateur sont déjà utilisés."});
+  var email = req.body.email;
+  User.findOneByEmail(email)
+  .then(function(user) {
+    if(user) {
+      res.status(402).json({message:"Votre courriel est déjà utilisé."});
+    } else {
+      verifyUniqueUsername(req, res);
+    }
+  })
+  .reject(function(err) {
+    logger.error('Error occured while finding users matching username or email: %s', err, req.body);
+    res.status(500).json({message: "Une erreur interne est survenue lors de la recherche du courriel et du nom d'utilisateur"});
+  });
+}
+
+function verifyUniqueUsername(req, res) {
+  var username = req.body.username;
+  User.findOneByUsername(username)
+  .then(function(user) {
+    if(user) {
+      res.status(402).json({message:"Votre nom d'utilisateur est déjà utilisé."});
     } else {
       verifyMaximum(req, res);
     }
@@ -27,7 +45,7 @@ function verifyUniqueEmail(req, res) {
     logger.error('Error occured while finding users matching username or email: %s', err, req.body);
     res.status(500).json({message: "Une erreur interne est survenue lors de la recherche du courriel et du nom d'utilisateur"});
   });
-};
+}
 
 function verifyMaximum(req, res) {
   var type = req.body.type;
@@ -124,15 +142,19 @@ function updateUser(req, res, emailVerification) {
   logger.debug(emailVerification);
   User.update({_id: emailVerification.userId}, {active: true}).exec()
   .then(function() {
-    var url = config.url.root + '/congratulations';
-    logger.debug(url);
-    res.redirect(url);
+    redirect(res, 'congratulations');
   })
   .reject(function(err) {
     logger.error('Error occured while activation user: %s', err, emailVerification);
     res.status(500).json({message:"Erreur lors de la modification de l'utilisateur"});
   });
 };
+
+function redirect(res, partial) {
+  var url = config.url.root + '/' + partial;
+  logger.debug(url);
+  res.redirect(url);
+}
 
 exports.index = function index(req, res) {
   res.sendFile('index.html', {root: __dirname + '/../../public/'});
@@ -218,11 +240,42 @@ exports.subscribe = function subscribe(req, res) {
   }
 };
 
+exports.subscribePre = function subscribe(req, res) {
+  var emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (req.body.email && emailRegex.test(req.body.email)) {
+    EmailSubcription.where({email:req.body.email}).count().exec()
+      .then(function(count) {
+        if (count > 0) {
+          res.status(200).json({message: "Votre courriel est déjà sur la liste !"});
+        } else {
+          EmailSubcription.create(req.body)
+          .then(function(emailSubcription) {
+            res.status(200).json({message: "Merci, vous receverez un courriel dès que possible !"});
+          })
+          .reject(function(err) {
+            logger.error('Error occured while creating mail: %s', err, data);
+            res.status(500).json({message: "Une erreur interne est survenue de l'enregistrement du courriel."});
+          });
+        }
+      })
+      .reject(function(err) {
+        logger.error('Error occured while finding users matching email: %s', err, req.body);
+        res.status(500).send('Une erreur interne est survenue');
+      });
+  } else {
+    return res.status(400).json({message:'Les informations données sont invalides ou incomplètes'});
+  }
+};
+
 exports.verify = function verify(req, res) {
   if (req.params.emailId) {
     EmailVerification.findOne({emailId: req.params.emailId}).exec()
     .then(function(emailVerification) {
-      updateUser(req, res, emailVerification);
+      if (emailVerification.confirmed) {
+        redirect(res, 'confirmed');
+      } else {
+        updateEmailVerification(req, res, emailVerification);
+      }
     })
     .reject(function(err) {
       logger.warn('Error occured while finding emailVerification `%s`: %s', req.params.emailId, err);
@@ -232,3 +285,10 @@ exports.verify = function verify(req, res) {
     res.status(400).send('Mauvais paramètre');
   }
 };
+
+function updateEmailVerification(req, res, emailVerification) {
+  emailVerification.confirmed = true;
+  emailVerification.save(function(err) {
+    updateUser(req, res, emailVerification);
+  });
+}
