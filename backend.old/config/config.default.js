@@ -100,6 +100,11 @@ module.exports = {
         title: 'League of Legends',
         description: 'Arène de bataille multijoueur développée par Riot Games.',
         imagePath: 'assets/game_banners/lol.jpg'
+      },
+      {
+        title: 'Rocket League',
+        description: 'Rocket League est un mélange de jeu de voiture et de jeu de soccer développé par Psyonix.',
+        imagePath: 'assets/game_banners/rl.jpg'
       }
     ],
     console: [
