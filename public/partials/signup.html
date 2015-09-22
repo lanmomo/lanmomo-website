@@ -1,12 +1,6 @@
-
-<!-- VIEUX CODE -->
-<!-- VIEUX CODE -->
-<!-- VIEUX CODE -->
-<!-- VIEUX CODE -->
-
 <div class="container">
   <div class="page-header">
-    <h1>Inscription <small>pour le LAN du 25 et 26 avril 2015, c'est gratuit!</small></h1>
+    <h1>Création de votre compte</h1>
   </div>
 
   <div ng-show="state.success" class="alert alert-warning" role="alert"><i class="fa fa-exclamation-circle"></i> {{data.message}}</div>
@@ -16,19 +10,6 @@
       Chargement
     </div>
   </div>
-  <div ng-show="state.max.pc && !state.max.both && !state.submitted" class="alert alert-warning" role="alert">
-    <i class="fa fa-exclamation-circle"></i>
-    <strong>Toutes les places PC sont réservées!</strong> Heureusement, vous pouvez vous inscrire pour une place Console.
-  </div>
-  <div ng-show="state.max.console && !state.max.both && !state.submitted" class="alert alert-warning" role="alert">
-    <i class="fa fa-exclamation-circle"></i>
-    <strong>Toutes les places Console sont réservées!</strong> Heureusement, vous pouvez vous inscrire pour une place PC.
-  </div>
-  <div ng-show="state.max.both && !state.submitted" class="alert alert-danger" role="alert">
-    <i class="fa fa-exclamation-triangle"></i>
-    <strong>Toutes les places sont réservées!</strong> Dès qu'une place ce libère, vous serez à nouveau en mesure de vous inscrire.
-  </div>
-
   <form class="form-horizontal" name="form" ng-submit="submitForm(form.$valid)" ng-hide="state.submitted || state.max.both" novalidate>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.username.$invalid && form.username.$dirty) || (!state.usernameAvailable && state.usernameChanged), 'has-success' : form.username.$valid && state.usernameChanged && state.usernameAvailable }">
@@ -48,7 +29,7 @@
         <input type="text" name="firstname" id="firstname" ng-model="user.firstname" class="form-control" placeholder="Saisissez votre prénom" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
-        <label for="firstname" class="control-label">Vous devez saisir un prénom.</label>
+        <label for="firstname" class="control-label">Vous devez saisir votre prénom.</label>
       </div>
     </div>
 
@@ -58,7 +39,7 @@
         <input type="text" name="lastname" id="lastname" ng-model="user.lastname" class="form-control" placeholder="Saisissez votre nom" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
-        <label for="lastname" class="control-label">Vous devez saisir un nom.</label>
+        <label for="lastname" class="control-label">Vous devez saisir votre nom.</label>
       </div>
     </div>
 
@@ -83,49 +64,11 @@
       </div>
     </div>
 
-    <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.type.$invalid && form.type.$dirty) || (state.typeChanged && !state.typeAvailable), 'has-success' : form.type.$valid && state.typeChanged && state.typeAvailable }">
-      <label for="type" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Vous pouvez choisir qu'un seul type de siège">Type de siège <i class="fa fa-info-circle"></i></label>
-      <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <select name="type" id="type" ng-model="user.type" ng-change="isTypeAvailable(user)" class="form-control" required>
-          <option value="" disabled>Choisissez votre type de siège</option>
-          <option value="pc">PC</option>
-          <option value="console">Console</option>
-        </select>
-        <span class="glyphicon glyphicon-remove form-control-feedback feedback-error feedback-select"></span>
-        <span class="glyphicon glyphicon-ok form-control-feedback feedback-success feedback-select"></span>
-        <label for="type" class="control-label">Vous devez choisir un type de siège valide.</label>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <div class="col-sm-offset-4 col-md-offset-3 col-lg-offset-2 col-sm-8 col-md-9 col-lg-10">
-        <div ng-show="user.type == 'pc'" class="alert alert-info" role="alert">
-          <i class="fa fa-info-circle"></i>
-          En choisissant un siège de type PC, tu es responsable d'apporter tout ce dont tu as besoin, incluant, mais non limité à: ton ordinateur, ton écran, ton clavier, ta souris, ton casque d'écoute, ton câble réseau et ta barre d'alimentation. Nous te fournissons qu'une seule prise d'alimentation, l'accès à Internet et une place assise. Inévitablement, tu ne pourras pas participer au LAN si tu n'as pas tout ton matériel.
-        </div>
-        <div ng-show="user.type == 'console'" class="alert alert-info" role="alert">
-          <i class="fa fa-info-circle"></i>
-          En choisissant un siège de type console, tu auras la possibilité d'utiliser les consoles qui seront disponible sur place lors du LAN, ainsi que d'apporter ta propre console, manettes et jeux pour jouer sur les téléviseurs disponibles. Par contre, prends note que la quantité de téléviseurs est limitée et ce sera donc à vous de décider comment partager les téléviseurs.
-        </div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <div class="col-sm-offset-4 col-md-offset-3 col-lg-offset-2 col-sm-8 col-md-9 col-lg-10">
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" name="checked" ng-model="checked" ng-init="checked = false">
-            J'ai lu et j'accepte <a target="_blank" href="/terms">les conditions générales</a> du LAN Montmorency.
-          </label>
-        </div>
-      </div>
-    </div>
-
     <div class="form-group">
       <div class="col-sm-offset-4 col-md-offset-3 col-lg-offset-2 col-sm-8 col-md-9 col-lg-10">
         <button type="submit" class="btn btn-primary"
-                ng-disabled="!checked || form.email.$invalid || form.lastname.$invalid || form.firstname.$invalid || form.username.$invalid || form.phone.$invalid || form.type.$invalid || state.submitted || !state.usernameAvailable || !state.emailAvailable"
-                ng-click="subscribe(user)"><i class="fa fa-pencil"></i> S'inscrire</button>
+                ng-disabled="form.email.$invalid || form.lastname.$invalid || form.firstname.$invalid || form.username.$invalid || form.phone.$invalid || state.submitted || !state.usernameAvailable || !state.emailAvailable"
+                ng-click="signup()"><i class="fa fa-pencil"></i> S'enregistrer</button>
       </div>
     </div>
   </form>

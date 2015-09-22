@@ -87,49 +87,53 @@ app.controller('UsersController', function($scope, $http) {
     });
 });
 
-app.controller('SubscriptionController', function($scope, $http) {
+app.controller('PreSubscriptionController', function($scope, $http) {
+  $scope.state = {};
+
+  $scope.registerEmail = function() {
+    var email = $scope.email;
+    $scope.state.loading = true;
+    $scope.state.submitted = true;
+    $http.post('/api/subscribe', {'email': email})
+      .success(function(data, status) {
+        $scope.message = data.message;
+        $scope.state.loading = false;
+        $scope.state.success = true;
+      })
+      .error(function(data) {
+        $scope.message = data.message;
+        if (!data.message) {
+            $scope.message = 'Une erreur interne est survenue. Veuillez réessayer plus tard.';
+        }
+        $scope.state.loading = false;
+        $scope.state.error = true;
+      });
+  };
+});
+
+app.controller('SignupController', function($scope, $http) {
   $('[data-toggle="tooltip"]').tooltip();
   $scope.state = {
     submitted: false,
     loading: false,
     success: false,
     error: false,
-    max: {
-      pc: false,
-      console: false,
-      both: false
-    },
     usernameChanged: false,
     emailChanged: false,
-    typeChanged: false,
     usernameAvailable: false,
-    emailAvailable: false,
-    typeAvailable: false
+    emailAvailable: false
   };
-  $http.get('/api/users/max')
-    .success(function(data) {
-      console.log(data);
-      $scope.state.max = data.max;
-    })
-    .error(function(data) {
-      console.log(data);
-      $scope.data = data;
-      $scope.state.error = true;
-    });
-  $scope.subscribe = function(data) {
+  $scope.signup = function(data) {
     $scope.state.loading = true;
     $scope.state.submitted = true;
-    $http.post('/api/subscribe', data)
+    $http.post('/api/signup', data)
       .success(function(data, status) {
-        console.log(status);
-        console.log(data);
-        $scope.data = data;
+        // TODO
         $scope.state.loading = false;
         $scope.state.success = true;
       })
       .error(function(data) {
-        console.log(data);
-        $scope.data = data;
+        // TODO
         $scope.state.loading = false;
         $scope.state.error = true;
       });
@@ -141,7 +145,6 @@ app.controller('SubscriptionController', function($scope, $http) {
         $scope.state.usernameChanged = true;
       })
       .error(function(data) {
-        console.log(data);
         $scope.state.usernameAvailable = false;
         $scope.state.usernameChanged = true;
       });
@@ -167,30 +170,6 @@ app.controller('SubscriptionController', function($scope, $http) {
   $scope.isTypeAvailable = function(user) {
     $scope.state.typeChanged = true;
     $scope.state.typeAvailable = user.type && !$scope.state.max[user.type];
-  };
-});
-
-app.controller('PreSubscriptionController', function($scope, $http) {
-  $scope.state = {};
-
-  $scope.registerEmail = function() {
-    var email = $scope.email;
-    $scope.state.loading = true;
-    $scope.state.submitted = true;
-    $http.post('/api/subscribe', {'email': email})
-      .success(function(data, status) {
-        $scope.message = data.message;
-        $scope.state.loading = false;
-        $scope.state.success = true;
-      })
-      .error(function(data) {
-        $scope.message = data.message;
-        if (!data.message) {
-            $scope.message = 'Une erreur interne est survenue. Veuillez réessayer plus tard.';
-        }
-        $scope.state.loading = false;
-        $scope.state.error = true;
-      });
   };
 });
 
@@ -225,6 +204,10 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   .when('/subscribe', {
     templateUrl: 'partials/subscription_pre.html',
     controller: 'PreSubscriptionController'
+  })
+  .when('/signup', {
+    templateUrl: 'partials/signup.html',
+    controller: 'SignupController'
   })
   .when('/congratulations', {
     templateUrl: 'partials/congratulations.html'
