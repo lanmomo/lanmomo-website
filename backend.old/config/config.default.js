@@ -64,7 +64,7 @@ module.exports = {
       {
         title: 'CS: Global Offensive',
         description: 'FPS en équipe développé par Valve. Les modes poser la bombe et délivrer les otages seront offert.',
-        imagePath: 'assets/game_banners/cs:go.jpg'
+        imagePath: 'assets/game_banners/csgo.jpg'
       },
       {
         title: 'Minecraft',
