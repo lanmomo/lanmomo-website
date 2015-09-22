@@ -1,2 +1,2 @@
 DEBUG = False
-DATABASE_URI = 'mysql://lanmomo@localhost/lanmomo'
+DATABASE_URI = 'mysql+mysqlconnector://lanmomo@localhost/lanmomo'
