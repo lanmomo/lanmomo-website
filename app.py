@@ -6,7 +6,7 @@ import re
 
 from flask import Flask, send_from_directory, jsonify, request
 from database import db_session, init_db, init_engine
-from models import Subscription
+from models import Subscription, User
 
 app = Flask(__name__)
 
@@ -24,6 +24,26 @@ def get_servers():
 @app.route('/api/servers', methods=['POST'])
 def update_server():
     return jsonify({'error': 'Not implemented'}), 500
+
+
+@app.route('/api/users/has/username', methods=['POST'])
+def has_username():
+    req = request.get_json()
+    if 'username' not in req:
+        return bad_request()
+
+    exists = User.query.filter(User.username == req['username']).count() > 0
+    return jsonify({'exists': exists}), 200
+
+
+@app.route('/api/users/has/email', methods=['POST'])
+def has_email():
+    req = request.get_json()
+    if 'email' not in req:
+        return bad_request()
+
+    exists = User.query.filter(User.email == req['email']).count() > 0
+    return jsonify({'exists': exists}), 200
 
 
 @app.route('/api/subscribe', methods=['POST'])
