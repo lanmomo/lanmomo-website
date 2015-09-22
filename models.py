@@ -41,7 +41,7 @@ class Ticket():
     def __repr__(self):
         return '<Ticket %r>' % (self.id)
 
-subcribtions = Table('subcriptions', metadata,
+subcriptions = Table('subcriptions', metadata,
                      Column('id', Integer, primary_key=True),
                      Column('email', String(1000), nullable=False)
                      )
