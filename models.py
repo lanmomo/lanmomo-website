@@ -4,14 +4,14 @@ from sqlalchemy.orm import mapper
 from database import metadata, db_session
 
 
-class Subscribtion():
+class Subscription():
     query = db_session.query_property()
 
     def __init__(self, email):
         self.email = email
 
     def __repr__(self):
-        return '<Subscribtion %r>' % (self.email)
+        return '<Subscription %r>' % (self.email)
 
 
 class User():
@@ -41,7 +41,7 @@ class Ticket():
     def __repr__(self):
         return '<Ticket %r>' % (self.id)
 
-subcribtions = Table('subcribtions', metadata,
+subcribtions = Table('subcriptions', metadata,
                      Column('id', Integer, primary_key=True),
                      Column('email', String(1000), nullable=False)
                      )
@@ -68,6 +68,6 @@ tickets = Table('tickets', metadata,
                 Column('reserved_at', Date, nullable=False)
                 )
 
-mapper(Subscribtion, subcribtions)
+mapper(Subscription, subcriptions)
 mapper(User, users)
 mapper(Ticket, tickets)

@@ -6,7 +6,7 @@ import re
 
 from flask import Flask, send_from_directory, jsonify, request
 from database import db_session, init_db, init_engine
-from models import Subscribtion
+from models import Subscription
 
 app = Flask(__name__)
 
@@ -28,7 +28,6 @@ def update_server():
 
 @app.route('/api/subscribe', methods=['POST'])
 def sub():
-    print('wat')
     req = request.get_json()
     if 'email' in req:
         email = req['email']
@@ -62,8 +61,8 @@ def bad_request():
 
 
 def subscribe_email(email):
-    if Subscribtion.query.filter(Subscribtion.email == email).count() == 0:
-        sub = Subscribtion(email)
+    if Subscription.query.filter(Subscription.email == email).count() == 0:
+        sub = Subscription(email)
         db_session.add(sub)
         db_session.commit()
         return jsonify({'message': 'Votre courriel a été ajouté sur la liste.' +
