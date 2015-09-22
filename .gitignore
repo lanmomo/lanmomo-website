@@ -1,12 +1,19 @@
 # Local config
-backend/config/config.dev.js
-backend/config/config.prod.js
+backend.old/config/config.dev.js
+backend.old/config/config.prod.js
 
 # Bower components
 public/bower_components
 
-# Node.js dependency directory
-node_modules
+# virtualenv
+bin/
+lib/
+include/
+env/
+
+# python
+*.pyc
+*.pyo
 
 # Logs
 logs
