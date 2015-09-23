@@ -1,5 +1,23 @@
 "use strict";
-var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment']);
+var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment'])
+  .directive('passwordCheck', [function () {
+        return {
+          restrict: 'A',
+          scope: true,
+          require: 'ngModel',
+          link: function (scope, elem , attributes, control) {
+            var checker = function () {
+              var password1 = scope.$eval(attributes.ngModel);
+              var password2 = scope.$eval(attributes.passwordCheck);
+              return password1 == password2;
+            };
+            scope.$watch(checker, function (n) {
+              control.$setValidity("unique", n);
+            });
+          }
+        }
+      }
+    ]);
 
 app.controller('NavbarController', function($scope, $location) {
   $scope.isActive = function(url) {
