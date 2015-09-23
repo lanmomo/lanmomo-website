@@ -19,6 +19,14 @@ def get_hash(password, salt):
     return m.digest()
 
 
+def email_exists(email):
+    return User.query.filter(User.username == email).count() > 0
+
+
+def username_exists(username):
+    return User.query.filter(User.username == username).count() > 0
+
+
 @app.route('/api/games', methods=['GET'])
 def get_games():
     return jsonify(games), 200
@@ -40,8 +48,7 @@ def has_username():
     if 'username' not in req:
         return bad_request()
 
-    exists = User.query.filter(User.username == req['username']).count() > 0
-    return jsonify({'exists': exists}), 200
+    return jsonify({'exists': username_exists(req['username'])}), 200
 
 
 @app.route('/api/users/has/email', methods=['POST'])
@@ -50,13 +57,15 @@ def has_email():
     if 'email' not in req:
         return bad_request()
 
-    exists = User.query.filter(User.email == req['email']).count() > 0
-    return jsonify({'exists': exists}), 200
+    return jsonify({'exists': email_exists(req['email'])}), 200
 
 
 def validate_signup_body(req):
-    needed = set(['password', 'username', 'firstname', 'lastname', 'email'])
-    return needed in set(req.keys())
+    needed = ['password', 'username', 'firstname', 'lastname', 'email', 'phone']
+    for n in needed:
+        if n not in req.keys():
+            return False
+    return True
 
 
 @app.route('/api/users', methods=['POST'])
@@ -65,12 +74,15 @@ def signup():
     if not validate_signup_body(req):
         return bad_request()
 
+    if email_exists(req['email']) or username_exists(req['username']):
+        return bad_request('Courriel ou utilisateur déjà pris !')
+
     salt = "salty"
     hashpass = get_hash(req['password'], salt)
 
     user = User(username=req['username'], firstname=req['firstname'],
                 lastname=req['lastname'], email=req['email'],
-                password=hashpass, salt=salt)
+                phone=req['phone'], password=hashpass, salt=salt)
     db_session.add(user)
     db_session.commit()
 
@@ -107,9 +119,11 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 
-def bad_request():
-    return jsonify({'message': 'Les informations données sont invalides ou ' +
-                    'incomplètes'}), 400
+def bad_request(custom_message):
+    message = 'Les informations données sont invalides ou incomplètes'
+    if custom_message:
+        message = custom_message
+    return jsonify({'message': message}), 400
 
 
 def subscribe_email(email):

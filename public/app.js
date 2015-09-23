@@ -145,7 +145,7 @@ app.controller('SignupController', function($scope, $http) {
     $scope.state.loading = true;
     $scope.state.submitted = true;
     $http.post('/api/users', data)
-      .success(function(data, status) {
+      .success(function(res, status) {
         // TODO
         $scope.state.loading = false;
         $scope.state.success = true;

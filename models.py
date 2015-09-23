@@ -1,6 +1,7 @@
 import datetime
 
-from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, ForeignKey, DateTime
+from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, \
+    ForeignKey, DateTime
 from sqlalchemy.orm import mapper
 
 from database import metadata, db_session
@@ -19,7 +20,8 @@ class Subscription():
 class User():
     query = db_session.query_property()
 
-    def __init__(self, username, firstname, lastname, email, phone, password, salt):
+    def __init__(self, username, firstname, lastname, email, phone,
+                 password, salt):
         self.username = username
         self.firstname = firstname
         self.lastname = lastname
@@ -28,6 +30,7 @@ class User():
         self.password = password
         self.salt = salt
         self.created_date = datetime.datetime.now
+        print(self.created_date)
 
     def __repr__(self):
         return '<User %r>' % (self.username)
@@ -61,7 +64,7 @@ users = Table('users', metadata,
               Column('email', String(255), nullable=False),
               Column('password', Binary(64), nullable=False),
               Column('salt', String(42), nullable=False),
-              Column('created_at', DateTime, nullable=False),
+              Column('created_at', DateTime, default=datetime.datetime.now),
               Column('modified_at', DateTime, onupdate=datetime.datetime.now)
               )
 
