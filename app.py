@@ -3,12 +3,20 @@ import os
 import sys
 import json
 import re
+import hashlib
 
 from flask import Flask, send_from_directory, jsonify, request
 from database import db_session, init_db, init_engine
 from models import Subscription, User
 
 app = Flask(__name__)
+
+
+def get_hash(password, salt):
+    m = hashlib.sha512()
+    m.update(salt.encode('utf8'))
+    m.update(password.encode('utf8'))
+    return m.digest()
 
 
 @app.route('/api/games', methods=['GET'])
@@ -44,6 +52,30 @@ def has_email():
 
     exists = User.query.filter(User.email == req['email']).count() > 0
     return jsonify({'exists': exists}), 200
+
+
+def validate_signup_body(req):
+    needed = set(['password', 'username', 'firstname', 'lastname', 'email'])
+    return needed in set(req.keys())
+
+
+@app.route('/api/users', methods=['POST'])
+def signup():
+    req = request.get_json()
+    if not validate_signup_body(req):
+        return bad_request()
+
+    salt = "salty"
+    hashpass = get_hash(req['password'], salt)
+
+    user = User(username=req['username'], firstname=req['firstname'],
+                lastname=req['lastname'], email=req['email'],
+                password=hashpass, salt=salt)
+    db_session.add(user)
+    db_session.commit()
+
+    # TODO send email confirmation
+    return jsonify({'message': 'Vérifier le courriel. TODO'}), 200
 
 
 @app.route('/api/subscribe', methods=['POST'])

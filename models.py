@@ -1,4 +1,6 @@
-from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, ForeignKey, Date
+import datetime
+
+from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import mapper
 
 from database import metadata, db_session
@@ -17,11 +19,15 @@ class Subscription():
 class User():
     query = db_session.query_property()
 
-    def __init__(self, username, email, password, salt):
+    def __init__(self, username, firstname, lastname, email, phone, password, salt):
         self.username = username
+        self.firstname = firstname
+        self.lastname = lastname
         self.email = email
+        self.phone = phone
         self.password = password
         self.salt = salt
+        self.created_date = datetime.datetime.now
 
     def __repr__(self):
         return '<User %r>' % (self.username)
@@ -49,10 +55,14 @@ subcriptions = Table('subcriptions', metadata,
 
 users = Table('users', metadata,
               Column('id', Integer, primary_key=True),
-              Column('username', String(1000), nullable=False),
-              Column('email', String(1000), nullable=False),
+              Column('username', String(255), nullable=False),
+              Column('firstname', String(255), nullable=False),
+              Column('lastname', String(255), nullable=False),
+              Column('email', String(255), nullable=False),
               Column('password', Binary(64), nullable=False),
-              Column('salt', String(42), nullable=False)
+              Column('salt', String(42), nullable=False),
+              Column('created_at', DateTime, nullable=False),
+              Column('modified_at', DateTime, onupdate=datetime.datetime.now)
               )
 
 tickets = Table('tickets', metadata,
@@ -64,8 +74,8 @@ tickets = Table('tickets', metadata,
                        nullable=False),
                 # Look for related payment and remove this field ?
                 Column('paid', Boolean, default=False, nullable=False),
-                Column('reserved_until', Date, nullable=False),
-                Column('reserved_at', Date, nullable=False)
+                Column('reserved_until', DateTime, nullable=False),
+                Column('reserved_at', DateTime, nullable=False)
                 )
 
 mapper(Subscription, subcriptions)

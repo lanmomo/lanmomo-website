@@ -51,3 +51,6 @@ build/Release
 # OS related files
 .DS_Store
 desktop.ini
+
+deploy/dev
+app.dev.wsgi

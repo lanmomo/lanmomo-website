@@ -64,6 +64,16 @@
       </div>
     </div>
 
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : form.password.$invalid, 'has-success' : form.password.$valid }">
+      <label for="password" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Mot de passe d'au moins 8 caractères">Mot de passe <i class="fa fa-info-circle"></i></label>
+      <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
+        <input type="password" name="password" id="password" ng-model="user.password" class="form-control" ng-minlength="8" placeholder="Saisissez votre mot de passe" required>
+        <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
+        <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
+        <label for="password" class="control-label">Vous devez un mot de passe d'au moins 8 caractères.</label>
+      </div>
+    </div>
+
     <div class="form-group">
       <div class="col-sm-offset-4 col-md-offset-3 col-lg-offset-2 col-sm-8 col-md-9 col-lg-10">
         <button type="submit" class="btn btn-primary"

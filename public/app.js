@@ -126,7 +126,7 @@ app.controller('SignupController', function($scope, $http) {
   $scope.signup = function(data) {
     $scope.state.loading = true;
     $scope.state.submitted = true;
-    $http.post('/api/signup', data)
+    $http.post('/api/users', data)
       .success(function(data, status) {
         // TODO
         $scope.state.loading = false;
@@ -166,10 +166,6 @@ app.controller('SignupController', function($scope, $http) {
   };
   $scope.resetEmailChanged = function() {
     $scope.state.emailChanged = false;
-  };
-  $scope.isTypeAvailable = function(user) {
-    $scope.state.typeChanged = true;
-    $scope.state.typeAvailable = user.type && !$scope.state.max[user.type];
   };
 });
 
