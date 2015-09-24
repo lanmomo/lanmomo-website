@@ -1,0 +1,17 @@
+<div class="container">
+  <div class="page-header">
+    <h1>Félicitations!</h1>
+  </div>
+
+  <div class="alert alert-success" role="alert" ng-show="message">
+    <i class="fa fa-info-circle"></i> {{message}}
+  </div>
+
+  <div class="alert alert-danger" role="alert" ng-show="error">
+    <i class="fa fa-info-circle"></i> {{error}}
+  </div>
+
+  <div class="text-center" ng-hide="error">
+    <a href="/login" class="btn btn-primary">Se connecter <i class="fa fa-chevron-right"></i></a>
+  </div>
+</div>

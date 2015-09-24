@@ -85,15 +85,19 @@ def validate_signup_body(req):
     return True
 
 
-@app.route('/api/users/verify/<token>', methods=['GET'])
+@app.route('/api/verify/<token>', methods=['GET'])
 def verify_user_email(token):
-    user = User.query.filter(User.confirmation_token == token).one()
-    if user:
-        user.confirmed = True
-        db_session.add(user)
-        db_session.commit()
-        return jsonify({'confirmed': True}), 200
-    return bad_request('Mauvais jeton fournis !')
+    user = User.query.filter(User.confirmation_token == token).first()
+    if not user:
+        return bad_request('Mauvais jeton fournis !')
+
+    if user.confirmed:
+        return jsonify({'first': False}), 200
+
+    user.confirmed = True
+    db_session.add(user)
+    db_session.commit()
+    return jsonify({'first': True}), 200
 
 
 @app.route('/api/users', methods=['POST'])
@@ -117,7 +121,7 @@ def signup():
     user = User.query.filter(User.email == req['email']).one()
 
     fullname = '%s %s' % (req['firstname'], req['lastname'])
-    conf_url = 'https://lanmomo.org/api/users/verify/%s' % \
+    conf_url = 'https://lanmomo.org/verify/%s' % \
         user.confirmation_token
 
     message = ("""\

@@ -129,6 +129,24 @@ app.controller('PreSubscriptionController', function($scope, $http) {
   };
 });
 
+app.controller('VerifyController', function($scope, $http, $routeParams) {
+  var token = $routeParams.token;
+  console.log(token);
+  $http.get('/api/verify/' + token)
+    .success(function(data, status) {
+      if (data.first) {
+        $scope.message = "Votre compte a bien été créé ! Vous pouvez maintenant vous connecter.";
+      } else if (data.first === false) {
+        $scope.message = "Votre compte a déjà été créé ! Vous pouvez vous connecter.";
+      } else {
+        $scope.error = "Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !"
+      }
+    })
+    .error(function(data) {
+      $scope.error = "Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !"
+    });
+});
+
 app.controller('SignupController', function($scope, $http) {
   $('[data-toggle="tooltip"]').tooltip();
   $scope.state = {
@@ -223,11 +241,9 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
     templateUrl: 'partials/signup.html',
     controller: 'SignupController'
   })
-  .when('/congratulations', {
-    templateUrl: 'partials/congratulations.html'
-  })
-  .when('/confirmed', {
-    templateUrl: 'partials/confirmed.html'
+  .when('/verify/:token', {
+    templateUrl: 'partials/verify.html',
+    controller: 'VerifyController'
   });
 
   $locationProvider.html5Mode(true);
