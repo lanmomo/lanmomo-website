@@ -5,7 +5,9 @@ import json
 import re
 import hashlib
 
+from smtplib import SMTP
 from flask import Flask, send_from_directory, jsonify, request
+
 from database import db_session, init_db, init_engine
 from models import Subscription, User
 
@@ -25,6 +27,19 @@ def email_exists(email):
 
 def username_exists(username):
     return User.query.filter(User.username == username).count() > 0
+
+
+def send_email(to_email, to_name, subject, message):
+    with SMTP(host='mail.lanmomo.org', port=587) as smtp:
+        m_with_headers = ('From: LAN Montmorency <%s>\r\nTo: %s <%s>' +
+                          '\r\nSubject: %s\r\n%s') % \
+                         (app.config['SMTP_USER'], to_name, to_email,
+                          subject, message)
+
+        smtp.starttls()
+        smtp.login(user=app.config['SMTP_USER'],
+                   password=app.config['SMTP_PASSWD'])
+        smtp.sendmail(app.config['SMTP_USER'], to_email, m_with_headers)
 
 
 @app.route('/api/games', methods=['GET'])
@@ -86,7 +101,9 @@ def signup():
     db_session.add(user)
     db_session.commit()
 
-    # TODO send email confirmation
+    fullname = '%s %s' % (req['firstname'], req['lastname'])
+    send_email(req['email'], fullname, 'lanmomo', 'yay')
+
     return jsonify({'message': 'Vérifier le courriel. TODO'}), 200
 
 

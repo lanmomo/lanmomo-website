@@ -54,3 +54,5 @@ desktop.ini
 
 deploy/dev
 app.dev.wsgi
+
+config/prod_config.py
