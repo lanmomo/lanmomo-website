@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, \
     ForeignKey, DateTime
@@ -30,7 +31,8 @@ class User():
         self.password = password
         self.salt = salt
         self.created_date = datetime.datetime.now
-        print(self.created_date)
+        self.confirmed = False
+        self.confirmation_token = uuid.uuid4().hex
 
     def __repr__(self):
         return '<User %r>' % (self.username)
@@ -65,7 +67,9 @@ users = Table('users', metadata,
               Column('password', Binary(64), nullable=False),
               Column('salt', String(42), nullable=False),
               Column('created_at', DateTime, default=datetime.datetime.now),
-              Column('modified_at', DateTime, onupdate=datetime.datetime.now)
+              Column('modified_at', DateTime, onupdate=datetime.datetime.now),
+              Column('confirmed', Boolean, default=False),
+              Column('confirmation_token', String(32))
               )
 
 tickets = Table('tickets', metadata,

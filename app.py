@@ -6,6 +6,7 @@ import re
 import hashlib
 
 from smtplib import SMTP
+from email.mime.text import MIMEText
 from flask import Flask, send_from_directory, jsonify, request
 
 from database import db_session, init_db, init_engine
@@ -22,7 +23,7 @@ def get_hash(password, salt):
 
 
 def email_exists(email):
-    return User.query.filter(User.username == email).count() > 0
+    return User.query.filter(User.email == email).count() > 0
 
 
 def username_exists(username):
@@ -31,15 +32,15 @@ def username_exists(username):
 
 def send_email(to_email, to_name, subject, message):
     with SMTP(host='mail.lanmomo.org', port=587) as smtp:
-        m_with_headers = ('From: LAN Montmorency <%s>\r\nTo: %s <%s>' +
-                          '\r\nSubject: %s\r\n%s') % \
-                         (app.config['SMTP_USER'], to_name, to_email,
-                          subject, message)
+        msg = MIMEText(message.encode('utf-8'), 'html', 'utf-8')
+        msg['Subject'] = subject
+        msg['From'] = 'LAN Montmorency <%s>' % app.config['SMTP_USER']
+        msg['To'] = '%s <%s>' % (to_name.encode('utf-8'), to_email)
 
         smtp.starttls()
         smtp.login(user=app.config['SMTP_USER'],
                    password=app.config['SMTP_PASSWD'])
-        smtp.sendmail(app.config['SMTP_USER'], to_email, m_with_headers)
+        smtp.sendmail(app.config['SMTP_USER'], to_email, msg.as_string())
 
 
 @app.route('/api/games', methods=['GET'])
@@ -83,6 +84,17 @@ def validate_signup_body(req):
     return True
 
 
+@app.route('/api/users/verify/<token>', methods=['GET'])
+def verify_user_email(token):
+    user = User.query.filter(User.confirmation_token == token).one()
+    if user:
+        user.confirmed = True
+        db_session.add(user)
+        db_session.commit()
+        return jsonify({'confirmed': True}), 200
+    return bad_request('Mauvais jeton fournis !')
+
+
 @app.route('/api/users', methods=['POST'])
 def signup():
     req = request.get_json()
@@ -92,7 +104,7 @@ def signup():
     if email_exists(req['email']) or username_exists(req['username']):
         return bad_request('Courriel ou utilisateur déjà pris !')
 
-    salt = "salty"
+    salt = "salty"  # TODO gen salt
     hashpass = get_hash(req['password'], salt)
 
     user = User(username=req['username'], firstname=req['firstname'],
@@ -101,10 +113,26 @@ def signup():
     db_session.add(user)
     db_session.commit()
 
-    fullname = '%s %s' % (req['firstname'], req['lastname'])
-    send_email(req['email'], fullname, 'lanmomo', 'yay')
+    user = User.query.filter(User.email == req['email']).one()
 
-    return jsonify({'message': 'Vérifier le courriel. TODO'}), 200
+    fullname = '%s %s' % (req['firstname'], req['lastname'])
+    conf_url = 'https://lanmomo.org/api/users/verify/%s' % \
+        user.confirmation_token
+
+    message = ("""\
+Bonjour %s, <br><br>
+Veuillez confirmer votre courriel en visitant le lien suivant:
+ <a href="%s">%s</a><br><br>
+Merci et à bientôt !<br><br>
+<small>Ceci est un courriel envoyé automatiquement.
+ Veuillez ne pas y répondre.</small>""") \
+        % (fullname, conf_url, conf_url)
+
+    send_email(req['email'], fullname, 'lanmomo', message)
+
+    return jsonify({'message': """\
+Un message de confirmation a été envoyé à votre adresse courriel ! Si le message
+ n'est pas reçu dans les prochaines minutes, vérifiez vos pourriel !"""}), 200
 
 
 @app.route('/api/subscribe', methods=['POST'])
