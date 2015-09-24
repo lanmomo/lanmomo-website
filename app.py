@@ -16,6 +16,14 @@ from models import Subscription, User
 app = Flask(__name__)
 
 
+def validate_signup_body(req):
+    needed = ['password', 'username', 'firstname', 'lastname', 'email', 'phone']
+    for n in needed:
+        if n not in req.keys():
+            return False
+    return True
+
+
 def get_hash(password, salt):
     m = hashlib.sha512()
     m.update(salt.encode('utf8'))
@@ -59,6 +67,31 @@ def update_server():
     return jsonify({'error': 'Not implemented'}), 500
 
 
+@app.route('/api/login', methods=['POST'])
+def login():
+    req = request.get_json()
+    if 'password' not in req or 'password' not in req:
+        return bad_request()
+
+    email = req['email']
+    password = req['password']
+
+    user = User.query.filter(User.email == email).first()
+
+    if user and get_hash(password, user.salt) == user.password:
+        token = uuid.uuid4().hex
+        user.login_token = token
+
+        db_session.add(user)
+        db_session.commit()
+
+        res = jsonify({'success': True})
+        res.set_cookie('login_token_lanmomo', token)
+        return res
+
+    return jsonify({'error': 'Les informations ne concordent pas !'}), 401
+
+
 @app.route('/api/users/has/username', methods=['POST'])
 def has_username():
     req = request.get_json()
@@ -75,14 +108,6 @@ def has_email():
         return bad_request()
 
     return jsonify({'exists': email_exists(req['email'])}), 200
-
-
-def validate_signup_body(req):
-    needed = ['password', 'username', 'firstname', 'lastname', 'email', 'phone']
-    for n in needed:
-        if n not in req.keys():
-            return False
-    return True
 
 
 @app.route('/api/verify/<token>', methods=['GET'])

@@ -1,5 +1,5 @@
 "use strict";
-var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment'])
+var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment', 'ngCookies'])
   .directive('passwordCheck', [function () {
         return {
           restrict: 'A',
@@ -147,6 +147,22 @@ app.controller('VerifyController', function($scope, $http, $routeParams) {
     });
 });
 
+app.controller('LoginController', function ($scope, $http, $location) {
+
+  $scope.submitLogin = function () {
+    var data = {
+        email: $scope.user.email,
+        password: $scope.user.password
+    }
+    $http.post('/api/login', data)
+      .success(function(data) {
+        $location.path('/');
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.error, status: status};
+      });
+  };
+});
 app.controller('SignupController', function($scope, $http) {
   $('[data-toggle="tooltip"]').tooltip();
   $scope.state = {
@@ -241,10 +257,15 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
     templateUrl: 'partials/signup.html',
     controller: 'SignupController'
   })
+  .when('/login', {
+    templateUrl: 'partials/login.html',
+    controller: 'LoginController'
+  })
   .when('/verify/:token', {
     templateUrl: 'partials/verify.html',
     controller: 'VerifyController'
   });
+  $routeProvider.otherwise({redirectTo: '/'});
 
   $locationProvider.html5Mode(true);
 
