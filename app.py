@@ -4,6 +4,7 @@ import sys
 import json
 import re
 import hashlib
+import uuid
 
 from smtplib import SMTP
 from email.mime.text import MIMEText
@@ -104,7 +105,7 @@ def signup():
     if email_exists(req['email']) or username_exists(req['username']):
         return bad_request('Courriel ou utilisateur déjà pris !')
 
-    salt = "salty"  # TODO gen salt
+    salt = uuid.uuid4().hex
     hashpass = get_hash(req['password'], salt)
 
     user = User(username=req['username'], firstname=req['firstname'],
