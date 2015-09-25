@@ -86,6 +86,11 @@ def login():
 
     user = User.query.filter(User.email == email).first()
 
+    if not user.confirmed:
+        return jsonify({'error': """\
+Veuillez valider votre courriel !
+ Contactez info@lanmomo.org si le courriel n'a pas été reçu."""}), 400
+
     if user and get_hash(password, user.salt) == user.password:
         token = uuid.uuid4().hex
         user.login_token = token
