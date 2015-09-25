@@ -156,12 +156,12 @@ def sub():
 
 @app.route('/')
 def index():
-    return send_from_directory('public', 'index.html')
+    return send_from_directory('static', 'index.html')
 
 
 @app.route('/<path:path>')
 def static_files(path):
-    return send_from_directory('public', path)
+    return send_from_directory('static', path)
 
 
 @app.teardown_appcontext
