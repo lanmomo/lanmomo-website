@@ -105,30 +105,6 @@ app.controller('UsersController', function($scope, $http) {
     });
 });
 
-app.controller('PreSubscriptionController', function($scope, $http) {
-  $scope.state = {};
-
-  $scope.registerEmail = function() {
-    var email = $scope.email;
-    $scope.state.loading = true;
-    $scope.state.submitted = true;
-    $http.post('/api/subscribe', {'email': email})
-      .success(function(data, status) {
-        $scope.message = data.message;
-        $scope.state.loading = false;
-        $scope.state.success = true;
-      })
-      .error(function(data) {
-        $scope.message = data.message;
-        if (!data.message) {
-            $scope.message = 'Une erreur interne est survenue. Veuillez réessayer plus tard.';
-        }
-        $scope.state.loading = false;
-        $scope.state.error = true;
-      });
-  };
-});
-
 app.controller('VerifyController', function($scope, $http, $routeParams) {
   var token = $routeParams.token;
   console.log(token);
@@ -248,10 +224,6 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   })
   .when('/contact', {
     templateUrl: 'partials/contact.html'
-  })
-  .when('/subscribe', {
-    templateUrl: 'partials/subscription_pre.html',
-    controller: 'PreSubscriptionController'
   })
   .when('/signup', {
     templateUrl: 'partials/signup.html',

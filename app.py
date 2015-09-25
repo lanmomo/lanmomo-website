@@ -165,20 +165,6 @@ Un message de confirmation a été envoyé à votre adresse courriel ! Si le mes
  n'est pas reçu dans les prochaines minutes, vérifiez vos pourriel !"""}), 200
 
 
-@app.route('/api/subscribe', methods=['POST'])
-def sub():
-    req = request.get_json()
-    if 'email' in req:
-        email = req['email']
-        match = re.search(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",
-                          email)
-        if match:
-            return subscribe_email(email)
-        else:
-            return bad_request()
-    return bad_request()
-
-
 @app.route('/')
 def index():
     return send_from_directory('public', 'index.html')
@@ -201,20 +187,6 @@ def bad_request(custom_message):
     return jsonify({'message': message}), 400
 
 
-def subscribe_email(email):
-    if Subscription.query.filter(Subscription.email == email).count() == 0:
-        sub = Subscription(email)
-        db_session.add(sub)
-        db_session.commit()
-        return jsonify({'message': 'Votre courriel a été ajouté sur la liste.' +
-                        'Vous receverez un courriel dès que les billets ' +
-                        'seront en vente !'}), 200
-    else:
-        return jsonify({'message': 'Votre courriel est déjà la liste ! ' +
-                        'Vous receverez un courriel dès que les billets ' +
-                        'seront en vente !'}), 200
-
-
 def setup(conf_path):
     global app, games
     app.config.from_pyfile(conf_path)
@@ -226,4 +198,4 @@ def setup(conf_path):
     return app
 
 if __name__ == '__main__':
-    setup('config/default_config.py').run(debug=True)
+    setup('config/prod_config.py').run(debug=True)
