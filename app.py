@@ -67,6 +67,14 @@ def update_server():
     return jsonify({'error': 'Not implemented'}), 500
 
 
+@app.route('/api/profile', methods=['GET'])
+def get_profile():
+    user = User.from_token(request.cookies.get('login_token_lanmomo'))
+    if user:
+        return jsonify({'user': user}), 200
+    return jsonify({'error': 'Non authorisé'}), 403
+
+
 @app.route('/api/login', methods=['POST'])
 def login():
     req = request.get_json()
@@ -157,11 +165,11 @@ Merci et à bientôt !<br><br>
 <small>Ceci est un courriel envoyé automatiquement.
  Veuillez ne pas y répondre.</small>""") \
         % (fullname, conf_url, conf_url)
-
-    send_email(req['email'], fullname, 'lanmomo', message)
+    subject = 'Confirmation de votre compte LAN Montmorency'
+    send_email(req['email'], fullname, subject, message)
 
     return jsonify({'message': """\
-Un message de confirmation a été envoyé à votre adresse courriel ! Si le message
+Un message de confirmation a été envoyé à votre adresse courriel. Si le message
  n'est pas reçu dans les prochaines minutes, vérifiez vos pourriel !"""}), 200
 
 
@@ -180,10 +188,7 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 
-def bad_request(custom_message):
-    message = 'Les informations données sont invalides ou incomplètes'
-    if custom_message:
-        message = custom_message
+def bad_request(message='Les informations sont invalides ou incomplètes.'):
     return jsonify({'message': message}), 400
 
 

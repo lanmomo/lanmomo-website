@@ -124,7 +124,6 @@ app.controller('VerifyController', function($scope, $http, $routeParams) {
 });
 
 app.controller('LoginController', function ($scope, $http, $location) {
-
   $scope.submitLogin = function () {
     var data = {
         email: $scope.user.email,
@@ -139,6 +138,17 @@ app.controller('LoginController', function ($scope, $http, $location) {
       });
   };
 });
+
+app.controller('ProfileController', function ($scope, $http) {
+  $http.get('/api/profile')
+    .success(function(data) {
+      $scope.userData = data.user;
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err.error, status: status};
+    });
+});
+
 app.controller('SignupController', function($scope, $http) {
   $('[data-toggle="tooltip"]').tooltip();
   $scope.state = {
@@ -156,12 +166,13 @@ app.controller('SignupController', function($scope, $http) {
     $scope.state.submitted = true;
     $http.post('/api/users', data)
       .success(function(res, status) {
-        // TODO
+        $scope.message = res.message;
         $scope.state.loading = false;
         $scope.state.success = true;
       })
       .error(function(data) {
-        // TODO
+        $scope.message = 'Malheuresement, une erreur est survenue lors de votre inscription !' +
+          ' Veuillez réessayer plus tard et contacter info@lanmomo.org si le problème persiste.';
         $scope.state.loading = false;
         $scope.state.error = true;
       });
@@ -228,6 +239,10 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   .when('/signup', {
     templateUrl: 'partials/signup.html',
     controller: 'SignupController'
+  })
+  .when('/profile', {
+    templateUrl: 'partials/profile.html',
+    controller: 'ProfileController'
   })
   .when('/login', {
     templateUrl: 'partials/login.html',

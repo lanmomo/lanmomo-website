@@ -37,6 +37,23 @@ class User():
     def __repr__(self):
         return '<User %r>' % (self.username)
 
+    def from_token(token):
+        if token:
+            return User.query.filter(
+                User.login_token == token).first().as_pub_dict()
+
+    def as_pub_dict(self):
+        pub_dict = {
+            'username': self.username,
+            'firstname': self.firstname,
+            'lastname': self.lastname,
+            'email': self.email,
+            'phone': self.phone,
+            'created_at': self.created_at
+            }
+
+        return pub_dict
+
 
 class Ticket():
     query = db_session.query_property()
@@ -64,12 +81,15 @@ users = Table('users', metadata,
               Column('firstname', String(255), nullable=False),
               Column('lastname', String(255), nullable=False),
               Column('email', String(255), nullable=False),
+              Column('phone', String(255), nullable=False),
+              Column('created_at', DateTime, default=datetime.datetime.now),
+              # private fields
+              Column('modified_at', DateTime, onupdate=datetime.datetime.now),
               Column('password', Binary(64), nullable=False),
               Column('salt', String(32), nullable=False),
-              Column('created_at', DateTime, default=datetime.datetime.now),
-              Column('modified_at', DateTime, onupdate=datetime.datetime.now),
               Column('confirmed', Boolean, default=False),
-              Column('confirmation_token', String(32))
+              Column('confirmation_token', String(32)),
+              Column('login_token', String(32))
               )
 
 tickets = Table('tickets', metadata,
