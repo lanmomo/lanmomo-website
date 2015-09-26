@@ -38,7 +38,8 @@ def _send_email(smtp, email, times, timeoutfn):
             # Le temps à sleep restant est calculé avec:
             #    `le temps de début` + `le timeout` - `le temps maintenant`.
             # Si c'est supérieur à 0, on sleep ce temps la.
-            time.sleep(max(0, begin_ts + timeout - time.time()))
+            if count < times:
+                time.sleep(max(0, begin_ts + timeout - time.time()))
 
         count += 1
     # Si le code se rend ici, c'est que tous les essais ont échoués.
