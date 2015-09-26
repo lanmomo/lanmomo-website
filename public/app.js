@@ -20,8 +20,10 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
     ]).factory('Auth', function($cookies) {
       return {
         isLoggedIn : function() {
-          var token = $cookies['login_token_lanmomo'];
-          return (token) ? token : false;
+          return $cookies['logged_in'];
+        },
+        login : function() {
+          $cookie['logged_in']
         }
       }
     });
@@ -161,6 +163,16 @@ app.controller('LogoutController', function ($scope, $http, $location) {
     });
 });
 
+app.controller('HomeController', function ($rootScope, $http) {
+  $http.get('/api/login')
+    .success(function(data) {
+      $rootScope.loggedIn = data.logged_in;
+    })
+    .error(function(err, status) {
+      $rootScope.loggedIn = false;
+    });
+});
+
 app.controller('ProfileController', function ($scope, $http) {
   $http.get('/api/profile')
     .success(function(data) {
@@ -232,7 +244,8 @@ app.controller('SignupController', function($scope, $http) {
 
 app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   $routeProvider.when('/', {
-    templateUrl: 'partials/home.html'
+    templateUrl: 'partials/home.html',
+    controller: 'HomeController'
   })
   .when('/users', {
     templateUrl: 'partials/users.html',
