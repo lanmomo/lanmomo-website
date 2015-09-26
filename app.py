@@ -10,6 +10,7 @@ from smtplib import SMTP
 from email.mime.text import MIMEText
 from flask import Flask, send_from_directory, jsonify, request, session
 
+import mail
 from database import db_session, init_db, init_engine
 from models import Subscription, User
 
@@ -40,16 +41,9 @@ def username_exists(username):
 
 
 def send_email(to_email, to_name, subject, message):
-    with SMTP(host='mail.lanmomo.org', port=587) as smtp:
-        msg = MIMEText(message.encode('utf-8'), 'html', 'utf-8')
-        msg['Subject'] = subject
-        msg['From'] = 'LAN Montmorency <%s>' % app.config['SMTP_USER']
-        msg['To'] = '%s <%s>' % (to_name.encode('utf-8'), to_email)
-
-        smtp.starttls()
-        smtp.login(user=app.config['SMTP_USER'],
-                   password=app.config['SMTP_PASSWD'])
-        smtp.sendmail(app.config['SMTP_USER'], to_email, msg.as_string())
+    mail.send_email(to_email, to_name, subject, message,
+                    app.config['SMTP_USER'],
+                    app.config['SMTP_PASSWD'])
 
 
 @app.before_request
@@ -193,12 +187,12 @@ Un message de confirmation a été envoyé à votre adresse courriel. Si le mess
 
 @app.route('/')
 def index():
-    return send_from_directory('public', 'index.html')
+    return send_from_directory('static', 'index.html')
 
 
 @app.route('/<path:path>')
 def static_files(path):
-    return send_from_directory('public', path)
+    return send_from_directory('static', path)
 
 
 @app.teardown_appcontext
