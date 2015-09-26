@@ -84,10 +84,13 @@ def get_profile():
 
 @app.route('/api/logout', methods=['GET'])
 def logout():
-    req = request.get_json()
-    del session['email']
+    session.clear()
+    return jsonify({'success': True}), 200
 
-    return jsonify({'success': True})
+
+@app.route('/api/login', methods=['GET'])
+def is_logged_in():
+    return jsonify({'logged_in': 'email' in session}), 200
 
 
 @app.route('/api/login', methods=['POST'])

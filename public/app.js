@@ -17,12 +17,24 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
           }
         }
       }
-    ]);
+    ]).factory('Auth', function($cookies) {
+      return {
+        isLoggedIn : function() {
+          var token = $cookies['login_token_lanmomo'];
+          return (token) ? token : false;
+        }
+      }
+    });
 
-app.controller('NavbarController', function($scope, $location) {
+app.controller('NavbarController', function($scope, $location, Auth) {
+  $scope.isLoggedIn = function() {
+    return Auth.isLoggedIn();
+  };
+
   $scope.isActive = function(url) {
     return $location.path() === url;
   };
+
   $('.navbar-nav li a').click(function() {
     if ($('.navbar-collapse.collapse').hasClass('in')) {
       $('#navbar').collapse('hide');
@@ -139,6 +151,16 @@ app.controller('LoginController', function ($scope, $http, $location) {
   };
 });
 
+app.controller('LogoutController', function ($scope, $http, $location) {
+  $http.get('/api/logout')
+    .success(function(data) {
+      $location.path('/');
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err.error, status: status};
+    });
+});
+
 app.controller('ProfileController', function ($scope, $http) {
   $http.get('/api/profile')
     .success(function(data) {
@@ -247,6 +269,10 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   .when('/login', {
     templateUrl: 'partials/login.html',
     controller: 'LoginController'
+  })
+  .when('/logout', {
+    templateUrl: 'partials/home.html',
+    controller: 'LogoutController'
   })
   .when('/verify/:token', {
     templateUrl: 'partials/verify.html',
