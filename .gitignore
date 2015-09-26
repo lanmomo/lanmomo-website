@@ -56,3 +56,9 @@ deploy/dev
 app.dev.wsgi
 
 config/prod_config.py
+
+# Node modules
+node_modules
+
+# Cache busting output folder
+static
