@@ -63,7 +63,7 @@ server {
     }
 
     location ~* \.(?:css|js)$ {
-        expires 1y;
+        expires 1M;
         access_log off;
         add_header Cache-Control "public";
     }
