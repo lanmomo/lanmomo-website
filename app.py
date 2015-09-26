@@ -8,7 +8,7 @@ import uuid
 
 from smtplib import SMTP
 from email.mime.text import MIMEText
-from flask import Flask, send_from_directory, jsonify, request
+from flask import Flask, send_from_directory, jsonify, request, session
 
 from database import db_session, init_db, init_engine
 from models import Subscription, User
@@ -52,6 +52,11 @@ def send_email(to_email, to_name, subject, message):
         smtp.sendmail(app.config['SMTP_USER'], to_email, msg.as_string())
 
 
+@app.before_request
+def func():
+    session.modified = True
+
+
 @app.route('/api/games', methods=['GET'])
 def get_games():
     return jsonify(games), 200
@@ -69,10 +74,20 @@ def update_server():
 
 @app.route('/api/profile', methods=['GET'])
 def get_profile():
-    user = User.from_token(request.cookies.get('login_token_lanmomo'))
+    email = session['email']
+    user = User.query.filter(User.email == email).first()
+
     if user:
-        return jsonify({'user': user}), 200
+        return jsonify({'user': user.as_pub_dict()}), 200
     return jsonify({'error': 'Non authorisé'}), 403
+
+
+@app.route('/api/logout', methods=['GET'])
+def logout():
+    req = request.get_json()
+    del session['email']
+
+    return jsonify({'success': True})
 
 
 @app.route('/api/login', methods=['POST'])
@@ -92,15 +107,8 @@ Veuillez valider votre courriel !
  Contactez info@lanmomo.org si le courriel n'a pas été reçu."""}), 400
 
     if user and get_hash(password, user.salt) == user.password:
-        token = uuid.uuid4().hex
-        user.login_token = token
-
-        db_session.add(user)
-        db_session.commit()
-
-        res = jsonify({'success': True})
-        res.set_cookie('login_token_lanmomo', token)
-        return res
+        session['email'] = user.email
+        return jsonify({'success': True})
 
     return jsonify({'error': 'Les informations ne concordent pas !'}), 401
 
@@ -171,7 +179,9 @@ Merci et à bientôt !<br><br>
  Veuillez ne pas y répondre.</small>""") \
         % (fullname, conf_url, conf_url)
     subject = 'Confirmation de votre compte LAN Montmorency'
-    send_email(req['email'], fullname, subject, message)
+
+    if not app.config['DEBUG']:
+        send_email(req['email'], fullname, subject, message)
 
     return jsonify({'message': """\
 Un message de confirmation a été envoyé à votre adresse courriel. Si le message
@@ -208,4 +218,4 @@ def setup(conf_path):
     return app
 
 if __name__ == '__main__':
-    setup('config/prod_config.py').run(debug=True)
+    setup('config/default_config.py').run(debug=True)

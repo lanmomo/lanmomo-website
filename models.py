@@ -40,7 +40,7 @@ class User():
     def from_token(token):
         if token:
             return User.query.filter(
-                User.login_token == token).first().as_pub_dict()
+                User.login_token == token).first()
 
     def as_pub_dict(self):
         pub_dict = {
@@ -88,8 +88,7 @@ users = Table('users', metadata,
               Column('password', Binary(64), nullable=False),
               Column('salt', String(32), nullable=False),
               Column('confirmed', Boolean, default=False),
-              Column('confirmation_token', String(32)),
-              Column('login_token', String(32))
+              Column('confirmation_token', String(32))
               )
 
 tickets = Table('tickets', metadata,
