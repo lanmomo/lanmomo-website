@@ -187,12 +187,12 @@ Un message de confirmation a été envoyé à votre adresse courriel. Si le mess
 
 @app.route('/')
 def index():
-    return send_from_directory('static', 'index.html')
+    return send_from_directory('public', 'index.html')
 
 
 @app.route('/<path:path>')
 def static_files(path):
-    return send_from_directory('static', path)
+    return send_from_directory('public', path)
 
 
 @app.teardown_appcontext

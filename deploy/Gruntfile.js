@@ -9,8 +9,8 @@ module.exports = function(grunt) {
             assets: {
                 files: [{
                     expand: true,
-                    cwd: 'tmp/',
-                    baseDir: 'tmp/',
+                    cwd: '../tmp/',
+                    baseDir: '../tmp/',
                     src: ['index.html']
                 }]
             }

@@ -1,5 +1,5 @@
 server {
-    root /opt/lanmomo-website/public/;
+    root /opt/lanmomo-website/static/;
     index index.html;
 
     server_name lanmomo.org www.lanmomo.org;
