@@ -17,22 +17,9 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
           }
         }
       }
-    ]).factory('Auth', function($cookies) {
-      return {
-        isLoggedIn : function() {
-          return $cookies['logged_in'];
-        },
-        login : function() {
-          $cookie['logged_in']
-        }
-      }
-    });
+    ]);
 
-app.controller('NavbarController', function($scope, $location, Auth) {
-  $scope.isLoggedIn = function() {
-    return Auth.isLoggedIn();
-  };
-
+app.controller('NavbarController', function($scope, $location) {
   $scope.isActive = function(url) {
     return $location.path() === url;
   };
@@ -86,37 +73,21 @@ app.controller('ServersController', function($scope, $http, $interval) {
   });
 });
 
-app.controller('UsersController', function($scope, $http) {
-  $scope.pcUsers = [];
-  $scope.consoleUsers = [];
-  $http.get('/api/users')
-    .success(function(data) {
-      $scope.data = data;
-      $scope.data.forEach(function(user) {
-        if (user.type === "pc") {
-          $scope.pcUsers.push(user);
-        } else if (user.type === "console"){
-          $scope.consoleUsers.push(user);
-        }
-      });
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err, status: status};
-    });
-  $http.get('/api/users/max/pc')
-    .success(function(max) {
-      $scope.maxPc = max;
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err, status: status};
-    });
-  $http.get('/api/users/max/console')
-    .success(function(max) {
-      $scope.maxConsole = max;
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err, status: status};
-    });
+app.controller('TicketsController', function($scope, $http) {
+  $scope.max = {};
+  $scope.max.pc = 96;
+  $scope.max.console = 32;
+
+  $scope.ticketCount = {};
+  $scope.ticketCount.pc = {};
+  $scope.ticketCount.pc.real = 54;
+  $scope.ticketCount.pc.temp = 4;
+  $scope.ticketCount.pc.total = $scope.ticketCount.pc.temp + $scope.ticketCount.pc.real;
+
+  $scope.ticketCount.console = {};
+  $scope.ticketCount.console.real = 14;
+  $scope.ticketCount.console.temp = 2;
+  $scope.ticketCount.console.total = $scope.ticketCount.console.temp + $scope.ticketCount.console.real;
 });
 
 app.controller('VerifyController', function($scope, $http, $routeParams) {
@@ -145,7 +116,7 @@ app.controller('LoginController', function ($scope, $http, $location) {
     }
     $http.post('/api/login', data)
       .success(function(data) {
-        $location.path('/');
+        $location.path('/profile');
       })
       .error(function(err, status) {
         $scope.error = {message: err.error, status: status};
@@ -177,6 +148,15 @@ app.controller('ProfileController', function ($scope, $http) {
   $http.get('/api/profile')
     .success(function(data) {
       $scope.userData = data.user;
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err.error, status: status};
+    });
+  $http.get('/api/users/ticket')
+    .success(function(data) {
+      if (data.ticket) {
+        $scope.userTicket = data.ticket;
+      }
     })
     .error(function(err, status) {
       $scope.error = {message: err.error, status: status};
@@ -247,9 +227,13 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
     templateUrl: 'partials/home.html',
     controller: 'HomeController'
   })
-  .when('/users', {
-    templateUrl: 'partials/users.html',
-    controller: 'UsersController'
+  .when('/tickets', {
+    templateUrl: 'partials/tickets.html',
+    controller: 'TicketsController'
+  })
+  .when('/map', {
+    templateUrl: 'partials/map.html',
+    controller: 'MapController'
   })
   .when('/games', {
     templateUrl: 'partials/games.html',

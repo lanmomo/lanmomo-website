@@ -12,7 +12,7 @@ from flask import Flask, send_from_directory, jsonify, request, session
 
 import mail
 from database import db_session, init_db, init_engine
-from models import Subscription, User
+from models import Ticket, Seat, User
 
 app = Flask(__name__)
 
@@ -66,10 +66,35 @@ def update_server():
     return jsonify({'error': 'Not implemented'}), 500
 
 
+@app.route('/api/users/ticket', defaults={'user_id': None})
+@app.route('/api/users/<user_id>/ticket', methods=['GET'])
+def get_ticket_from_user(user_id):
+    if not user_id:
+        if 'user_id' not in session:
+            return bad_request()
+        user_id = session['user_id']
+
+    ticket = Ticket.query.filter(Ticket.owner_id == user_id).first()
+    if not ticket:
+        return jsonify({}), 200
+
+    return jsonify({'ticket': ticket.as_pub_dict()}), 200
+
+
+@app.route('/api/tickets', methods=['GET'])
+def get_all_tickets():
+    pub_tickets = []
+    tickets = Ticker.query.all()
+
+    for ticket in tickets:
+        pub_tickets.append(ticket.as_pub_dict())
+    return tickets
+
+
 @app.route('/api/profile', methods=['GET'])
 def get_profile():
-    email = session['email']
-    user = User.query.filter(User.email == email).first()
+    user_id = session['user_id']
+    user = User.query.filter(User.id == user_id).first()
 
     if user:
         return jsonify({'user': user.as_pub_dict()}), 200
@@ -84,7 +109,7 @@ def logout():
 
 @app.route('/api/login', methods=['GET'])
 def is_logged_in():
-    return jsonify({'logged_in': 'email' in session}), 200
+    return jsonify({'logged_in': 'user_id' in session}), 200
 
 
 @app.route('/api/login', methods=['POST'])
@@ -98,13 +123,13 @@ def login():
 
     user = User.query.filter(User.email == email).first()
 
-    if not user.confirmed:
+    if not user.confirmed and not app.config['DEBUG']:
         return jsonify({'error': """\
 Veuillez valider votre courriel !
  Contactez info@lanmomo.org si le courriel n'a pas été reçu."""}), 400
 
     if user and get_hash(password, user.salt) == user.password:
-        session['email'] = user.email
+        session['user_id'] = user.id
         return jsonify({'success': True})
 
     return jsonify({'error': 'Les informations ne concordent pas !'}), 401
@@ -177,8 +202,8 @@ Merci et à bientôt !<br><br>
         % (fullname, conf_url, conf_url)
     subject = 'Confirmation de votre compte LAN Montmorency'
 
-    # if not app.config['DEBUG']:
-    send_email(req['email'], fullname, subject, message)
+    if not app.config['DEBUG']:
+        send_email(req['email'], fullname, subject, message)
 
     return jsonify({'message': """\
 Un message de confirmation a été envoyé à votre adresse courriel. Si le message

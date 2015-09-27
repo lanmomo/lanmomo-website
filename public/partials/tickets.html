@@ -1,0 +1,54 @@
+<div class="container">
+  <div class="page-header">
+      <h1>Achat de billet</h1>
+  </div>
+  <div class="alert alert-success" role="alert" ng-show="message">
+    <i class="fa fa-info-circle"></i> {{message}}
+  </div>
+
+  <div class="alert alert-danger" role="alert" ng-show="error">
+    <i class="fa fa-info-circle"></i> {{error}}
+  </div>
+
+  <p class="text-warning">Lorsque vous procéderez à l'achat, votre billet sera réservé pour 10 minutes.</p>
+  <p class="text-warning">Les billets temporairements réservés sont attribuées à des joueurs qui n'ont pas encore payé. Ces places peuvent donc se libérer.</p>
+
+  <h2>BYOC - 20$</h2>
+  <p>{{ticketCount.pc.real}} billets réservés</p>
+  <p>{{ticketCount.pc.temp}} billets réservés temporairements</p>
+
+  <div class="progress">
+    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{ticketCount.pc.real}}"
+         aria-valuemin="0" aria-valuemax="{{max.pc}}" style="min-width:3em; width: {{ticketCount.pc.real / max.pc * 100}}%">
+      {{ticketCount.pc.real}} / {{max.pc}}
+    </div>
+    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{ticketCount.pc.temp}}"
+         aria-valuemin="0" aria-valuemax="{{max.pc}}" style="min-width:3em; width: {{ticketCount.pc.temp / max.pc * 100}}%">
+      {{ticketCount.pc.temp}} / {{max.pc}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2 col-md-offset-5">
+      <button ng-click="buy('pc')" class="btn btn-info btn-lg">Acheter un billet BYOC <i class="fa fa-chevron-right fa-3"></i></button>
+    </div>
+  </div>
+
+  <h2>Console - 10$</h2>
+  <p>{{ticketCount.console.real}} billets réservés</p>
+  <p>{{ticketCount.console.temp}} billets réservés temporairements</p>
+  <div class="progress">
+    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{ticketCount.console.real}}"
+         aria-valuemin="0" aria-valuemax="{{max.console}}" style="min-width:3em; width: {{ticketCount.console.real / max.console * 100}}%">
+      {{ticketCount.console.real}} / {{max.console}}
+    </div>
+    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{ticketCount.console.temp}}"
+         aria-valuemin="0" aria-valuemax="{{max.console}}" style="min-width:3em; width: {{ticketCount.console.temp / max.console * 100}}%">
+      {{ticketCount.console.temp}} / {{max.console}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2 col-md-offset-5">
+      <button ng-click="buy('console')" class="btn btn-info btn-lg">Acheter un billet console <i class="fa fa-chevron-right fa-3"></i></button>
+    </div>
+  </div>
+</div>

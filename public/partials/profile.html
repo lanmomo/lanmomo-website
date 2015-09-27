@@ -9,5 +9,12 @@
   <div class="alert alert-danger" role="alert" ng-show="error">
     <i class="fa fa-info-circle"></i> {{error}}
   </div>
+  <div ng-show="userTicker"></div>
+  <div ng-hide="userTicker">
+    <div class="well well-lg">
+      <p class="text-info">Il semble que vous n'avez pas encore de billet !</p>
+      <a ng-href="/tickets" class="btn btn-primary btn-info btn-lg">Acheter un billet <i class="fa fa-chevron-right fa-3"></i></a>
+    </div>
 
+  </div>
 </div>

@@ -8,16 +8,6 @@ from sqlalchemy.orm import mapper
 from database import metadata, db_session
 
 
-class Subscription():
-    query = db_session.query_property()
-
-    def __init__(self, email):
-        self.email = email
-
-    def __repr__(self):
-        return '<Subscription %r>' % (self.email)
-
-
 class User():
     query = db_session.query_property()
 
@@ -51,7 +41,6 @@ class User():
             'phone': self.phone,
             'created_at': self.created_at
             }
-
         return pub_dict
 
 
@@ -69,11 +58,24 @@ class Ticket():
     def __repr__(self):
         return '<Ticket %r>' % (self.id)
 
-subcriptions = Table('subcriptions', metadata,
-                     Column('id', Integer, primary_key=True),
-                     Column('email', String(1000), nullable=False)
-                     )
+    def as_pub_dict(self):
+        pub_dict = {
+            'type_id': self.type_id,
+            'owner_id': self.owner_id,
+            'paid': self.paid,
+            'reserved_until': self.reserved_until,
+            }
+        return pub_dict
 
+
+class Seat():
+    query = db_session.query_property()
+
+    def __init__(self, ticket_id, reserved_until=None, reserved_at=None):
+        self.ticket_id = ticket_id
+
+    def __repr__(self):
+        return '<Seat %r>' % (self.id)
 
 users = Table('users', metadata,
               Column('id', Integer, primary_key=True),
@@ -96,14 +98,23 @@ tickets = Table('tickets', metadata,
                 # pc or console
                 Column('type_id', Integer, nullable=False),
                 # avoid n-n for now...
-                Column('owner_id', Integer, ForeignKey("users.id"),
+                Column('owner_id', Integer, ForeignKey('users.id'),
                        nullable=False),
                 # Look for related payment and remove this field ?
                 Column('paid', Boolean, default=False, nullable=False),
                 Column('reserved_until', DateTime, nullable=False),
-                Column('reserved_at', DateTime, nullable=False)
+                # private fields
+                Column('created_at', DateTime, default=datetime.datetime.now),
+                Column('modified_at', DateTime, onupdate=datetime.datetime.now)
                 )
 
-mapper(Subscription, subcriptions)
+seats = Table('seats', metadata,
+              Column('id', Integer, primary_key=True),
+              Column('ticket_id', Integer, ForeignKey('tickets.id')),
+              Column('created_at', DateTime, default=datetime.datetime.now),
+              Column('modified_at', DateTime, onupdate=datetime.datetime.now)
+              )
+
 mapper(User, users)
 mapper(Ticket, tickets)
+mapper(Seat, seats)
