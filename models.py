@@ -102,7 +102,8 @@ tickets = Table('tickets', metadata,
                        nullable=False),
                 # Look for related payment and remove this field ?
                 Column('paid', Boolean, default=False, nullable=False),
-                Column('reserved_until', DateTime, nullable=False),
+                # Column('reserved_until', DateTime, nullable=False),
+                Column('reserved_until', DateTime, nullable=True),
                 # private fields
                 Column('created_at', DateTime, default=datetime.datetime.now),
                 Column('modified_at', DateTime, onupdate=datetime.datetime.now)

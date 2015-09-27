@@ -1,4 +1,6 @@
 "use strict";
+var TICKET_TYPES = {PC: 0, CONSOLE: 1};
+
 var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment', 'ngCookies'])
   .directive('passwordCheck', [function () {
         return {
@@ -88,6 +90,27 @@ app.controller('TicketsController', function($scope, $http) {
   $scope.ticketCount.console.real = 14;
   $scope.ticketCount.console.temp = 2;
   $scope.ticketCount.console.total = $scope.ticketCount.console.temp + $scope.ticketCount.console.real;
+
+  $scope.buy = function(ticketType) {
+    var ticket = {};
+    ticket.type = ticketType;
+
+    if (ticketType === TICKET_TYPES.CONSOLE) {
+      $http.post('/api/ticket', ticket)
+        .success(function(data) {
+          // TODO payment redirection
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.error, status: status};
+        });
+    } else if (ticketType === TICKET_TYPES.PC) {
+      // TODO redirect to map
+    } else {
+      console.log('wrong type id');
+    }
+
+  };
+
 });
 
 app.controller('VerifyController', function($scope, $http, $routeParams) {
