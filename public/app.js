@@ -232,7 +232,8 @@ app.controller('SignupController', function($scope, $http) {
     usernameChanged: false,
     emailChanged: false,
     usernameAvailable: false,
-    emailAvailable: false
+    emailAvailable: false,
+    selectedSeat: null,
   };
   $scope.signup = function(data) {
     $scope.state.loading = true;
@@ -278,6 +279,17 @@ app.controller('SignupController', function($scope, $http) {
   };
   $scope.resetEmailChanged = function() {
     $scope.state.emailChanged = false;
+  }
+  $scope.isTaken = function (seat) {
+    return seat % 4 == 0 || seat % 5 == 0;
+  };
+  $scope.selectSeat = function (seat) {
+    if (!$scope.isTaken(seat)) {
+      $scope.state.selectedSeat = seat;
+    }
+  };
+  $scope.times = function (x) {
+    return new Array(x);
   };
 });
 
@@ -339,7 +351,7 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   });
   $routeProvider.otherwise({redirectTo: '/'});
 
-  $locationProvider.html5Mode(true);
+  //$locationProvider.html5Mode(true);
 
   cfpLoadingBarProvider.includeSpinner = false;
 
