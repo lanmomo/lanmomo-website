@@ -2,7 +2,7 @@ import datetime
 import uuid
 
 from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, \
-    ForeignKey, DateTime
+    ForeignKey, DateTime, text
 from sqlalchemy.orm import mapper
 
 from database import metadata, db_session
@@ -66,6 +66,28 @@ class Ticket():
             'reserved_until': self.reserved_until,
             }
         return pub_dict
+
+    def book_synced(user_id, ticket_type):
+        db_session.execute("LOCK TABLES tickets write;")
+
+        r = text("SELECT COUNT(1) FROM tickets WHERE tickets.owner_id = :id;")
+        r = r.bindparams(id=user_id)
+
+        if db_session.execute(r).scalar() > 0:
+            db_session.rollback()
+            db_session.execute("UNLOCK TABLES;")
+            return False
+
+        # check if more tickets is allowed
+        # TODO
+
+        # insert ticket
+        ticket = Ticket(ticket_type, user_id)
+        db_session.add(ticket)
+
+        db_session.commit()
+        db_session.execute("UNLOCK TABLES;")
+        return True
 
 
 class Seat():

@@ -10,8 +10,6 @@ from smtplib import SMTP
 from email.mime.text import MIMEText
 from flask import Flask, send_from_directory, jsonify, request, session
 
-from sqlalchemy import text
-
 import mail
 from database import db_session, init_db, init_engine
 from models import Ticket, Seat, User
@@ -77,43 +75,9 @@ def book_ticket():
     if 'type' not in req:
         return bad_request()
 
-    book_ticket_synced(session['user_id'], req['type'])
+    Ticket.book_synced(session['user_id'], req['type'])
 
     return jsonify({'ticket': 'ok'}), 200
-
-
-def book_ticket_synced(user_id, ticket_type):
-    print('ok')
-    """Begin a transaction and ensure DB is locked for the booking process"""
-    # lock db
-    db_session.execute("FLUSH TABLES WITH READ LOCK;")
-
-    # begin transaction
-    db_session.execute("START TRANSACTION")
-
-    # check if user already has a ticket
-    r = text("SELECT COUNT(1) FROM tickets WHERE tickets.owner_id = :id;")
-    r = r.bindparams(id=user_id)
-    user_ticket_count = db_session.execute(r).scalar()
-    print(user_ticket_count)
-    if user_ticket_count > 0:
-        db_session.execute("ROLLBACK;")
-        db_session.execute("UNLOCK TABLES;")
-        return
-
-    db_session.execute("select sleep(5);")
-    # check if more tickets is allowed
-
-    # insert ticket
-    ticket = Ticket(ticket_type, user_id)
-    print(db_session.add(ticket))
-
-    # commit transaction
-    db_session.execute("COMMIT;")
-    # unlock db
-    db_session.execute("UNLOCK TABLES;")
-    db_session.commit()
-    return None
 
 
 @app.route('/api/users/ticket', defaults={'user_id': None})
