@@ -101,16 +101,14 @@ app.controller('TicketsController', function($scope, $http) {
           // TODO payment redirection
         })
         .error(function(err, status) {
-          $scope.error = {message: err.error, status: status};
+          $scope.error = err.error;
         });
     } else if (ticketType === TICKET_TYPES.PC) {
       // TODO redirect to map
     } else {
       console.log('wrong type id');
     }
-
   };
-
 });
 
 app.controller('VerifyController', function($scope, $http, $routeParams) {

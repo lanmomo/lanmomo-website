@@ -1,5 +1,6 @@
-import datetime
 import uuid
+
+from datetime import datetime, timedelta
 
 from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, \
     ForeignKey, DateTime, text
@@ -20,7 +21,7 @@ class User():
         self.phone = phone
         self.password = password
         self.salt = salt
-        self.created_date = datetime.datetime.now
+        self.created_date = datetime.now
         self.confirmed = False
         self.confirmation_token = uuid.uuid4().hex
 
@@ -67,26 +68,37 @@ class Ticket():
             }
         return pub_dict
 
-    def book_synced(user_id, ticket_type):
-        db_session.execute("LOCK TABLES tickets write;")
+    def book_synced(user_id, ticket_type, tickets_max, seat=None):
+        db_session.execute('LOCK TABLES tickets write;')
 
-        r = text("SELECT COUNT(1) FROM tickets WHERE tickets.owner_id = :id;")
+        # Check if user can order a ticket
+        r = text('SELECT COUNT(1) FROM tickets WHERE tickets.owner_id = :id;')
         r = r.bindparams(id=user_id)
 
         if db_session.execute(r).scalar() > 0:
             db_session.rollback()
-            db_session.execute("UNLOCK TABLES;")
-            return False
+            db_session.execute('UNLOCK TABLES;')
+            raise Exception("Vous avez déjà un billet !")
 
-        # check if more tickets is allowed
-        # TODO
+        # Check if more tickets is allowed
+        r = text('SELECT COUNT(1) FROM tickets WHERE tickets.type_id = :id;')
+        r = r.bindparams(id=ticket_type)
 
-        # insert ticket
-        ticket = Ticket(ticket_type, user_id)
+        if db_session.execute(r).scalar() > tickets_max[ticket_type]:
+            db_session.rollback()
+            db_session.execute('UNLOCK TABLES;')
+            raise Exception('Le maximum de billet a été réservé pour ' +
+                            'le moment !')
+
+        # Book ticket for 10 minutes
+        reserved_until = datetime.now() + timedelta(minutes=10)
+
+        # Insert ticket
+        ticket = Ticket(ticket_type, user_id, reserved_until=reserved_until)
         db_session.add(ticket)
 
         db_session.commit()
-        db_session.execute("UNLOCK TABLES;")
+        db_session.execute('UNLOCK TABLES;')
         return True
 
 
@@ -106,9 +118,9 @@ users = Table('users', metadata,
               Column('lastname', String(255), nullable=False),
               Column('email', String(255), nullable=False),
               Column('phone', String(255), nullable=False),
-              Column('created_at', DateTime, default=datetime.datetime.now),
+              Column('created_at', DateTime, default=datetime.now),
               # private fields
-              Column('modified_at', DateTime, onupdate=datetime.datetime.now),
+              Column('modified_at', DateTime, onupdate=datetime.now),
               Column('password', Binary(64), nullable=False),
               Column('salt', String(32), nullable=False),
               Column('confirmed', Boolean, default=False),
@@ -125,17 +137,17 @@ tickets = Table('tickets', metadata,
                 # Look for related payment and remove this field ?
                 Column('paid', Boolean, default=False, nullable=False),
                 # Column('reserved_until', DateTime, nullable=False),
-                Column('reserved_until', DateTime, nullable=True),
+                Column('reserved_until', DateTime, nullable=False),
                 # private fields
-                Column('created_at', DateTime, default=datetime.datetime.now),
-                Column('modified_at', DateTime, onupdate=datetime.datetime.now)
+                Column('created_at', DateTime, default=datetime.now),
+                Column('modified_at', DateTime, onupdate=datetime.now)
                 )
 
 seats = Table('seats', metadata,
               Column('id', Integer, primary_key=True),
               Column('ticket_id', Integer, ForeignKey('tickets.id')),
-              Column('created_at', DateTime, default=datetime.datetime.now),
-              Column('modified_at', DateTime, onupdate=datetime.datetime.now)
+              Column('created_at', DateTime, default=datetime.now),
+              Column('modified_at', DateTime, onupdate=datetime.now)
               )
 
 mapper(User, users)

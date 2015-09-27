@@ -70,14 +70,33 @@ def update_server():
 def book_ticket():
     if 'user_id' not in session:
         return login_in_please()
+    user_id = session['user_id']
 
     req = request.get_json()
     if 'type' not in req:
         return bad_request()
+    ticket_type = req['type']
 
-    Ticket.book_synced(session['user_id'], req['type'])
+    if ticket_type not in app.config['TYPE_IDS'].values():
+        return bad_request()
 
-    return jsonify({'ticket': 'ok'}), 200
+    if ticket_type == app.config['TYPE_IDS']['pc']:
+        if 'seat' not in req:
+            return bad_request()
+        seat = req['seat']
+    else:
+        seat = None
+
+    tickets_max = app.config['TICKETS_MAX']
+
+    try:
+        if Ticket.book_synced(user_id, ticket_type, tickets_max, seat):
+            ticket = Ticket.query.filter(Ticket.owner_id == user_id).one()
+            return jsonify({'ticket': ticket.as_pub_dict()}), 201
+
+        return jsonify({'error': 'Une erreur inconnue est survenue.'}), 409
+    except Exception as e:
+        return jsonify({'error': str(e)}), 409  # Conflit
 
 
 @app.route('/api/users/ticket', defaults={'user_id': None})
@@ -221,7 +240,7 @@ Merci et à bientôt !<br><br>
 
     return jsonify({'message': """\
 Un message de confirmation a été envoyé à votre adresse courriel. Si le message
- n'est pas reçu dans les prochaines minutes, vérifiez vos pourriel !"""}), 200
+ n'est pas reçu dans les prochaines minutes, vérifiez vos pourriel !"""}), 201
 
 
 @app.route('/')
