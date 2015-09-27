@@ -75,7 +75,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
   });
 });
 
-app.controller('TicketsController', function($scope, $http) {
+app.controller('TicketsController', function($scope, $http, $location) {
   $scope.max = {};
   $scope.max.pc = 96;
   $scope.max.console = 32;
@@ -93,27 +93,31 @@ app.controller('TicketsController', function($scope, $http) {
 
   $scope.buy = function(ticketType) {
     var ticket = {};
+    $scope.submitted = true;
     ticket.type = ticketType;
 
     if (ticketType === TICKET_TYPES.CONSOLE) {
       $http.post('/api/ticket', ticket)
         .success(function(data) {
-          // TODO payment redirection
+          $location.path('/pay');
         })
         .error(function(err, status) {
           $scope.error = err.error;
         });
     } else if (ticketType === TICKET_TYPES.PC) {
-      // TODO redirect to map
+      $location.path('/map/buy');
     } else {
       console.log('wrong type id');
     }
   };
 });
+app.controller('PayController', function($scope, $http, $routeParams) {
+  var isComingFromPay = $routeParams.pay;
+});
 
 app.controller('VerifyController', function($scope, $http, $routeParams) {
   var token = $routeParams.token;
-  console.log(token);
+
   $http.get('/api/verify/' + token)
     .success(function(data, status) {
       if (data.first) {
@@ -251,6 +255,10 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   .when('/tickets', {
     templateUrl: 'partials/tickets.html',
     controller: 'TicketsController'
+  })
+  .when('/pay/:pay?', {
+    templateUrl: 'partials/pay.html',
+    controller: 'PayController'
   })
   .when('/map', {
     templateUrl: 'partials/map.html',

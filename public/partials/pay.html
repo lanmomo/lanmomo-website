@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="page-header">
+      <h1>Paiement de billet</h1>
+  </div>
+  <div class="alert alert-success" role="alert" ng-show="message">
+    <i class="fa fa-info-circle"></i> {{message}}
+  </div>
+
+  <div class="alert alert-danger" role="alert" ng-show="error">
+    <i class="fa fa-info-circle"></i> {{error}}
+  </div>
+
+<timer countdown="{{}}" max-time-unit="'minute'" interval="{{ticket.reserved_until}}">{{mminutes}} minute{{minutesS}}, {{sseconds}} second{{secondsS}}</timer>
+  <p class="text-warning">Votre billet est réservé pour encore: {{}}</p>
+
+  <h3>Type de billet</h3>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-default">Régulier {{ticket.price}}</button>
+    <button type="button" class="btn btn-default">Étudiant de Montmorency {{ticket.price}}</button>
+  </div>
+
+</div>
