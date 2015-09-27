@@ -1,7 +1,6 @@
 import threading
 import time
-from smtplib import SMTP
-from email.mime.text import MIMEText
+import requests
 
 
 def _def_timeoutfn(x):
@@ -11,28 +10,26 @@ def _def_timeoutfn(x):
         return 15 * 60
 
 
-def _send_email(smtp, email, times, timeoutfn):
+def _send_mailgun_api(to_email, to_name, subject, message, sender, api_key,
+                      domain, timeoutfn, times):
     count = 1
     while count <= times:
         timeout = timeoutfn(count)
         begin_ts = time.time()
         try:
-            with SMTP(host=smtp['host'], port=smtp['port'],
-                      timeout=timeout) as co:
-                # Si on est rendu ici c'est que la connexion est ok
-                msg = MIMEText(email['message'].encode('utf-8'),
-                               'html', 'utf-8')
-                msg['Subject'] = email['subject']
-                msg['From'] = 'LAN Montmorency <%s>' % smtp['user']
-                msg['To'] = '%s <%s>' % (email['name'].encode('utf-8'),
-                                         email['address'])
+            request_url = 'https://api.mailgun.net/v3/%s/messages' % domain
 
-                co.starttls()
-                co.login(user=smtp['user'], password=smtp['pass'])
-                co.sendmail(smtp['user'], email['address'], msg.as_string())
-                # Si on arrive ici, c'est qu'il n'y a pas d'erreurs.
+            request = requests.post(request_url, auth=('api', api_key), data={
+                'from': 'LAN Montmorency <%s>' % sender,
+                'to': '%s <%s>' % (to_name, to_email),
+                'subject': subject,
+                'text': message
+            })
+            if request.status_code == 200:
                 return
-        except:
+            raise Exception(request.text)
+        except Exception as e:
+            print(e)
             # Erreur de connexion ou d'envoie de courriel
             #
             # Le temps à sleep restant est calculé avec:
@@ -44,24 +41,17 @@ def _send_email(smtp, email, times, timeoutfn):
         count += 1
     # Si le code se rend ici, c'est que tous les essais ont échoués.
     # TODO log here
+    return
 
 
-def send_email(to_email, to_name, subject, message,
-               smtp_user, smtp_pass, host='mail.lanmomo.org', port=587,
-               times=13, timeoutfn=_def_timeoutfn):
+def send_email(to_email, to_name, subject, message, sender, api_key, domain,
+               timeoutfn=_def_timeoutfn, times=13):
     """
     Envoyer un courriel en background avec les informations données.
     `times` est le nombres de fois à essayer d'envoyer le courriel.
     `timeoutfn` est une fonction qui doit retourner un timeout en secondes
                 en fonction du numéro de l'essai donné.
     """
-    smtp = {'user': smtp_user,
-            'pass': smtp_pass,
-            'host': host,
-            'port': port}
-    email = {'address': to_email,
-             'name': to_name,
-             'subject': subject,
-             'message': message}
-    threading.Thread(target=_send_email,
-                     args=(smtp, email, times, timeoutfn)).start()
+    threading.Thread(target=_send_mailgun_api, args=(
+        to_email, to_name, subject, message, sender, api_key, domain, timeoutfn,
+        times)).start()

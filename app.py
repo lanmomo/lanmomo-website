@@ -42,8 +42,8 @@ def username_exists(username):
 
 def send_email(to_email, to_name, subject, message):
     mail.send_email(to_email, to_name, subject, message,
-                    app.config['SMTP_USER'],
-                    app.config['SMTP_PASSWD'])
+                    app.config['MAILGUN_USER'], app.config['MAILGUN_KEY'],
+                    app.config['MAILGUN_DOMAIN'])
 
 
 @app.before_request
@@ -177,8 +177,8 @@ Merci et à bientôt !<br><br>
         % (fullname, conf_url, conf_url)
     subject = 'Confirmation de votre compte LAN Montmorency'
 
-    if not app.config['DEBUG']:
-        send_email(req['email'], fullname, subject, message)
+    # if not app.config['DEBUG']:
+    send_email(req['email'], fullname, subject, message)
 
     return jsonify({'message': """\
 Un message de confirmation a été envoyé à votre adresse courriel. Si le message
