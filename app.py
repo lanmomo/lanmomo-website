@@ -284,6 +284,10 @@ def index():
 
 @app.route('/<path:path>')
 def static_files(path):
+    # support html5mode
+    if '.' not in path:
+        return index()
+
     return send_from_directory('public', path)
 
 
