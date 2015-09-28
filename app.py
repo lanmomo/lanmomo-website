@@ -66,7 +66,17 @@ def update_server():
     return jsonify({'error': 'Not implemented'}), 500
 
 
-@app.route('/api/ticket', methods=['POST'])
+@app.route('/api/tickets', methods=['GET'])
+def get_all_tickets():
+    pub_tickets = []
+    tickets = Ticker.query.all()
+
+    for ticket in tickets:
+        pub_tickets.append(ticket.as_pub_dict())
+    return tickets
+
+
+@app.route('/api/tickets', methods=['POST'])
 def book_ticket():
     if 'user_id' not in session:
         return login_in_please()
@@ -80,23 +90,54 @@ def book_ticket():
     if ticket_type not in app.config['TYPE_IDS'].values():
         return bad_request()
 
+    seat = None
     if ticket_type == app.config['TYPE_IDS']['pc']:
         if 'seat' not in req:
             return bad_request()
         seat = req['seat']
-    else:
-        seat = None
 
     tickets_max = app.config['TICKETS_MAX']
+    price = app.config['PRICING'][ticket_type]
 
     try:
-        if Ticket.book_synced(user_id, ticket_type, tickets_max, seat):
+        if Ticket.book_temp(user_id, ticket_type, price, tickets_max, seat):
             ticket = Ticket.query.filter(Ticket.owner_id == user_id).one()
             return jsonify({'ticket': ticket.as_pub_dict()}), 201
 
-        return jsonify({'error': 'Une erreur inconnue est survenue.'}), 409
+        return jsonify({'error': 'Une erreur inconnue semble être survenue ' +
+                        'lors de la réservation de votre billet.'}), 409
     except Exception as e:
-        return jsonify({'error': str(e)}), 409  # Conflit
+        # Conflict while booking ticket
+        return jsonify({'error': str(e)}), 409
+
+
+@app.route('/api/tickets/pay', methods=['POST'])
+def pay_ticket():
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    req = request.get_json()
+    if 'discount_momo' in req:
+        discount = app.config['DISCOUNT_MOMO']
+    else:
+        discount = 0
+
+    try:
+        ticket = Ticket.query.filter(Ticket.owner_id == user_id).one()
+
+        # Update ticket with discount and total
+        ticket.discount_amount = discount
+        ticket.total = ticket.price - discount
+
+        db_session.add(ticket)
+        db_session.commit()
+
+        # TODO PAYPAL !!
+
+        return jsonify({'message': 'Veuillez payer'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 409  # Conflit (idk)
 
 
 @app.route('/api/users/ticket', defaults={'user_id': None})
@@ -112,16 +153,6 @@ def get_ticket_from_user(user_id):
         return jsonify({}), 200
 
     return jsonify({'ticket': ticket.as_pub_dict()}), 200
-
-
-@app.route('/api/tickets', methods=['GET'])
-def get_all_tickets():
-    pub_tickets = []
-    tickets = Ticker.query.all()
-
-    for ticket in tickets:
-        pub_tickets.append(ticket.as_pub_dict())
-    return tickets
 
 
 @app.route('/api/profile', methods=['GET'])
@@ -156,12 +187,15 @@ def login():
 
     user = User.query.filter(User.email == email).first()
 
+    if not user:
+        return jsonify({'error': 'Les informations ne concordent pas !'}), 401
+
     if not user.confirmed and not app.config['DEBUG']:
         return jsonify({'error': """\
 Veuillez valider votre courriel !
  Contactez info@lanmomo.org si le courriel n'a pas été reçu."""}), 400
 
-    if user and get_hash(password, user.salt) == user.password:
+    if get_hash(password, user.salt) == user.password:
         session['user_id'] = user.id
         return jsonify({'success': True})
 

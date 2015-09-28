@@ -1,6 +1,8 @@
 "use strict";
 var TICKET_TYPES = {PC: 0, CONSOLE: 1};
 
+var TICKET_TYPES_STR = {0: 'BYOC', 1: 'Console'};
+
 var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment', 'ngCookies'])
   .directive('passwordCheck', [function () {
         return {
@@ -20,6 +22,17 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
         }
       }
     ]);
+
+app.run(function($rootScope, $http) {
+  // runs on first page load or refresh
+  $http.get('/api/login')
+    .success(function(data) {
+      $rootScope.loggedIn = data.logged_in;
+    })
+    .error(function(err, status) {
+      $rootScope.loggedIn = false;
+    });
+});
 
 app.controller('NavbarController', function($scope, $location) {
   $scope.isActive = function(url) {
@@ -97,7 +110,7 @@ app.controller('TicketsController', function($scope, $http, $location) {
     ticket.type = ticketType;
 
     if (ticketType === TICKET_TYPES.CONSOLE) {
-      $http.post('/api/ticket', ticket)
+      $http.post('/api/tickets', ticket)
         .success(function(data) {
           $location.path('/pay');
         })
@@ -111,8 +124,38 @@ app.controller('TicketsController', function($scope, $http, $location) {
     }
   };
 });
-app.controller('PayController', function($scope, $http, $routeParams) {
-  var isComingFromPay = $routeParams.pay;
+app.controller('PayController', function($scope, $http) {
+  $http.get('/api/users/ticket')
+    .success(function(data) {
+      $scope.ticket = data.ticket;
+      $scope.ticket_type_str = TICKET_TYPES_STR[data.ticket.type_id];
+    })
+    .error(function(data) {
+      $scope.error = "too bad man"
+    });
+
+    $scope.getTotal = function () {
+      if (!$scope.ticket) {
+        return 0;
+      }
+      if ($scope.discountMomo) {
+        return $scope.ticket.price - 5;
+      }
+      return $scope.ticket.price;
+    }
+
+    $scope.payNow = function () {
+      var data = {};
+      data.discount_momo = $scope.discountMomo;
+
+      $http.post('/api/tickets/pay', data)
+        .success(function(data) {
+          // TODO
+        })
+        .error(function(data) {
+          $scope.error = "too bad man"
+        });
+    }
 });
 
 app.controller('VerifyController', function($scope, $http, $routeParams) {
@@ -133,7 +176,7 @@ app.controller('VerifyController', function($scope, $http, $routeParams) {
     });
 });
 
-app.controller('LoginController', function ($scope, $http, $location) {
+app.controller('LoginController', function ($scope, $http, $location, $rootScope) {
   $scope.submitLogin = function () {
     var data = {
         email: $scope.user.email,
@@ -141,6 +184,7 @@ app.controller('LoginController', function ($scope, $http, $location) {
     }
     $http.post('/api/login', data)
       .success(function(data) {
+        $rootScope.loggedIn
         $location.path('/profile');
       })
       .error(function(err, status) {
@@ -156,16 +200,6 @@ app.controller('LogoutController', function ($scope, $http, $location) {
     })
     .error(function(err, status) {
       $scope.error = {message: err.error, status: status};
-    });
-});
-
-app.controller('HomeController', function ($rootScope, $http) {
-  $http.get('/api/login')
-    .success(function(data) {
-      $rootScope.loggedIn = data.logged_in;
-    })
-    .error(function(err, status) {
-      $rootScope.loggedIn = false;
     });
 });
 
@@ -249,8 +283,7 @@ app.controller('SignupController', function($scope, $http) {
 
 app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   $routeProvider.when('/', {
-    templateUrl: 'partials/home.html',
-    controller: 'HomeController'
+    templateUrl: 'partials/home.html'
   })
   .when('/tickets', {
     templateUrl: 'partials/tickets.html',

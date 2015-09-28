@@ -9,7 +9,7 @@
   <div class="alert alert-danger" role="alert" ng-show="error">
     <i class="fa fa-info-circle"></i> {{error}}
   </div>
-  <div ng-show="!userTicket.paid">
+  <div ng-show="userTicket && !userTicket.paid">
     <div class="well well-lg">
       <p class="text-danger">Votre billet n'est pas encore payé.</p>
       <p class="text-danger">Il est réservé jusqu'à {{userTicket.reserved_until}}</p>

@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, \
-    ForeignKey, DateTime, text
+    ForeignKey, DateTime, Float, text
 from sqlalchemy.orm import mapper
 
 from database import metadata, db_session
@@ -48,10 +48,11 @@ class User():
 class Ticket():
     query = db_session.query_property()
 
-    def __init__(self, type_id, owner_id, paid=False, reserved_until=None,
+    def __init__(self, type_id, owner_id, price, paid=False, reserved_until=None,
                  reserved_at=None):
         self.type_id = type_id
         self.owner_id = owner_id
+        self.price = price
         self.paid = paid
         self.reserved_until = reserved_until
         self.reserved_at = reserved_at
@@ -65,10 +66,13 @@ class Ticket():
             'owner_id': self.owner_id,
             'paid': self.paid,
             'reserved_until': self.reserved_until,
+            'price': self.price,
+            'discount_amount': self.discount_amount,
+            'total': self.total
             }
         return pub_dict
 
-    def book_synced(user_id, ticket_type, tickets_max, seat=None):
+    def book_temp(user_id, ticket_type, price, tickets_max, seat=None):
         db_session.execute('LOCK TABLES tickets write;')
 
         # Check if user can order a ticket
@@ -84,7 +88,7 @@ class Ticket():
         r = text('SELECT COUNT(1) FROM tickets WHERE tickets.type_id = :id;')
         r = r.bindparams(id=ticket_type)
 
-        if db_session.execute(r).scalar() > tickets_max[ticket_type]:
+        if db_session.execute(r).scalar() >= tickets_max[ticket_type]:
             db_session.rollback()
             db_session.execute('UNLOCK TABLES;')
             raise Exception('Le maximum de billet a été réservé pour ' +
@@ -94,7 +98,8 @@ class Ticket():
         reserved_until = datetime.now() + timedelta(minutes=10)
 
         # Insert ticket
-        ticket = Ticket(ticket_type, user_id, reserved_until=reserved_until)
+        ticket = Ticket(ticket_type, user_id, price,
+                        reserved_until=reserved_until)
         db_session.add(ticket)
 
         db_session.commit()
@@ -136,7 +141,9 @@ tickets = Table('tickets', metadata,
                        nullable=False),
                 # Look for related payment and remove this field ?
                 Column('paid', Boolean, default=False, nullable=False),
-                # Column('reserved_until', DateTime, nullable=False),
+                Column('price', Float, nullable=False),
+                Column('discount_amount', Float, default=0, nullable=False),
+                Column('total', Float, default=0, nullable=False),
                 Column('reserved_until', DateTime, nullable=False),
                 # private fields
                 Column('created_at', DateTime, default=datetime.now),
