@@ -8,11 +8,14 @@ import uuid
 
 from smtplib import SMTP
 from email.mime.text import MIMEText
-from flask import Flask, send_from_directory, jsonify, request, session
+from flask import Flask, send_from_directory, jsonify, request, session, redirect
 
 import mail
+from paypal import Paypal
+
 from database import db_session, init_db, init_engine
-from models import Ticket, Seat, User
+from models import Ticket, Seat, User, Payment
+
 
 app = Flask(__name__)
 
@@ -133,11 +136,45 @@ def pay_ticket():
         db_session.add(ticket)
         db_session.commit()
 
-        # TODO PAYPAL !!
+        paypal_payment = paypal_api.create(ticket)
+        payment = Payment(
+            amount=ticket.total, ticket_id=ticket.id,
+            paypal_payment_id=paypal_payment['paypal_payment_id'])
 
-        return jsonify({'message': 'Veuillez payer'}), 200
+        db_session.add(payment)
+        db_session.commit()
+
+        return jsonify({'redirect_url': paypal_payment['redirect_url']}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 409  # Conflit (idk)
+
+
+@app.route('/api/tickets/pay/execute', methods=['GET'])
+def execute_payment():
+    paypal_payment_id = request.args.get('paymentId')
+    paypal_payer_id = request.args.get('PayerID')
+
+    try:
+        # lock table tickets
+        og_payment = Payment.query.filter(
+            Payment.paypal_payment_id == paypal_payment_id).one()
+
+        ticket = Ticket.query.filter(
+            Payment.ticket_id == og_payment.ticket_id).one()
+        # Check if ticket is paid
+
+        # Check if ticket is expired and booked to another player
+
+        # Set paypal's payer id to payment
+
+        # Execute the payment (receive the money money)
+
+        # Update ticket, and payment
+    except Exception as e:
+        print(e)
+    # unlock table
+
+    return redirect('/profile')
 
 
 @app.route('/api/users/ticket', defaults={'user_id': None})
@@ -305,10 +342,16 @@ def login_in_please(message='Vous devez vous connecter.'):
 
 
 def setup(conf_path):
-    global app, games
+    global app, games, paypal_api
     app.config.from_pyfile(conf_path)
     init_engine(app.config['DATABASE_URI'])
     init_db()
+
+    paypal_api = Paypal()
+    paypal_api.configure(
+        client_id=app.config['PAYPAL_API_ID'],
+        client_secret=app.config['PAYPAL_API_SECRET'],
+        mode=app.config['PAYPAL_API_MODE'])
 
     with open('config/games.json') as data_file:
         games = json.load(data_file)

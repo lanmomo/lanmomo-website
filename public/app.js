@@ -124,7 +124,7 @@ app.controller('TicketsController', function($scope, $http, $location) {
     }
   };
 });
-app.controller('PayController', function($scope, $http) {
+app.controller('PayController', function($scope, $http, $window) {
   $http.get('/api/users/ticket')
     .success(function(data) {
       $scope.ticket = data.ticket;
@@ -150,7 +150,7 @@ app.controller('PayController', function($scope, $http) {
 
       $http.post('/api/tickets/pay', data)
         .success(function(data) {
-          // TODO
+          $window.location.href = data.redirect_url;
         })
         .error(function(data) {
           $scope.error = "too bad man"

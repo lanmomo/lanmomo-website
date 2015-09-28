@@ -116,6 +116,18 @@ class Seat():
     def __repr__(self):
         return '<Seat %r>' % (self.id)
 
+
+class Payment():
+    query = db_session.query_property()
+
+    def __init__(self, amount, ticket_id, paypal_payment_id):
+        self.amount = amount
+        self.ticket_id = ticket_id
+        self.paypal_payment_id = paypal_payment_id
+
+    def __repr__(self):
+        return '<Seat %r>' % (self.id)
+
 users = Table('users', metadata,
               Column('id', Integer, primary_key=True),
               Column('username', String(255), nullable=False),
@@ -157,6 +169,17 @@ seats = Table('seats', metadata,
               Column('modified_at', DateTime, onupdate=datetime.now)
               )
 
+payments = Table('payments', metadata,
+                 Column('id', Integer, primary_key=True),
+                 Column('ticket_id', Integer, ForeignKey('tickets.id')),  # SKU
+                 Column('paypal_payer_id', String(255)),  # nullable
+                 Column('paypal_payment_id', String(255), nullable=False),
+                 Column('amount', Float, nullable=False),
+                 Column('created_at', DateTime, default=datetime.now),
+                 Column('modified_at', DateTime, onupdate=datetime.now)
+                 )
+
 mapper(User, users)
 mapper(Ticket, tickets)
 mapper(Seat, seats)
+mapper(Payment, payments)
