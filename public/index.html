@@ -32,14 +32,16 @@
             <div class="collapse navbar-collapse" id="navbar" ng-controller="NavbarController">
               <ul class="nav navbar-nav">
                 <li ng-class="{ active: isActive('/') }"><a href="/"><i class="fa fa-home"></i> Accueil</a></li>
-                <li ng-class="{ active: isActive('/tickets') }"><a href="/users"><i class="fa fa-shopping-cart"></i> Billets</a></li>
+                <li ng-class="{ active: isActive('/map') }"><a href="/map"><i class="fa fa-map-marker"></i> Plan</a></li>
                 <li ng-class="{ active: isActive('/games') }"><a href="/games"><i class="fa fa-gamepad"></i> Jeux</a></li>
+                <li ng-class="{ active: isActive('/tickets') }"><a href="/tickets"><i class="fa fa-map-marker"></i> Billets</a></li>
                 <!--<li ng-class="{ active: isActive('/servers') }"><a href="/servers"><i class="fa fa-server"></i> Serveurs</a></li> -->
               </ul>
               <ul class="nav navbar-nav pull-right">
                 <li ng-hide="loggedIn" ng-class="{ active: isActive('/signup') }"><a href="/signup"><i class="fa fa-pencil-square-o"></i> Créer un compte</a></li>
                 <li ng-hide="loggedIn"  ng-class="{ active: isActive('/login') }"><a href="/login"><i class="fa fa-sign-in"></i> Connexion</a></li>
-                <li ng-show="loggedIn"  ng-class="{ active: isActive('/logout') }"><a href="/logout"><i class="fa fa-sign-in"></i> Déconnexion</a></li>
+                <li ng-show="loggedIn"  ng-class="{ active: isActive('/profile') }"><a href="/profile"><i class="fa fa-user"></i> Mon profil</a></li>
+                <li ng-show="loggedIn"  ng-class="{ active: isActive('/logout') }"><a href="/logout"><i class="fa fa-sign-out"></i> Déconnexion</a></li>
               </ul>
             </div>
           </div>

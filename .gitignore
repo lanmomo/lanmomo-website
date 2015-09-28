@@ -62,3 +62,5 @@ node_modules
 
 # Cache busting output folder
 static
+
+app.dev.mysql.py

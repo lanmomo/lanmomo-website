@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="page-header">
+      <h1>Paiement de billet</h1>
+  </div>
+  <div class="alert alert-success" role="alert" ng-show="message">
+    <i class="fa fa-info-circle"></i> {{message}}
+  </div>
+
+  <div class="alert alert-danger" role="alert" ng-show="error">
+    <i class="fa fa-info-circle"></i> {{error}}
+  </div>
+
+  <p class="text-warning">Votre billet est réservé pour encore: <timer countdown="{{}}" max-time-unit="'minute'" interval="{{ticket.reserved_until}}">{{mminutes}} minute{{minutesS}}, {{sseconds}} second{{secondsS}}</timer></p>
+
+  <h2>Confirmer l'achat d'un billet de type {{ticket_type_str}}</h2>
+
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" ng-model="discountMomo" ng-init="checked = false">
+      Je suis un étudiant de Montmorency (5$ de rabais)
+    </label>
+  </div>
+
+  <p>Total à payer {{getTotal()}} $</p>
+
+  <button class="btn btn-primary" ng-click="payNow()">Payer avec PayPal</button>
+
+</div>

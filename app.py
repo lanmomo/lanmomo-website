@@ -12,7 +12,7 @@ from flask import Flask, send_from_directory, jsonify, request, session
 
 import mail
 from database import db_session, init_db, init_engine
-from models import Subscription, User
+from models import Ticket, Seat, User
 
 app = Flask(__name__)
 
@@ -66,10 +66,99 @@ def update_server():
     return jsonify({'error': 'Not implemented'}), 500
 
 
+@app.route('/api/tickets', methods=['GET'])
+def get_all_tickets():
+    pub_tickets = []
+    tickets = Ticket.query.all()
+
+    for ticket in tickets:
+        pub_tickets.append(ticket.as_pub_dict())
+    return tickets
+
+
+@app.route('/api/tickets', methods=['POST'])
+def book_ticket():
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    req = request.get_json()
+    if 'type' not in req:
+        return bad_request()
+    ticket_type = req['type']
+
+    if ticket_type not in app.config['TYPE_IDS'].values():
+        return bad_request()
+
+    seat = None
+    if ticket_type == app.config['TYPE_IDS']['pc']:
+        if 'seat' not in req:
+            return bad_request()
+        seat = req['seat']
+
+    tickets_max = app.config['TICKETS_MAX']
+    price = app.config['PRICING'][ticket_type]
+
+    try:
+        if Ticket.book_temp(user_id, ticket_type, price, tickets_max, seat):
+            ticket = Ticket.query.filter(Ticket.owner_id == user_id).one()
+            return jsonify({'ticket': ticket.as_pub_dict()}), 201
+
+        return jsonify({'error': 'Une erreur inconnue semble être survenue ' +
+                        'lors de la réservation de votre billet.'}), 409
+    except Exception as e:
+        # Conflict while booking ticket
+        return jsonify({'error': str(e)}), 409
+
+
+@app.route('/api/tickets/pay', methods=['POST'])
+def pay_ticket():
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    req = request.get_json()
+    if 'discount_momo' in req:
+        discount = app.config['DISCOUNT_MOMO']
+    else:
+        discount = 0
+
+    try:
+        ticket = Ticket.query.filter(Ticket.owner_id == user_id).one()
+
+        # Update ticket with discount and total
+        ticket.discount_amount = discount
+        ticket.total = ticket.price - discount
+
+        db_session.add(ticket)
+        db_session.commit()
+
+        # TODO PAYPAL !!
+
+        return jsonify({'message': 'Veuillez payer'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 409  # Conflit (idk)
+
+
+@app.route('/api/users/ticket', defaults={'user_id': None})
+@app.route('/api/users/<user_id>/ticket', methods=['GET'])
+def get_ticket_from_user(user_id):
+    if not user_id:
+        if 'user_id' not in session:
+            return bad_request()
+        user_id = session['user_id']
+
+    ticket = Ticket.query.filter(Ticket.owner_id == user_id).first()
+    if not ticket:
+        return jsonify({}), 200
+
+    return jsonify({'ticket': ticket.as_pub_dict()}), 200
+
+
 @app.route('/api/profile', methods=['GET'])
 def get_profile():
-    email = session['email']
-    user = User.query.filter(User.email == email).first()
+    user_id = session['user_id']
+    user = User.query.filter(User.id == user_id).first()
 
     if user:
         return jsonify({'user': user.as_pub_dict()}), 200
@@ -84,7 +173,7 @@ def logout():
 
 @app.route('/api/login', methods=['GET'])
 def is_logged_in():
-    return jsonify({'logged_in': 'email' in session}), 200
+    return jsonify({'logged_in': 'user_id' in session}), 200
 
 
 @app.route('/api/login', methods=['POST'])
@@ -98,13 +187,16 @@ def login():
 
     user = User.query.filter(User.email == email).first()
 
-    if not user.confirmed:
+    if not user:
+        return jsonify({'error': 'Les informations ne concordent pas !'}), 401
+
+    if not user.confirmed and not app.config['DEBUG']:
         return jsonify({'error': """\
 Veuillez valider votre courriel !
  Contactez info@lanmomo.org si le courriel n'a pas été reçu."""}), 400
 
-    if user and get_hash(password, user.salt) == user.password:
-        session['email'] = user.email
+    if get_hash(password, user.salt) == user.password:
+        session['user_id'] = user.id
         return jsonify({'success': True})
 
     return jsonify({'error': 'Les informations ne concordent pas !'}), 401
@@ -177,12 +269,12 @@ Merci et à bientôt !<br><br>
         % (fullname, conf_url, conf_url)
     subject = 'Confirmation de votre compte LAN Montmorency'
 
-    # if not app.config['DEBUG']:
-    send_email(req['email'], fullname, subject, message)
+    if not app.config['DEBUG']:
+        send_email(req['email'], fullname, subject, message)
 
     return jsonify({'message': """\
 Un message de confirmation a été envoyé à votre adresse courriel. Si le message
- n'est pas reçu dans les prochaines minutes, vérifiez vos pourriel !"""}), 200
+ n'est pas reçu dans les prochaines minutes, vérifiez vos pourriel !"""}), 201
 
 
 @app.route('/')
@@ -202,6 +294,10 @@ def shutdown_session(exception=None):
 
 def bad_request(message='Les informations sont invalides ou incomplètes.'):
     return jsonify({'message': message}), 400
+
+
+def login_in_please(message='Vous devez vous connecter.'):
+    return jsonify({'message': message}), 401
 
 
 def setup(conf_path):

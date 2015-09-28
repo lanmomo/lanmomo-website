@@ -1,4 +1,8 @@
 "use strict";
+var TICKET_TYPES = {PC: 0, CONSOLE: 1};
+
+var TICKET_TYPES_STR = {0: 'BYOC', 1: 'Console'};
+
 var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment', 'ngCookies'])
   .directive('passwordCheck', [function () {
         return {
@@ -17,22 +21,20 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
           }
         }
       }
-    ]).factory('Auth', function($cookies) {
-      return {
-        isLoggedIn : function() {
-          return $cookies['logged_in'];
-        },
-        login : function() {
-          $cookie['logged_in']
-        }
-      }
+    ]);
+
+app.run(function($rootScope, $http) {
+  // runs on first page load or refresh
+  $http.get('/api/login')
+    .success(function(data) {
+      $rootScope.loggedIn = data.logged_in;
+    })
+    .error(function(err, status) {
+      $rootScope.loggedIn = false;
     });
+});
 
-app.controller('NavbarController', function($scope, $location, Auth) {
-  $scope.isLoggedIn = function() {
-    return Auth.isLoggedIn();
-  };
-
+app.controller('NavbarController', function($scope, $location) {
   $scope.isActive = function(url) {
     return $location.path() === url;
   };
@@ -86,42 +88,79 @@ app.controller('ServersController', function($scope, $http, $interval) {
   });
 });
 
-app.controller('UsersController', function($scope, $http) {
-  $scope.pcUsers = [];
-  $scope.consoleUsers = [];
-  $http.get('/api/users')
+app.controller('TicketsController', function($scope, $http, $location) {
+  $scope.max = {};
+  $scope.max.pc = 96;
+  $scope.max.console = 32;
+
+  $scope.ticketCount = {};
+  $scope.ticketCount.pc = {};
+  $scope.ticketCount.pc.real = 54;
+  $scope.ticketCount.pc.temp = 4;
+  $scope.ticketCount.pc.total = $scope.ticketCount.pc.temp + $scope.ticketCount.pc.real;
+
+  $scope.ticketCount.console = {};
+  $scope.ticketCount.console.real = 14;
+  $scope.ticketCount.console.temp = 2;
+  $scope.ticketCount.console.total = $scope.ticketCount.console.temp + $scope.ticketCount.console.real;
+
+  $scope.buy = function(ticketType) {
+    var ticket = {};
+    $scope.submitted = true;
+    ticket.type = ticketType;
+
+    if (ticketType === TICKET_TYPES.CONSOLE) {
+      $http.post('/api/tickets', ticket)
+        .success(function(data) {
+          $location.path('/pay');
+        })
+        .error(function(err, status) {
+          $scope.error = err.error;
+        });
+    } else if (ticketType === TICKET_TYPES.PC) {
+      $location.path('/map/buy');
+    } else {
+      console.log('wrong type id');
+    }
+  };
+});
+app.controller('PayController', function($scope, $http) {
+  $http.get('/api/users/ticket')
     .success(function(data) {
-      $scope.data = data;
-      $scope.data.forEach(function(user) {
-        if (user.type === "pc") {
-          $scope.pcUsers.push(user);
-        } else if (user.type === "console"){
-          $scope.consoleUsers.push(user);
-        }
-      });
+      $scope.ticket = data.ticket;
+      $scope.ticket_type_str = TICKET_TYPES_STR[data.ticket.type_id];
     })
-    .error(function(err, status) {
-      $scope.error = {message: err, status: status};
+    .error(function(data) {
+      $scope.error = "too bad man"
     });
-  $http.get('/api/users/max/pc')
-    .success(function(max) {
-      $scope.maxPc = max;
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err, status: status};
-    });
-  $http.get('/api/users/max/console')
-    .success(function(max) {
-      $scope.maxConsole = max;
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err, status: status};
-    });
+
+    $scope.getTotal = function () {
+      if (!$scope.ticket) {
+        return 0;
+      }
+      if ($scope.discountMomo) {
+        return $scope.ticket.price - 5;
+      }
+      return $scope.ticket.price;
+    }
+
+    $scope.payNow = function () {
+      var data = {};
+      data.discount_momo = $scope.discountMomo;
+
+      $http.post('/api/tickets/pay', data)
+        .success(function(data) {
+          // TODO
+        })
+        .error(function(data) {
+          $scope.error = "too bad man"
+        });
+    }
 });
 
 app.controller('VerifyController', function($scope, $http, $routeParams) {
   var token = $routeParams.token;
-  console.log(token);
+
   $http.get('/api/verify/' + token)
     .success(function(data, status) {
       if (data.first) {
@@ -137,7 +176,7 @@ app.controller('VerifyController', function($scope, $http, $routeParams) {
     });
 });
 
-app.controller('LoginController', function ($scope, $http, $location) {
+app.controller('LoginController', function ($scope, $http, $location, $rootScope) {
   $scope.submitLogin = function () {
     var data = {
         email: $scope.user.email,
@@ -145,7 +184,8 @@ app.controller('LoginController', function ($scope, $http, $location) {
     }
     $http.post('/api/login', data)
       .success(function(data) {
-        $location.path('/');
+        $rootScope.loggedIn
+        $location.path('/profile');
       })
       .error(function(err, status) {
         $scope.error = {message: err.error, status: status};
@@ -163,20 +203,19 @@ app.controller('LogoutController', function ($scope, $http, $location) {
     });
 });
 
-app.controller('HomeController', function ($rootScope, $http) {
-  $http.get('/api/login')
-    .success(function(data) {
-      $rootScope.loggedIn = data.logged_in;
-    })
-    .error(function(err, status) {
-      $rootScope.loggedIn = false;
-    });
-});
-
 app.controller('ProfileController', function ($scope, $http) {
   $http.get('/api/profile')
     .success(function(data) {
       $scope.userData = data.user;
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err.error, status: status};
+    });
+  $http.get('/api/users/ticket')
+    .success(function(data) {
+      if (data.ticket) {
+        $scope.userTicket = data.ticket;
+      }
     })
     .error(function(err, status) {
       $scope.error = {message: err.error, status: status};
@@ -244,12 +283,19 @@ app.controller('SignupController', function($scope, $http) {
 
 app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   $routeProvider.when('/', {
-    templateUrl: 'partials/home.html',
-    controller: 'HomeController'
+    templateUrl: 'partials/home.html'
   })
-  .when('/users', {
-    templateUrl: 'partials/users.html',
-    controller: 'UsersController'
+  .when('/tickets', {
+    templateUrl: 'partials/tickets.html',
+    controller: 'TicketsController'
+  })
+  .when('/pay/:pay?', {
+    templateUrl: 'partials/pay.html',
+    controller: 'PayController'
+  })
+  .when('/map', {
+    templateUrl: 'partials/map.html',
+    controller: 'MapController'
   })
   .when('/games', {
     templateUrl: 'partials/games.html',
