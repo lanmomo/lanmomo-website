@@ -69,7 +69,7 @@ def update_server():
 @app.route('/api/tickets', methods=['GET'])
 def get_all_tickets():
     pub_tickets = []
-    tickets = Ticker.query.all()
+    tickets = Ticket.query.all()
 
     for ticket in tickets:
         pub_tickets.append(ticket.as_pub_dict())
