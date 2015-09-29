@@ -56,6 +56,16 @@ app.controller('GamesController', function($scope, $http) {
     });
 });
 
+app.controller('TournamentsController', function($scope, $http) {
+  $http.get('/api/games')
+    .success(function(games) {
+      $scope.games = games;
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err, status: status};
+    });
+});
+
 app.controller('ServersController', function($scope, $http, $interval) {
   $scope.state = {
     loading: true
@@ -300,6 +310,10 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   .when('/games', {
     templateUrl: 'partials/games.html',
     controller: 'GamesController'
+  })
+  .when('/tournaments', {
+    templateUrl: 'partials/tournaments.html',
+    controller: 'TournamentsController'
   })
   .when('/servers', {
     templateUrl: 'partials/servers.html',
