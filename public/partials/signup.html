@@ -82,22 +82,6 @@
         <label for="conf" class="control-label">Vous devez un mot de passe identique au précédant.</label>
       </div>
     </div>
-    <div class="form-group has-feedback">
-      <label for="conf" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip">Siège</i></label>
-      <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <div ng-repeat="(row, _) in times(4) track by $index">
-          <div class="row">
-            <div ng-repeat="(col, _) in times(24) track by $index" ng-init="seat = row * 24 + col + 1;"
-                 ng-attr-id="{{ seat }}" ng-click="selectSeat(seat)"
-                 ng-class="{bottom: row==1 || row ==3, right: col==23, taken: isTaken(seat), selected: state.selectedSeat == seat}"
-                 class="seat">
-              {{ seat }}
-            </div>
-          </div>
-          <div class="splitter" ng-show="row == 1"></div>
-        </div>
-      </div>
-    </div>
     <div class="form-group">
       <div class="col-sm-offset-4 col-md-offset-3 col-lg-offset-2 col-sm-8 col-md-9 col-lg-10">
         <div class="checkbox">

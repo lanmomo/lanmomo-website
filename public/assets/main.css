@@ -214,6 +214,10 @@ fieldset[disabled] .btn-subscribe.active {
   background-color: #B01515;
   cursor: not-allowed;
 }
+.seat.reserved {
+  background-color: #7A7A05;
+  cursor: not-allowed;
+}
 .seat.selected {
   background-color: #36B385;
 }
