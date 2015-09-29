@@ -55,6 +55,10 @@ def func():
 def get_games():
     return jsonify(games), 200
 
+@app.route('/api/tournaments', methods=['GET'])
+def get_tournaments():
+    return jsonify(tournaments), 200
+
 
 @app.route('/api/servers', methods=['GET'])
 def get_servers():
@@ -305,13 +309,15 @@ def login_in_please(message='Vous devez vous connecter.'):
 
 
 def setup(conf_path):
-    global app, games
+    global app, games, tournaments
     app.config.from_pyfile(conf_path)
     init_engine(app.config['DATABASE_URI'])
     init_db()
 
     with open('config/games.json') as data_file:
         games = json.load(data_file)
+    with open('config/tournaments.json') as data_file:
+        tournaments = json.load(data_file)
     return app
 
 if __name__ == '__main__':

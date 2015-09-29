@@ -1,4 +1,19 @@
 <div class="container">
   <div class="page-header">
-    <h2>Tournois</h2>
+    <h2>Équipes</h2>
   </div>
+
+  <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments.tournaments">
+    <div class="panel-heading">
+      <div class="panel-title row tournaments-text">
+        <strong>{{tournament.title}}</strong>
+        <button type="submit" class="btn btn-success pull-right"><i class="fa fa-plus-circle"></i></button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <!-- teams for each game -->
+      <!-- can click "join" next to a team ask to join it -->
+      <!-- team captain sees pending members and can accept or decline -->
+    </div>
+  </div>
+</div>

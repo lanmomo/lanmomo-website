@@ -57,13 +57,21 @@ app.controller('GamesController', function($scope, $http) {
 });
 
 app.controller('TournamentsController', function($scope, $http) {
-  $http.get('/api/games')
-    .success(function(games) {
-      $scope.games = games;
+  $http.get('/api/tournaments')
+    .success(function(tourney) {
+      $scope.tournaments = tourney;
     })
     .error(function(err, status) {
       $scope.error = {message: err, status: status};
     });
+
+    $http.get('/api/profile')
+      .success(function(data) {
+        $scope.userData = data.user;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.error, status: status};
+      });
 });
 
 app.controller('ServersController', function($scope, $http, $interval) {

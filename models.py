@@ -116,6 +116,38 @@ class Seat():
     def __repr__(self):
         return '<Seat %r>' % (self.id)
 
+
+class Team():
+    query = db_session.query_property()
+
+    def __init__(self, name, game, captain):
+            self.name = name
+            self.game = game
+            self.captain = captain
+            self.created_date = datetime.now
+
+    def __repr__(self):
+            return '<Team %r>' % (self.name)
+
+    def as_pub_dict(self):
+            pub_dict = {
+                'name': self.username,
+                'game': self.firstname,
+                'captain': self.captain,
+                'created_at': self.created_at
+                }
+            return pub_dict
+
+teams = Table('teams', metadata,
+            Column('id', Integer, primary_key=True),
+            Column('name', String(255), nullable=False),
+            Column('captain', String(255), nullable=False),
+            Column('game', String(255), nullable=False),
+            Column('created_at', DateTime, default=datetime.now),
+            Column('modified_at', DateTime, onupdate=datetime.now)
+            )
+
+
 users = Table('users', metadata,
               Column('id', Integer, primary_key=True),
               Column('username', String(255), nullable=False),
@@ -160,3 +192,4 @@ seats = Table('seats', metadata,
 mapper(User, users)
 mapper(Ticket, tickets)
 mapper(Seat, seats)
+mapper(Team, teams)
