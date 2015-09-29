@@ -102,16 +102,14 @@ def book_ticket():
     tickets_max = app.config['TICKETS_MAX']
     price = app.config['PRICING'][ticket_type]
 
-    try:
-        if Ticket.book_temp(user_id, ticket_type, price, tickets_max, seat):
-            ticket = Ticket.query.filter(Ticket.owner_id == user_id).one()
-            return jsonify({'ticket': ticket.as_pub_dict()}), 201
+    r = Ticket.book_temp(user_id, ticket_type, price, tickets_max, seat)
 
-        return jsonify({'error': 'Une erreur inconnue semble être survenue ' +
-                        'lors de la réservation de votre billet.'}), 409
-    except Exception as e:
-        # Conflict while booking ticket
-        return jsonify({'error': str(e)}), 409
+    if r[0]:
+        ticket = Ticket.query.filter(Ticket.owner_id == user_id).one()
+        return jsonify({'ticket': ticket.as_pub_dict()}), 201
+
+    # Conflict while booking ticket
+    return jsonify({'error': str(r[1])}), 409
 
 
 @app.route('/api/tickets/pay', methods=['POST'])
@@ -146,7 +144,11 @@ def pay_ticket():
 
         return jsonify({'redirect_url': paypal_payment['redirect_url']}), 201
     except Exception as e:
-        return jsonify({'error': str(e)}), 409  # Conflit (idk)
+        # TODO log error
+        print(str(e))
+        return jsonify({
+            'error': 'Une erreur est survenue lors de la création de' +
+            ' paiement'}), 500
 
 
 @app.route('/api/tickets/pay/execute', methods=['GET'])

@@ -73,38 +73,42 @@ class Ticket():
         return pub_dict
 
     def book_temp(user_id, ticket_type, price, tickets_max, seat=None):
-        db_session.execute('LOCK TABLES tickets write;')
+        try:
+            db_session.execute('LOCK TABLES tickets WRITE;')
 
-        # Check if user can order a ticket
-        r = text('SELECT COUNT(1) FROM tickets WHERE tickets.owner_id = :id;')
-        r = r.bindparams(id=user_id)
+            # Check if user can order a ticket
+            if Ticket.query.filter(Ticket.owner_id == user_id).count() > 0:
+                db_session.rollback()
+                db_session.execute('UNLOCK TABLES;')
+                return False, 'Vous avez déjà un billet !'
 
-        if db_session.execute(r).scalar() > 0:
+            # Check if more tickets is allowed
+            type_count = Ticket.query.filter(Ticket.owner_id == user_id) \
+                .filter(Ticket.paid).count()
+
+            if type_count >= tickets_max[ticket_type]:
+                db_session.rollback()
+                db_session.execute('UNLOCK TABLES;')
+                return False, \
+                    'Le maximum de billet a été réservé pour le moment !'
+
+            # Book ticket for 10 minutes
+            reserved_until = datetime.now() + timedelta(minutes=10)
+
+            # Insert ticket
+            ticket = Ticket(ticket_type, user_id, price,
+                            reserved_until=reserved_until)
+            db_session.add(ticket)
+
+            db_session.commit()
+            db_session.execute('UNLOCK TABLES;')
+            return True, ticket
+        except Exception as e:
             db_session.rollback()
             db_session.execute('UNLOCK TABLES;')
-            raise Exception("Vous avez déjà un billet !")
-
-        # Check if more tickets is allowed
-        r = text('SELECT COUNT(1) FROM tickets WHERE tickets.type_id = :id;')
-        r = r.bindparams(id=ticket_type)
-
-        if db_session.execute(r).scalar() >= tickets_max[ticket_type]:
-            db_session.rollback()
-            db_session.execute('UNLOCK TABLES;')
-            raise Exception('Le maximum de billet a été réservé pour ' +
-                            'le moment !')
-
-        # Book ticket for 10 minutes
-        reserved_until = datetime.now() + timedelta(minutes=10)
-
-        # Insert ticket
-        ticket = Ticket(ticket_type, user_id, price,
-                        reserved_until=reserved_until)
-        db_session.add(ticket)
-
-        db_session.commit()
-        db_session.execute('UNLOCK TABLES;')
-        return True
+            print(str(e))
+            return False, '''\
+Une erreur inconnue être survenue lors de la réservation de votre bilet.'''
 
 
 class Seat():
