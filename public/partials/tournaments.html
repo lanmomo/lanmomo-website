@@ -3,17 +3,28 @@
     <h2>Équipes</h2>
   </div>
 
-  <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments.tournaments">
+  <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments">
     <div class="panel-heading">
       <div class="panel-title row tournaments-text">
         <strong>{{tournament.title}}</strong>
-        <button type="submit" class="btn btn-success pull-right"><i class="fa fa-plus-circle"></i></button>
+        <button ng-hide="!loggedIn" type="submit" class="btn btn-success pull-right"><i class="fa fa-plus-circle"></i></button>
       </div>
     </div>
     <div class="panel-body">
-      <!-- teams for each game -->
-      <!-- can click "join" next to a team ask to join it -->
-      <!-- team captain sees pending members and can accept or decline -->
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Nom de l'équipe</th>
+                    <th>Capitain</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="(key, team) in teams" ng-if="team.game==tournament.game">
+                    <th>{{team.name}}</th>
+                    <td>{{team.captain_ID}}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
   </div>
 </div>

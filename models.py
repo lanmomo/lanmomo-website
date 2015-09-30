@@ -120,10 +120,10 @@ class Seat():
 class Team():
     query = db_session.query_property()
 
-    def __init__(self, name, game, captain):
+    def __init__(self, name, game, captain_ID):
             self.name = name
             self.game = game
-            self.captain = captain
+            self.captain_ID = captain_ID
             self.created_date = datetime.now
 
     def __repr__(self):
@@ -131,22 +131,38 @@ class Team():
 
     def as_pub_dict(self):
             pub_dict = {
-                'name': self.username,
-                'game': self.firstname,
-                'captain': self.captain,
-                'created_at': self.created_at
+                'name': self.name,
+                'game': self.game,
+                'captain_ID': self.captain_ID,
                 }
             return pub_dict
 
-teams = Table('teams', metadata,
-            Column('id', Integer, primary_key=True),
-            Column('name', String(255), nullable=False),
-            Column('captain', String(255), nullable=False),
-            Column('game', String(255), nullable=False),
-            Column('created_at', DateTime, default=datetime.now),
-            Column('modified_at', DateTime, onupdate=datetime.now)
-            )
+class Team_User():
+    query = db_session.query_property()
 
+    def __init__(self, team_ID, user_ID):
+            self.team_ID = team_ID
+            self.user_ID = user_ID
+
+    def __repr__(self):
+            return '<Team-User %r - %r>' % (self.team_ID, self.user_ID)
+
+    def as_pub_dict(self):
+            pub_dict = {
+                'team_ID': self.team_ID,
+                'user_ID': self.user_ID,
+                }
+            return pub_dict
+
+
+teams = Table('teams', metadata,
+               Column('id', Integer, primary_key=True),
+               Column('name', String(255), nullable=False),
+               Column('game', String(255), nullable=False),
+               Column('captain_ID', Integer, nullable=False),
+               Column('created_at', DateTime, default=datetime.now),
+               Column('modified_at', DateTime, onupdate=datetime.now)
+               )
 
 users = Table('users', metadata,
               Column('id', Integer, primary_key=True),
@@ -163,6 +179,12 @@ users = Table('users', metadata,
               Column('confirmed', Boolean, default=False),
               Column('confirmation_token', String(32))
               )
+
+team_Users = Table('team_Users', metadata,
+                    Column('id', Integer, primary_key=True),
+                    Column('team_ID', Integer, ForeignKey('teams.id')),
+                    Column('user_ID', Integer, ForeignKey('users.id'))
+                    )
 
 tickets = Table('tickets', metadata,
                 Column('id', Integer, primary_key=True),
@@ -193,3 +215,4 @@ mapper(User, users)
 mapper(Ticket, tickets)
 mapper(Seat, seats)
 mapper(Team, teams)
+mapper(Team_User, team_Users)

@@ -12,7 +12,7 @@ from flask import Flask, send_from_directory, jsonify, request, session
 
 import mail
 from database import db_session, init_db, init_engine
-from models import Ticket, Seat, User
+from models import Ticket, Seat, User, Team, Team_User
 
 app = Flask(__name__)
 
@@ -58,6 +58,29 @@ def get_games():
 @app.route('/api/tournaments', methods=['GET'])
 def get_tournaments():
     return jsonify(tournaments), 200
+
+
+@app.route('/api/teams', methods=['GET'])
+def get_all_teams():
+    pub_teams = []
+    teams = Team.query.all()
+
+    for team in teams:
+        pub_teams.append(team.as_pub_dict())
+    return jsonify({'teams': pub_teams}), 200
+
+
+@app.route('/api/team', methods=['POST'])
+def add_team():
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    req = request.get_json()
+    team = Team(req['name'], req['game'], user_id)
+    db_session.add(team)
+    db_session.commit()
+    return jsonify({'Sucess': 'Woot'}), 200
 
 
 @app.route('/api/servers', methods=['GET'])
@@ -183,7 +206,7 @@ def is_logged_in():
 @app.route('/api/login', methods=['POST'])
 def login():
     req = request.get_json()
-    if 'password' not in req or 'password' not in req:
+    if 'email' not in req or 'password' not in req:
         return bad_request()
 
     email = req['email']

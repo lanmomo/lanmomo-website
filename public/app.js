@@ -58,16 +58,16 @@ app.controller('GamesController', function($scope, $http) {
 
 app.controller('TournamentsController', function($scope, $http) {
   $http.get('/api/tournaments')
-    .success(function(tourney) {
-      $scope.tournaments = tourney;
+    .success(function(data) {
+      $scope.tournaments = data.tournaments;
     })
     .error(function(err, status) {
       $scope.error = {message: err, status: status};
     });
 
-    $http.get('/api/profile')
+    $http.get('/api/teams')
       .success(function(data) {
-        $scope.userData = data.user;
+        $scope.teams = data.teams;
       })
       .error(function(err, status) {
         $scope.error = {message: err.error, status: status};

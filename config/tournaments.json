@@ -1,32 +1,32 @@
 {
   "tournaments": [
     {
-      "name": "LoL",
+      "game": "LoL",
       "title": "league of Legends",
       "team_size": 5
     },
     {
-      "name": "CS:GO",
+      "game": "CS:GO",
       "title": "Counter Strike: Global Offensive",
       "team_size": 5
     },
     {
-      "name": "RL",
+      "game": "RL",
       "title": "Rocket League",
       "team_size": 2
     },
     {
-      "name": "PM",
+      "game": "PM",
       "title": "ProjectM",
       "team_size": 1
     },
     {
-      "name": "Melee",
+      "game": "Melee",
       "title": "Super Smash Bros Melee",
       "team_size": 1
     },
     {
-      "name": "Hs",
+      "game": "HS",
       "title": "Hearthstone",
       "team_size": 1
     }
