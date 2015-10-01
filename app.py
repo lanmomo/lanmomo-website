@@ -16,6 +16,8 @@ from models import Ticket, Seat, User, Payment
 import mail
 from paypal import Paypal
 
+from paypalrestsdk import Payment
+
 app = Flask(__name__)
 
 
@@ -157,11 +159,13 @@ def execute_payment():
 
     try:
         # lock table tickets
-        db_session.execute('LOCK TABLES tickets WRITE;')
+        db_session.execute('LOCK TABLES tickets WRITE, payments WRITE;')
 
+        # Find the payment
         og_payment = Payment.query.filter(
             Payment.paypal_payment_id == paypal_payment_id).one()
 
+        # Find the ticket related to this payment
         ticket = Ticket.query.filter(
             Payment.ticket_id == og_payment.ticket_id).one()
 
@@ -174,11 +178,32 @@ def execute_payment():
             print('Votre réservation de billet a expirée ! ' +
                   'Aucun montant ne vous a été facturé.')
 
+        # Check payment status
+
         # Set paypal's payer id to payment
+        og_payment.paypal_payer_id = paypal_payer_id
+        db_session.add(og_payment)
 
-        # Execute the payment (receive the money money)
+        # Reserve seat for 30 more seconds if necessary
+        # TODO
 
-        # Update ticket, and payment
+        # Unlock tables (we do not want to lock while we query the paypal api)
+        db_session.execute('UNLOCK TABLES;')
+
+        payment = Payment.find(paypal_payment_id)
+
+        # PayerID is required to approve the payment.
+        if payment.execute({"payer_id": payer_id}):
+            print(payment)
+            # Make everything final by updating ticket
+            db_session.execute('LOCK TABLES tickets WRITE;')
+
+            ticket.paid = True
+            db_session.add(ticket)
+            db_session.commit()
+        else:
+            print('problem')
+
     except Exception as e:
         db_session.rollback()
         print(e)

@@ -97,7 +97,7 @@ class Ticket():
                 return False, \
                     'Le maximum de billet a été réservé pour le moment !'
 
-            if ticket:
+            if seat:
                 # Check is seat is taken
                 # TODO
                 pass
