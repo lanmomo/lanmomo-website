@@ -6,16 +6,15 @@ import re
 import hashlib
 import uuid
 
-from smtplib import SMTP
-from email.mime.text import MIMEText
-from flask import Flask, send_from_directory, jsonify, request, session, redirect
+from datetime import datetime
 
-import mail
-from paypal import Paypal
+from flask import Flask, send_from_directory, jsonify, request, session, redirect
 
 from database import db_session, init_db, init_engine
 from models import Ticket, Seat, User, Payment
 
+import mail
+from paypal import Paypal
 
 app = Flask(__name__)
 
@@ -158,14 +157,22 @@ def execute_payment():
 
     try:
         # lock table tickets
+        db_session.execute('LOCK TABLES tickets WRITE;')
+
         og_payment = Payment.query.filter(
             Payment.paypal_payment_id == paypal_payment_id).one()
 
         ticket = Ticket.query.filter(
             Payment.ticket_id == og_payment.ticket_id).one()
-        # Check if ticket is paid
 
-        # Check if ticket is expired and booked to another player
+        # Check if ticket is already paid
+        if ticket.paid:
+            print('Votre billet a déjà été payé ! ')
+
+        # Check if reservation is expired
+        if ticket.reserved_until < datetime.now():
+            print('Votre réservation de billet a expirée ! ' +
+                  'Aucun montant ne vous a été facturé.')
 
         # Set paypal's payer id to payment
 
@@ -173,8 +180,11 @@ def execute_payment():
 
         # Update ticket, and payment
     except Exception as e:
+        db_session.rollback()
         print(e)
+
     # unlock table
+    db_session.execute('UNLOCK TABLES;')
 
     return redirect('/profile')
 

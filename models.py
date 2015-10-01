@@ -71,21 +71,36 @@ class Ticket():
         try:
             db_session.execute('LOCK TABLES tickets WRITE;')
 
+            # Get reservation and paid ticket total count for user
+            user_ticket_count = Ticket.query \
+                .filter(Ticket.owner_id == user_id) \
+                .filter(Ticket.paid | Ticket.reserved_until >= datetime.now()) \
+                .count()
+
             # Check if user can order a ticket
-            if Ticket.query.filter(Ticket.owner_id == user_id).count() > 0:
+            if user_ticket_count > 0:
                 db_session.rollback()
                 db_session.execute('UNLOCK TABLES;')
-                return False, 'Vous avez déjà un billet !'
+                return False, \
+                    'Vous avez déjà un billet ou une réservation en cours !'
 
-            # Check if more tickets is allowed
-            type_count = Ticket.query.filter(Ticket.owner_id == user_id) \
-                .filter(Ticket.paid).count()
+            # Get reservation and paid ticket total count for ticket type
+            ticket_type_count = Ticket.query \
+                .filter(Ticket.type_id == ticket_type) \
+                .filter(Ticket.paid | Ticket.reserved_until >= datetime.now()) \
+                .count()
 
-            if type_count >= tickets_max[ticket_type]:
+            # Check if more tickets is allowed for this type
+            if ticket_type_count >= tickets_max[ticket_type]:
                 db_session.rollback()
                 db_session.execute('UNLOCK TABLES;')
                 return False, \
                     'Le maximum de billet a été réservé pour le moment !'
+
+            if ticket:
+                # Check is seat is taken
+                # TODO
+                pass
 
             # Book ticket for 10 minutes
             reserved_until = datetime.now() + timedelta(minutes=10)
