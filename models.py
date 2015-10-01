@@ -72,10 +72,10 @@ class Ticket():
             db_session.execute('LOCK TABLES tickets WRITE;')
 
             # Get reservation and paid ticket total count for user
-            user_ticket_count = Ticket.query \
-                .filter(Ticket.owner_id == user_id) \
-                .filter(Ticket.paid | Ticket.reserved_until >= datetime.now()) \
-                .count()
+            user_ticket_count = Ticket.query.filter(
+                Ticket.owner_id == user_id and
+                (Ticket.paid | Ticket.reserved_until >= datetime.now())
+            ).count()
 
             # Check if user can order a ticket
             if user_ticket_count > 0:
@@ -85,10 +85,10 @@ class Ticket():
                     'Vous avez déjà un billet ou une réservation en cours !'
 
             # Get reservation and paid ticket total count for ticket type
-            ticket_type_count = Ticket.query \
-                .filter(Ticket.type_id == ticket_type) \
-                .filter(Ticket.paid | Ticket.reserved_until >= datetime.now()) \
-                .count()
+            ticket_type_count = Ticket.query.filter(
+                Ticket.type_id == ticket_type and
+                (Ticket.paid | Ticket.reserved_until >= datetime.now())
+            ).count()
 
             # Check if more tickets is allowed for this type
             if ticket_type_count >= tickets_max[ticket_type]:

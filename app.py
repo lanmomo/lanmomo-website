@@ -16,7 +16,16 @@ from models import Ticket, Seat, User, Payment
 import mail
 from paypal import Paypal
 
-from paypalrestsdk import Payment
+from paypalrestsdk import Payment as PaypalPayment
+
+ERR_INVALID_PAYPAL = """\
+Votre paiement n'a pas pu être vérifié ! Confirmez cette information sur
+ votre compte et contactez info@lanmomo.org ."""
+
+ERR_CREATE_PAYPAL = """\
+Votre paiement n'a pas pu être créé ! Veuillez réessayer et contactez
+ info@lanmomo.org si la situation persiste."""
+
 
 app = Flask(__name__)
 
@@ -171,7 +180,7 @@ def execute_payment():
 
         # Check if ticket is already paid
         if ticket.paid:
-            print('Votre billet a déjà été payé ! ')
+            print('Votre billet a déjà été payé !')
 
         # Check if reservation is expired
         if ticket.reserved_until < datetime.now():
@@ -190,23 +199,29 @@ def execute_payment():
         # Unlock tables (we do not want to lock while we query the paypal api)
         db_session.execute('UNLOCK TABLES;')
 
-        payment = Payment.find(paypal_payment_id)
+        # Validate paypal is authorized
+        payment = PaypalPayment.find(paypal_payment_id)
+        if payment.state.lower() != 'created':
+            raise(Exception(ERR_CREATE_PAYPAL))
 
-        # PayerID is required to approve the payment.
-        if payment.execute({"payer_id": payer_id}):
-            print(payment)
-            # Make everything final by updating ticket
-            db_session.execute('LOCK TABLES tickets WRITE;')
+        if payment.execute({"payer_id": paypal_payer_id}):
+            # Validate paypal is approved
+            if payment.state.lower() != 'approved':
+                raise(Exception(ERR_INVALID_PAYPAL))
 
+            db_session.execute('LOCK TABLES tickets WRITE, payments WRITE;')
+
+            # update ticket
             ticket.paid = True
             db_session.add(ticket)
             db_session.commit()
         else:
-            print('problem')
+            raise(Exception(ERR_INVALID_PAYPAL))
 
     except Exception as e:
         db_session.rollback()
         print(e)
+        # TODO loggin and error redirect
 
     # unlock table
     db_session.execute('UNLOCK TABLES;')
