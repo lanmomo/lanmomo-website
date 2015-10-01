@@ -26,6 +26,15 @@ ERR_CREATE_PAYPAL = """\
 Votre paiement n'a pas pu être créé ! Veuillez réessayer et contactez
  info@lanmomo.org si la situation persiste."""
 
+ERR_EXPIRED = """\
+Votre réservation de billet a expirée ! Aucun montant ne vous a été facturé."""
+
+ERR_COMPLETION = """\
+Une erreur est survenue lors de la mise à jour de votre billet."""
+
+MSG_SUCCESS_PAY """\
+Félicitations, votre billet est maintenant payé !
+"""
 
 app = Flask(__name__)
 
@@ -163,74 +172,132 @@ def pay_ticket():
             ' paiement'}), 500
 
 
+def check_execution(payment, paypal_payer_id):
+    if payment.execute({"payer_id": paypal_payer_id}):
+        # Validate paypal is approved
+        return payment.state.lower() == 'approved'
+
+
+def check_creation(payment, paypal_payer_id):
+    if payment.execute({"payer_id": paypal_payer_id}):
+        # Validate paypal is approved
+        return payment.state.lower() == 'approved'
+
+
+def complete_purchase(ticket):
+    try:
+        db_session.execute('LOCK TABLES tickets WRITE;')
+        # update ticket
+        ticket.paid = True
+        db_session.add(ticket)
+        db_session.commit()
+
+        db_session.execute('UNLOCK TABLES;')
+    except:
+        return ERR_COMPLETION
+# TODO send email with payment confirmation
+
+    return None
+
+
+def err_execute_and_complete_payment():
+    """"Returns ERROR or None"""
+    # lock table tickets
+    db_session.execute('LOCK TABLES tickets WRITE, payments WRITE;')
+
+    og_payment = get_og_payment(paypal_payment_id)
+    if not og_payment:
+        return 'aucun paiement'
+
+    ticket = get_ticket_from_payment(payment)
+
+    err = get_err_from_ticket(ticket)
+    if err:
+        return err
+
+    prepare_payment_execution(og_payment, paypal_payer_id, ticket)
+
+    # Unlock tables (we do not want to lock while we query the paypal api)
+    db_session.execute('UNLOCK TABLES;')
+
+    # Execute the payment
+    if (!payment.execute({"payer_id": paypal_payer_id}) or
+            payment.state.lower() != 'approved'):
+        # Could not execute or execute did not approve transaction
+        return ERR_INVALID_PAYPAL
+
+    # Validate payment is created
+    payment = PaypalPayment.find(paypal_payment_id)
+    if payment.state.lower() != 'created':
+        return ERR_CREATE_PAYPAL
+
+    return complete_purchase(ticket)
+
+
 @app.route('/api/tickets/pay/execute', methods=['GET'])
 def execute_payment():
     paypal_payment_id = request.args.get('paymentId')
     paypal_payer_id = request.args.get('PayerID')
 
     try:
-        # lock table tickets
-        db_session.execute('LOCK TABLES tickets WRITE, payments WRITE;')
+        err = err_execute_and_complete_payment():
+            return jsonify({'error': err}), 500
 
-        # Find the payment
-        og_payment = Payment.query.filter(
-            Payment.paypal_payment_id == paypal_payment_id).one()
-
-        # Find the ticket related to this payment
-        ticket = Ticket.query.filter(
-            Payment.ticket_id == og_payment.ticket_id).one()
-
-        # Check if ticket is already paid
-        if ticket.paid:
-            print('Votre billet a déjà été payé !')
-
-        # Check if reservation is expired
-        if ticket.reserved_until < datetime.now():
-            print('Votre réservation de billet a expirée ! ' +
-                  'Aucun montant ne vous a été facturé.')
-
-        # Check payment status
-
-        # Set paypal's payer id to payment
-        og_payment.paypal_payer_id = paypal_payer_id
-        db_session.add(og_payment)
-
-        # Reserve seat for 30 more seconds if necessary
-        # TODO
-
-        # Unlock tables (we do not want to lock while we query the paypal api)
-        db_session.execute('UNLOCK TABLES;')
-
-        # Validate paypal is authorized
-        payment = PaypalPayment.find(paypal_payment_id)
-        if payment.state.lower() != 'created':
-            raise(Exception(ERR_CREATE_PAYPAL))
-
-        if payment.execute({"payer_id": paypal_payer_id}):
-            # Validate paypal is approved
-            if payment.state.lower() != 'approved':
-                raise(Exception(ERR_INVALID_PAYPAL))
-
-            db_session.execute('LOCK TABLES tickets WRITE, payments WRITE;')
-
-            # update ticket
-            ticket.paid = True
-            db_session.add(ticket)
-            db_session.commit()
-
-            # TODO send email with payment confirmation
-        else:
-            raise(Exception(ERR_INVALID_PAYPAL))
-
+        # Success at last
+        return jsonify({'message': MSG_SUCCESS_PAY}), 200
     except Exception as e:
         db_session.rollback()
-        print(e)
+        try:
+            # try to unlock table
+            db_session.execute('UNLOCK TABLES;')
+        except:
+            pass
         # TODO logging and error redirect
+        return jsonify({'error': 'Une erreur inconnue est survenue.'}), 500
 
-    # unlock table
-    db_session.execute('UNLOCK TABLES;')
 
-    return redirect('/profile')
+def get_og_payment(paypal_payment_id):
+    try:
+        return Payment.query.filter(
+            Payment.paypal_payment_id == paypal_payment_id).one()
+    except:
+        return None
+
+
+def get_ticket_from_payment(payment):
+    try:
+        return Ticket.query.filter(
+            Payment.ticket_id == payment.ticket_id).one()
+    except:
+        return None
+
+
+def prepare_payment_execution(payment, payer_id, ticket):
+    # Set paypal's payer id to payment
+    og_payment.paypal_payer_id = paypal_payer_id
+    db_session.add(og_payment)
+
+    # Reserve seat for 30 more seconds if necessary
+    time_after_tran = datetime.now() + timedelta(seconds=30)
+    if ticket.reserved_until <= time_after_tran:
+        # TODO set new reservation
+        pass
+
+
+def get_err_from_ticket(ticket):
+    """Check if the payment is related to a valid reservation"""
+    if not ticket:
+        return 'aucun billet'
+
+    # Check if ticket is already paid
+    if ticket.paid:
+        return 'Votre billet a déjà été payé !'
+
+    # Check if reservation is expired
+    if ticket.reserved_until < datetime.now():
+        return ERR_EXPIRED
+
+    return None
 
 
 @app.route('/api/users/ticket', defaults={'user_id': None})
