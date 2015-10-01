@@ -203,6 +203,23 @@ app.controller('LogoutController', function ($scope, $http, $location) {
     });
 });
 
+app.controller('ExecuteController', function ($scope, $http, $location, $routeParams) {
+  var data = {
+    'payment_id' : $routeParams.paymentId,
+    'payer_id' : $routeParams.PayerID
+  };
+
+  $http.put('/api/tickets/pay/execute', data)
+    .success(function(data) {
+      console.log(data);
+      $location.path('/');
+    })
+    .error(function(err, status) {
+      console.log(err);
+      $scope.error = {message: err.error, status: status};
+    });
+});
+
 app.controller('ProfileController', function ($scope, $http) {
   $http.get('/api/profile')
     .success(function(data) {
@@ -289,9 +306,13 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
     templateUrl: 'partials/tickets.html',
     controller: 'TicketsController'
   })
-  .when('/pay/:pay?', {
+  .when('/pay', {
     templateUrl: 'partials/pay.html',
     controller: 'PayController'
+  })
+  .when('/execute', {
+    templateUrl: 'partials/execute.html',
+    controller: 'ExecuteController'
   })
   .when('/map', {
     templateUrl: 'partials/map.html',
