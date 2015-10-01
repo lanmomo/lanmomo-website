@@ -152,6 +152,8 @@ def pay_ticket():
         db_session.add(payment)
         db_session.commit()
 
+        # TODO send email with paypal url
+
         return jsonify({'redirect_url': paypal_payment['redirect_url']}), 201
     except Exception as e:
         # TODO log error
@@ -215,13 +217,15 @@ def execute_payment():
             ticket.paid = True
             db_session.add(ticket)
             db_session.commit()
+
+            # TODO send email with payment confirmation
         else:
             raise(Exception(ERR_INVALID_PAYPAL))
 
     except Exception as e:
         db_session.rollback()
         print(e)
-        # TODO loggin and error redirect
+        # TODO logging and error redirect
 
     # unlock table
     db_session.execute('UNLOCK TABLES;')
