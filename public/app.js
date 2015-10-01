@@ -72,6 +72,36 @@ app.controller('TournamentsController', function($scope, $http) {
       .error(function(err, status) {
         $scope.error = {message: err.error, status: status};
       });
+
+    $http.get('/api/profile')
+    .success(function(data) {
+      $scope.user = data.user;
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err.error, status: status};
+    });
+
+    $scope.createTeam = function(name, game) {
+        $http.post('/api/teams/' + game + '/' + name)
+            .success(function(data) {
+                location.reload();
+            })
+            .error(function(err, status) {
+
+            });
+    }
+
+    $scope.deleteTeam = function(name, game, index) {
+        if(confirm('Etes vous sure de vouloir supprimer cette equipe?')) {
+            $http.delete('/api/teams/' + game + '/' + name)
+                .success(function(data) {
+                    $scope.teams.splice(index, 1);
+                })
+                .error(function(err, status) {
+
+                });
+        }
+    }
 });
 
 app.controller('ServersController', function($scope, $http, $interval) {

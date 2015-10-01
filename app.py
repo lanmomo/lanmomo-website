@@ -12,7 +12,7 @@ from flask import Flask, send_from_directory, jsonify, request, session
 
 import mail
 from database import db_session, init_db, init_engine
-from models import Ticket, Seat, User, Team, Team_User
+from models import Ticket, Seat, User, Team, TeamUser
 
 app = Flask(__name__)
 
@@ -38,6 +38,16 @@ def email_exists(email):
 
 def username_exists(username):
     return User.query.filter(User.username == username).count() > 0
+
+
+def team_exists(game, team):
+    return Team.query.filter(Team.game == game and
+                            Team.name == team).count() > 0
+
+
+def captain_has_team(game, captain_id):
+    return Team.query.filter(Team.game == game and
+                            Team.captain_id == captain_id).count() > 0
 
 
 def send_email(to_email, to_name, subject, message):
@@ -70,17 +80,43 @@ def get_all_teams():
     return jsonify({'teams': pub_teams}), 200
 
 
-@app.route('/api/team', methods=['POST'])
-def add_team():
+#@app.route('/api/teams/<team_name>')
+
+
+# TODO check if the game exists before creating a team
+@app.route('/api/teams/<game>/<name>', methods=['POST'])
+def add_team(game, name):
     if 'user_id' not in session:
         return login_in_please()
     user_id = session['user_id']
 
-    req = request.get_json()
-    team = Team(req['name'], req['game'], user_id)
+    team = Team(name, game, user_id)
+    if team_exists(team.game, team.name) or \
+        captain_has_team(team.game, team.captain_id):
+        return bad_request()
+
     db_session.add(team)
     db_session.commit()
-    return jsonify({'Sucess': 'Woot'}), 200
+    return jsonify({'Sucess': 'Team Created'}), 200
+
+
+@app.route('/api/teams/<game>/<name>', methods=['DELETE'])
+def delete_team(game, name):
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    team = Team.query.filter(Team.game == game and
+            Team.name == name).first()
+    if not team:
+        return jsonify({'error': 'no team found'}), 500
+
+    if team.captain_id != user_id:
+        return jsonify({'error': 'you are not the captain of this team'}), 401
+    else:
+        db_session.delete(team)
+        db_session.commit()
+        return jsonify({'Success': 'Team Deleted!'}), 200
 
 
 @app.route('/api/servers', methods=['GET'])

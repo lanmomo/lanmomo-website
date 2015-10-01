@@ -1,13 +1,14 @@
 <div class="container">
-  <div class="page-header">
-    <h2>Équipes</h2>
+  <div class="page-header row">
+    <span class="col-md-4 pull-left"><h1>Équipes</h1></span>
+    <button data-toggle="modal" data-target="#myModal" ng-hide="!loggedIn" type="submit" class="btn btn-success pull-right">Cree une equipe</button>
+    <span class="pull-right" ng-show="!loggedIn"><a href="/login">Connectez-vous</a> pour cree une eqipe!</span>
   </div>
 
   <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments">
     <div class="panel-heading">
       <div class="panel-title row tournaments-text">
         <strong>{{tournament.title}}</strong>
-        <button ng-hide="!loggedIn" type="submit" class="btn btn-success pull-right"><i class="fa fa-plus-circle"></i></button>
       </div>
     </div>
     <div class="panel-body">
@@ -21,10 +22,44 @@
             <tbody>
                 <tr ng-repeat="(key, team) in teams" ng-if="team.game==tournament.game">
                     <th>{{team.name}}</th>
-                    <td>{{team.captain_ID}}</td>
+                    <td>{{team.captain_id}}</td>
+                    <td>
+                        <button ng-click="deleteTeam(team.name, team.game, key)" ng-hide="user.username != team.captain_id" type="submit" class="btn btn-danger pull-right">DEL</i></button>
+                        <!-- <button ng-show="user.username != team.captain_id" type="submit" class="btn btn-success pull-right">JOIN</i></button> -->
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
+  </div>
+</div>
+
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cree une equipe</h4>
+      </div>
+      <div class="modal-body">
+          <table>
+              <tr>
+                <th><strong>Jeu: </strong></th>
+                <td><select ng-model="teamGame" class="input-sm"><option ng-repeat="(key, tournament) in tournaments" value="{{tournament.game}}">{{tournament.title}}</option></select></td>
+            </tr>
+            <tr>
+                <th><strong>Nom de l'equipe: </strong></th>
+                <td><input class="input-sm" ng-model="teamName"></input></td>
+            </tr>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button ng-click="createTeam(teamName, teamGame)" type="button" class="btn btn-success" data-dismiss="modal">Creer</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
   </div>
 </div>
