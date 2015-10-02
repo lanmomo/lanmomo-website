@@ -48,8 +48,8 @@ class User():
 class Ticket():
     query = db_session.query_property()
 
-    def __init__(self, type_id, owner_id, price, paid=False, reserved_until=None,
-                 reserved_at=None):
+    def __init__(self, type_id, owner_id, price,
+                 paid=False, reserved_until=None, reserved_at=None):
         self.type_id = type_id
         self.owner_id = owner_id
         self.price = price
@@ -147,6 +147,7 @@ class Team():
                 }
             return pub_dict
 
+
 class TeamUser():
     query = db_session.query_property()
 
@@ -168,7 +169,6 @@ class TeamUser():
         if user:
             return user.username
 
-
     def as_pub_dict(self):
             pub_dict = {
                 'username': self.get_user_name,
@@ -179,13 +179,13 @@ class TeamUser():
 
 
 teams = Table('teams', metadata,
-               Column('id', Integer, primary_key=True),
-               Column('name', String(255), nullable=False),
-               Column('game', String(255), nullable=False),
-               Column('captain_id', Integer, ForeignKey('users.id')),
-               Column('created_at', DateTime, default=datetime.now),
-               Column('modified_at', DateTime, onupdate=datetime.now)
-               )
+              Column('id', Integer, primary_key=True),
+              Column('name', String(255), nullable=False),
+              Column('game', String(255), nullable=False),
+              Column('captain_id', Integer, ForeignKey('users.id')),
+              Column('created_at', DateTime, default=datetime.now),
+              Column('modified_at', DateTime, onupdate=datetime.now)
+              )
 
 users = Table('users', metadata,
               Column('id', Integer, primary_key=True),
@@ -204,11 +204,11 @@ users = Table('users', metadata,
               )
 
 team_users = Table('team_users', metadata,
-                    Column('id', Integer, primary_key=True),
-                    Column('team_id', Integer, ForeignKey('teams.id')),
-                    Column('user_id', Integer, ForeignKey('users.id')),
-                    Column('accepted', Boolean, nullable=False)
-                    )
+                   Column('id', Integer, primary_key=True),
+                   Column('team_id', Integer, ForeignKey('teams.id')),
+                   Column('user_id', Integer, ForeignKey('users.id')),
+                   Column('accepted', Boolean, nullable=False)
+                   )
 
 tickets = Table('tickets', metadata,
                 Column('id', Integer, primary_key=True),
