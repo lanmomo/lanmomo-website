@@ -212,7 +212,7 @@ app.controller('ExecuteController', function ($scope, $http, $location, $routePa
   $http.put('/api/tickets/pay/execute', data)
     .success(function(data) {
       console.log(data);
-      $location.path('/');
+      $scope.message = data.message;
     })
     .error(function(err, status) {
       console.log(err);
