@@ -21,6 +21,13 @@
     </label>
   </div>
 
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" ng-model="participateGG" ng-init="checked = true">
+      Je souhaite participer au concours de Gamer's Giveaway. Votre adresse courriel leur sera envoyé.
+    </label>
+  </div>
+
   <p>Total à payer {{getTotal()}} $</p>
 
   <button class="btn btn-primary" ng-click="payNow()">Payer avec PayPal</button>

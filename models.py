@@ -81,7 +81,7 @@ class Ticket():
             # Get reservation and paid ticket total count for user
             user_ticket_count = Ticket.query \
                 .filter(Ticket.owner_id == user_id) \
-                .filter(_or(
+                .filter(or_(
                     Ticket.paid, Ticket.reserved_until >= datetime.now())) \
                 .count()
 
@@ -95,7 +95,7 @@ class Ticket():
             # Get reservation and paid ticket total count for ticket type
             ticket_type_count = Ticket.query \
                 .filter(Ticket.type_id == ticket_type) \
-                .filter(_or(
+                .filter(or_(
                     Ticket.paid, Ticket.reserved_until >= datetime.now())) \
                 .count()
 

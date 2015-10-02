@@ -390,6 +390,9 @@ def get_ticket_from_user(user_id):
 
 @app.route('/api/profile', methods=['GET'])
 def get_profile():
+    if 'user_id' not in session:
+        return login_in_please()
+
     user_id = session['user_id']
     user = User.query.filter(User.id == user_id).first()
 
