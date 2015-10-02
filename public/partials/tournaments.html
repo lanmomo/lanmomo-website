@@ -27,9 +27,9 @@
             <tbody>
                 <tr ng-repeat="(key, team) in teams" ng-if="team.game==tournament.game">
                     <th>{{team.name}}</th>
-                    <td>{{team.captain_id}}</td>
+                    <td>{{team.captain_name}}</td>
                     <td>
-                        <button ng-click="deleteTeam(team.name, team.game, key)" ng-hide="user.username != team.captain_id" type="submit" class="btn btn-danger pull-right">supprimer</i></button>
+                        <button ng-click="deleteTeam(team.id, key)" ng-hide="user.username != team.captain_name" type="submit" class="btn btn-danger pull-right">supprimer</i></button>
                         <!-- <button ng-show="user.username != team.captain_id" type="submit" class="btn btn-success pull-right">JOIN</i></button> -->
                     </td>
                 </tr>

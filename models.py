@@ -129,16 +129,21 @@ class Team():
     def __repr__(self):
             return '<Team %r>' % (self.name)
 
+    def get_team_id(self):
+        return Team.query.filter(Team.name == self.name) \
+            .filter(Team.game == self.game).first().id
+
     def get_captain_name(self):
         user = User.query.filter(User.id == self.captain_id).first()
         if user:
-            return user.as_pub_dict()['username']
+            return user.username
 
     def as_pub_dict(self):
             pub_dict = {
+                'id': self.get_team_id(),
                 'name': self.name,
                 'game': self.game,
-                'captain_id': self.get_captain_name(),
+                'captain_name': self.get_captain_name(),
                 }
             return pub_dict
 
@@ -156,12 +161,12 @@ class TeamUser():
     def get_team_name(self):
         team = User.query.filter(Team.id == self.team_id).first()
         if team:
-            return user.as_pub_dict()['name']
+            return user.name
 
     def get_user_name(self):
         user = User.query.filter(User.id == self.user_id).first()
         if user:
-            return user.as_pub_dict()['username']
+            return user.username
 
 
     def as_pub_dict(self):

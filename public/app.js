@@ -81,8 +81,12 @@ app.controller('TournamentsController', function($scope, $http) {
       $scope.error = {message: err.error, status: status};
     });
 
-    $scope.createTeam = function(name, game) {
-        $http.post('/api/teams/' + game + '/' + name)
+    $scope.createTeam = function(_name, _game) {
+        var data = {
+            game: _game,
+            name: _name
+        };
+        $http.post('/api/teams',data)
             .success(function(data) {
                 location.reload();
             })
@@ -91,9 +95,9 @@ app.controller('TournamentsController', function($scope, $http) {
             });
     }
 
-    $scope.deleteTeam = function(name, game, index) {
+    $scope.deleteTeam = function(id, index) {
         if(confirm('Etes vous sure de vouloir supprimer cette equipe?')) {
-            $http.delete('/api/teams/' + game + '/' + name)
+            $http.delete('/api/teams/' + id)
                 .success(function(data) {
                     $scope.teams.splice(index, 1);
                 })

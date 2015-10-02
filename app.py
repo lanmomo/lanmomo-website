@@ -84,13 +84,15 @@ def get_all_teams():
 
 
 # TODO check if the game exists before creating a team
-@app.route('/api/teams/<game>/<name>', methods=['POST'])
-def add_team(game, name):
+@app.route('/api/teams', methods=['POST'])
+def add_team():
     if 'user_id' not in session:
         return login_in_please()
     user_id = session['user_id']
 
-    team = Team(name, game, user_id)
+    req = request.get_json()
+
+    team = Team(req['name'], req['game'], user_id)
     if team_exists(team.game, team.name) or \
         captain_has_team(team.game, team.captain_id):
         return jsonify({'message': 'Vous avez déja une équipe pour ce jeu ' +
@@ -101,14 +103,13 @@ def add_team(game, name):
     return jsonify({'message': 'Team Created'}), 200
 
 
-@app.route('/api/teams/<game>/<name>', methods=['DELETE'])
-def delete_team(game, name):
+@app.route('/api/teams/<id>', methods=['DELETE'])
+def delete_team(id):
     if 'user_id' not in session:
         return login_in_please()
     user_id = session['user_id']
 
-    team = Team.query.filter(Team.game == game) \
-                            .filter(Team.name == name).first()
+    team = Team.query.filter(Team.id == id).first()
     if not team:
         return jsonify({'message': 'no team found'}), 500
 
