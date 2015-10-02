@@ -48,8 +48,8 @@ class User():
 class Ticket():
     query = db_session.query_property()
 
-    def __init__(self, type_id, owner_id, price, paid=False, reserved_until=None,
-                 reserved_at=None):
+    def __init__(self, type_id, owner_id, price,
+                 paid=False, reserved_until=None, reserved_at=None):
         self.type_id = type_id
         self.owner_id = owner_id
         self.price = price
