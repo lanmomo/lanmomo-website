@@ -56,6 +56,58 @@ app.controller('GamesController', function($scope, $http) {
     });
 });
 
+app.controller('TournamentsController', function($scope, $http) {
+  $http.get('/api/tournaments')
+    .success(function(data) {
+      $scope.tournaments = data.tournaments;
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err, status: status};
+    });
+
+    $http.get('/api/teams')
+      .success(function(data) {
+        $scope.teams = data.teams;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.error, status: status};
+      });
+
+    $http.get('/api/profile')
+    .success(function(data) {
+      $scope.user = data.user;
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err.error, status: status};
+    });
+
+    $scope.createTeam = function(_name, _game) {
+        var data = {
+            game: _game,
+            name: _name
+        };
+        $http.post('/api/teams',data)
+            .success(function(data) {
+                location.reload();
+            })
+            .error(function(err, status) {
+                $scope.error = {message: err.message, status: status};
+            });
+    }
+
+    $scope.deleteTeam = function(id, index) {
+        if(confirm('Etes vous sure de vouloir supprimer cette equipe?')) {
+            $http.delete('/api/teams/' + id)
+                .success(function(data) {
+                    $scope.teams.splice(index, 1);
+                })
+                .error(function(err, status) {
+                    $scope.error = {message: err.error, status: status};
+                });
+        }
+    }
+});
+
 app.controller('ServersController', function($scope, $http, $interval) {
   $scope.state = {
     loading: true
@@ -300,6 +352,10 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   .when('/games', {
     templateUrl: 'partials/games.html',
     controller: 'GamesController'
+  })
+  .when('/tournaments', {
+    templateUrl: 'partials/tournaments.html',
+    controller: 'TournamentsController'
   })
   .when('/servers', {
     templateUrl: 'partials/servers.html',
