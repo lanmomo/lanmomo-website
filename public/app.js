@@ -300,13 +300,26 @@ app.controller('SignupController', function($scope, $http) {
 
 app.controller('MapController', function ($scope, $http, $interval) {
   var seatStatus = {};
-  
-  for (var i = 1; i <= 96; i++) {
-    if (i % 4 == 0 || i % 5 == 0)
-      seatStatus[i] = 't';
-    if (i % 6 == 0)
-      seatStatus[i] = 'r';
-  }
+  $http.get('/api/tickets/type/0')
+    .success(function(data) {
+      var tickets = data.tickets;
+      console.log(tickets);
+      for (var i = 0; i <= tickets.length; i++) {
+        if (tickets[i]) {
+          console.log(tickets[i]);
+
+          var seat_num = tickets[i].seat_num;
+          if (tickets[i].paid) {
+            seatStatus[seat_num] = 't';
+          } else {
+            seatStatus[seat_num] = 'r';
+          }
+        }
+      }
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err.error, status: status};
+    });
 
   $scope.selectedSeat = null;
 
@@ -395,7 +408,7 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   });
   $routeProvider.otherwise({redirectTo: '/'});
 
-  //$locationProvider.html5Mode(true);
+  $locationProvider.html5Mode(true);
 
   cfpLoadingBarProvider.includeSpinner = false;
 

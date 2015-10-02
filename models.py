@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, \
-    ForeignKey, DateTime, Float, text
+    ForeignKey, DateTime, Float, text, or_
 from sqlalchemy.orm import mapper
 
 from database import metadata, db_session
@@ -65,6 +65,8 @@ class Ticket():
             'discount_amount': self.discount_amount,
             'total': self.total
             }
+        if self.seat_num:
+            pub_dict['seat_num'] = self.seat_num
         return pub_dict
 
     def book_temp(user_id, ticket_type, price, tickets_max, seat=None):
@@ -72,10 +74,11 @@ class Ticket():
             db_session.execute('LOCK TABLES tickets WRITE;')
 
             # Get reservation and paid ticket total count for user
-            user_ticket_count = Ticket.query.filter(
-                Ticket.owner_id == user_id and
-                (Ticket.paid | Ticket.reserved_until >= datetime.now())
-            ).count()
+            user_ticket_count = Ticket.query \
+                .filter(Ticket.owner_id == user_id) \
+                .filter(_or(
+                    Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+                .count()
 
             # Check if user can order a ticket
             if user_ticket_count > 0:
@@ -85,10 +88,11 @@ class Ticket():
                     'Vous avez déjà un billet ou une réservation en cours !'
 
             # Get reservation and paid ticket total count for ticket type
-            ticket_type_count = Ticket.query.filter(
-                Ticket.type_id == ticket_type and
-                (Ticket.paid | Ticket.reserved_until >= datetime.now())
-            ).count()
+            ticket_type_count = Ticket.query \
+                .filter(Ticket.type_id == ticket_type) \
+                .filter(_or(
+                    Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+                .count()
 
             # Check if more tickets is allowed for this type
             if ticket_type_count >= tickets_max[ticket_type]:
@@ -119,16 +123,6 @@ class Ticket():
             print(str(e))
             return False, '''\
 Une erreur inconnue être survenue lors de la réservation de votre bilet.'''
-
-
-class Seat():
-    query = db_session.query_property()
-
-    def __init__(self, ticket_id, reserved_until=None, reserved_at=None):
-        self.ticket_id = ticket_id
-
-    def __repr__(self):
-        return '<Seat %r>' % (self.id)
 
 
 class Payment():
@@ -165,6 +159,7 @@ tickets = Table('tickets', metadata,
                 # avoid n-n for now...
                 Column('owner_id', Integer, ForeignKey('users.id'),
                        nullable=False),
+                Column('seat_num', Integer),
                 # Look for related payment and remove this field ?
                 Column('paid', Boolean, default=False, nullable=False),
                 Column('price', Float, nullable=False),
@@ -175,13 +170,6 @@ tickets = Table('tickets', metadata,
                 Column('created_at', DateTime, default=datetime.now),
                 Column('modified_at', DateTime, onupdate=datetime.now)
                 )
-
-seats = Table('seats', metadata,
-              Column('id', Integer, primary_key=True),
-              Column('ticket_id', Integer, ForeignKey('tickets.id')),
-              Column('created_at', DateTime, default=datetime.now),
-              Column('modified_at', DateTime, onupdate=datetime.now)
-              )
 
 payments = Table('payments', metadata,
                  Column('id', Integer, primary_key=True),
@@ -195,5 +183,4 @@ payments = Table('payments', metadata,
 
 mapper(User, users)
 mapper(Ticket, tickets)
-mapper(Seat, seats)
 mapper(Payment, payments)

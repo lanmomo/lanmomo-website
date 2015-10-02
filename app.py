@@ -10,8 +10,10 @@ from datetime import datetime
 
 from flask import Flask, send_from_directory, jsonify, request, session, redirect
 
+from sqlalchemy import or_
+
 from database import db_session, init_db, init_engine
-from models import Ticket, Seat, User, Payment
+from models import Ticket, User, Payment
 
 import mail
 from paypal import Paypal
@@ -87,14 +89,26 @@ def update_server():
     return jsonify({'error': 'Not implemented'}), 500
 
 
+@app.route('/api/tickets/type/<type_id>', methods=['GET'])
+def get_tickets_by_type(type_id):
+    pub_tickets = []
+    tickets = Ticket.query \
+        .filter(Ticket.type_id == type_id) \
+        .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())).all()
+
+    pub = map(lambda ticket: ticket.as_pub_dict(), tickets)
+    return jsonify({'tickets': list(pub)}), 200
+
+
 @app.route('/api/tickets', methods=['GET'])
 def get_all_tickets():
-    pub_tickets = []
-    tickets = Ticket.query.all()
+    tickets = Ticket.query.filter(
+        or_(
+            Ticket.paid,
+            Ticket.reserved_until >= datetime.now())).all()
 
-    for ticket in tickets:
-        pub_tickets.append(ticket.as_pub_dict())
-    return tickets
+    pub = map(lambda ticket: ticket.as_pub_dict(), tickets)
+    return jsonify({'tickets': list(pub)}), 200
 
 
 @app.route('/api/tickets', methods=['POST'])
