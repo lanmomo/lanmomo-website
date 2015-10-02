@@ -170,7 +170,7 @@ app.controller('TicketsController', function($scope, $http, $location) {
           $scope.error = err.error;
         });
     } else if (ticketType === TICKET_TYPES.PC) {
-      $location.path('/map/buy');
+      $location.path('/map');
     } else {
       console.log('wrong type id');
     }
