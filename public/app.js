@@ -249,7 +249,7 @@ app.controller('SignupController', function($scope, $http) {
     usernameChanged: false,
     emailChanged: false,
     usernameAvailable: false,
-    emailAvailable: false
+    emailAvailable: false,
   };
   $scope.signup = function(data) {
     $scope.state.loading = true;
@@ -296,6 +296,41 @@ app.controller('SignupController', function($scope, $http) {
   $scope.resetEmailChanged = function() {
     $scope.state.emailChanged = false;
   };
+});
+
+app.controller('MapController', function ($scope, $http, $interval) {
+  var seatStatus = {};
+  
+  for (var i = 1; i <= 96; i++) {
+    if (i % 4 == 0 || i % 5 == 0)
+      seatStatus[i] = 't';
+    if (i % 6 == 0)
+      seatStatus[i] = 'r';
+  }
+
+  $scope.selectedSeat = null;
+
+  $scope.isAvail = function (seat) {
+    return !seatStatus.hasOwnProperty(seat);
+  };
+  $scope.isReserved = function (seat) {
+    return seatStatus[seat] == 'r';
+  };
+  $scope.isTaken = function (seat) {
+    return seatStatus[seat] == 't';
+  };
+  $scope.selectSeat = function (seat) {
+    if ($scope.isAvail(seat)) {
+      $scope.selectedSeat = seat;
+    }
+  };
+  $scope.times = function (x) {
+    return new Array(x);
+  };
+
+  $interval(function () {
+    // TODO refresh
+  }, 5000);
 });
 
 app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
@@ -360,7 +395,7 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   });
   $routeProvider.otherwise({redirectTo: '/'});
 
-  $locationProvider.html5Mode(true);
+  //$locationProvider.html5Mode(true);
 
   cfpLoadingBarProvider.includeSpinner = false;
 

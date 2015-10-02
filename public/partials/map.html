@@ -1,0 +1,15 @@
+<div class="container">
+  <div class="col-lg-12">
+    <div ng-repeat="(row, _) in times(4) track by $index">
+      <div class="row">
+        <div ng-repeat="(col, _) in times(24) track by $index" ng-init="seat = row * 24 + col + 1;"
+             ng-attr-id="{{ seat }}" ng-click="selectSeat(seat)"
+             ng-class="{bottom: row==1 || row ==3, right: col==23, selected: selectedSeat == seat, taken: isTaken(seat), reserved: isReserved(seat)}"
+             class="seat">
+          {{ seat }}
+        </div>
+      </div>
+      <div class="splitter" ng-show="row == 1"></div>
+    </div>
+  </div>
+</div>
