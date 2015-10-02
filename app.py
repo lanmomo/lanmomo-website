@@ -5,7 +5,6 @@ import json
 import re
 import hashlib
 import uuid
-import logging
 
 from datetime import datetime
 
@@ -172,34 +171,6 @@ def pay_ticket():
             ' paiement'}), 500
 
 
-def check_execution(payment, paypal_payer_id):
-    if payment.execute({"payer_id": paypal_payer_id}):
-        # Validate paypal is approved
-        return payment.state.lower() == 'approved'
-
-
-def check_creation(payment, paypal_payer_id):
-    if payment.execute({"payer_id": paypal_payer_id}):
-        # Validate paypal is approved
-        return payment.state.lower() == 'approved'
-
-
-def complete_purchase(ticket):
-    try:
-        db_session.execute('LOCK TABLES tickets WRITE;')
-        # update ticket
-        ticket.paid = True
-        db_session.add(ticket)
-        db_session.commit()
-
-        db_session.execute('UNLOCK TABLES;')
-        # TODO send email with payment confirmation
-    except:
-        return ERR_COMPLETION
-
-    return None
-
-
 def err_execute_and_complete_payment(paypal_payment_id, paypal_payer_id):
     """"Returns ERROR or None"""
     # lock table tickets
@@ -207,7 +178,7 @@ def err_execute_and_complete_payment(paypal_payment_id, paypal_payer_id):
 
     payment = get_og_payment(paypal_payment_id)
     if not payment:
-        return 'aucun paiement'
+        return jsonify({'message': 'aucun paiement'}), 404
 
     ticket = get_ticket_from_payment(payment)
 
@@ -225,14 +196,12 @@ def err_execute_and_complete_payment(paypal_payment_id, paypal_payer_id):
     if (not paypal_payment.execute({"payer_id": paypal_payer_id}) or
             paypal_payment.state.lower() != 'approved'):
         # Could not execute or execute did not approve transaction
-        print(paypal_payment)
-        return ERR_INVALID_PAYPAL
+        return jsonify({'message': ERR_INVALID_PAYPAL}), 402
 
     # Validate payment is created
     paypal_payment = PaypalPayment.find(paypal_payment_id)
     if paypal_payment.state.lower() != 'created':
-        print(paypal_payment)
-        return ERR_CREATE_PAYPAL
+        return jsonify({'message': ERR_CREATE_PAYPAL}), 402
 
     return complete_purchase(ticket)
 
@@ -248,9 +217,9 @@ def execute_payment():
         if err:
             db_session.rollback()
             db_session.execute('UNLOCK TABLES;')
-            return jsonify({'error': err}), 500
+            return err
 
-        # Success at last
+        # Success
         return jsonify({'message': MSG_SUCCESS_PAY}), 200
     except Exception as e:
         try:
@@ -259,8 +228,6 @@ def execute_payment():
             db_session.execute('UNLOCK TABLES;')
         except:
             pass
-        print(e)
-        logging.exception("Something awful happened!")
         # TODO logging and error redirect
         return jsonify({'error': 'Une erreur inconnue est survenue.'}), 500
 
@@ -287,24 +254,40 @@ def prepare_payment_execution(payment, payer_id, ticket):
     db_session.add(payment)
 
     # Reserve seat for 30 more seconds if necessary
-    #time_after_tran = datetime.now() + timedelta(seconds=30)
-    #if ticket.reserved_until <= time_after_tran:
-        # TODO set new reservation
+    # time_after_tran = datetime.now() + timedelta(seconds=30)
+    # if ticket.reserved_until <= time_after_tran:
+    # TODO set new reservation
     #    pass
 
 
 def get_err_from_ticket(ticket):
     """Check if the payment is related to a valid reservation"""
     if not ticket:
-        return 'aucun billet'
+        return jsonify({'error': 'aucun billet'}), 409
 
     # Check if ticket is already paid
-    if ticket.paid:
-        return 'Votre billet a déjà été payé !'
+    if ticket.pid:
+        return jsonify({'error': 'Votre billet a déjà été payé !'}), 409
 
     # Check if reservation is expired
     if ticket.reserved_until < datetime.now():
-        return ERR_EXPIRED
+        return jsonify({'error': ERR_EXPIRED}), 410
+
+    return None
+
+
+def complete_purchase(ticket):
+    try:
+        db_session.execute('LOCK TABLES tickets WRITE;')
+        # update ticket
+        ticket.paid = True
+        db_session.add(ticket)
+        db_session.commit()
+
+        db_session.execute('UNLOCK TABLES;')
+        # TODO send email with payment confirmation
+    except:
+        return jsonify({'message': ERR_COMPLETION}), 409
 
     return None
 

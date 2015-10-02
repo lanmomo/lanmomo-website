@@ -8,9 +8,9 @@ class Paypal():
     def configure(self, client_id, client_secret, mode):
         paypalrestsdk. \
             configure({
-                       "mode": mode,
-                       "client_id": client_id,
-                       "client_secret": client_secret})
+                      "mode": mode,
+                      "client_id": client_id,
+                      "client_secret": client_secret})
 
     def create(self, ticket):
         price_str = ("%.2f" % ticket.total)
@@ -21,9 +21,9 @@ class Paypal():
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": "https://lanmomo.org/api/tickets/pay/execute",
+                "return_url": "https://lanmomo.org/pay/execute",
                 # TODO check cancel url
-                "cancel_url": "https://lanmomo.org/api/tickets/pay/cancel"
+                "cancel_url": "https://lanmomo.org/pay/cancel"
             },
             "transactions": [{
                 "item_list": {
