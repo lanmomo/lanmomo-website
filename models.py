@@ -28,6 +28,11 @@ class User():
     def __repr__(self):
         return '<User %r>' % (self.username)
 
+    def from_token(token):
+        if token:
+            return User.query.filter(
+                User.login_token == token).first()
+
     def as_pub_dict(self):
         pub_dict = {
             'username': self.username,
@@ -142,6 +147,76 @@ class Payment():
     def __repr__(self):
         return '<Seat %r>' % (self.id)
 
+
+class Team():
+    query = db_session.query_property()
+
+    def __init__(self, name, game, captain_id):
+            self.name = name
+            self.game = game
+            self.captain_id = captain_id
+            self.created_date = datetime.now
+
+    def __repr__(self):
+            return '<Team %r>' % (self.name)
+
+    def get_team_id(self):
+        return Team.query.filter(Team.name == self.name) \
+            .filter(Team.game == self.game).first().id
+
+    def get_captain_name(self):
+        user = User.query.filter(User.id == self.captain_id).first()
+        if user:
+            return user.username
+
+    def as_pub_dict(self):
+            pub_dict = {
+                'id': self.get_team_id(),
+                'name': self.name,
+                'game': self.game,
+                'captain_name': self.get_captain_name(),
+                }
+            return pub_dict
+
+
+class TeamUser():
+    query = db_session.query_property()
+
+    def __init__(self, team_id, user_id, accepted=False):
+            self.team_id = team_id
+            self.user_id = user_id
+            self.accepted = accepted
+
+    def __repr__(self):
+            return '<Team-User %r - %r>' % (self.team_id, self.user_id)
+
+    def get_team_name(self):
+        team = User.query.filter(Team.id == self.team_id).first()
+        if team:
+            return user.name
+
+    def get_user_name(self):
+        user = User.query.filter(User.id == self.user_id).first()
+        if user:
+            return user.username
+
+    def as_pub_dict(self):
+            pub_dict = {
+                'username': self.get_user_name,
+                'team_name': self.get_team_name,
+                'accepted': self.accepted
+                }
+            return pub_dict
+
+teams = Table('teams', metadata,
+              Column('id', Integer, primary_key=True),
+              Column('name', String(255), nullable=False),
+              Column('game', String(255), nullable=False),
+              Column('captain_id', Integer, ForeignKey('users.id')),
+              Column('created_at', DateTime, default=datetime.now),
+              Column('modified_at', DateTime, onupdate=datetime.now)
+              )
+
 users = Table('users', metadata,
               Column('id', Integer, primary_key=True),
               Column('username', String(255), nullable=False),
@@ -157,6 +232,13 @@ users = Table('users', metadata,
               Column('confirmed', Boolean, default=False),
               Column('confirmation_token', String(32))
               )
+
+team_users = Table('team_users', metadata,
+                   Column('id', Integer, primary_key=True),
+                   Column('team_id', Integer, ForeignKey('teams.id')),
+                   Column('user_id', Integer, ForeignKey('users.id')),
+                   Column('accepted', Boolean, nullable=False)
+                   )
 
 tickets = Table('tickets', metadata,
                 Column('id', Integer, primary_key=True),
@@ -196,4 +278,6 @@ payments = Table('payments', metadata,
 mapper(User, users)
 mapper(Ticket, tickets)
 mapper(Seat, seats)
+mapper(Team, teams)
+mapper(TeamUser, team_users)
 mapper(Payment, payments)

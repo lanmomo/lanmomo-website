@@ -188,3 +188,9 @@ fieldset[disabled] .btn-subscribe.active {
   filter: none;
 }
 /* END BTN-SUBSCRIBE */
+
+.tournaments-text {
+  margin-left: 5px;
+  margin-right: 5px;
+
+}
