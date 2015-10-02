@@ -351,15 +351,21 @@ app.controller('SignupController', function($scope, $http) {
 });
 
 app.controller('MapController', function ($scope, $http, $interval) {
-  var seatStatus = {};
-  $http.get('/api/tickets/type/0')
-    .success(function(data) {
-      var tickets = data.tickets;
-      console.log(tickets);
-      for (var i = 0; i <= tickets.length; i++) {
-        if (tickets[i]) {
-          console.log(tickets[i]);
 
+  $scope.selectedSeat = null;
+  var seatStatus = {};
+  refresh();
+
+  $interval(function () {
+      refresh();
+  }, 5000);
+
+  function refresh() {
+    $http.get('/api/tickets/type/0')
+      .success(function(data) {
+        seatStatus = {};
+        var tickets = data.tickets;
+        for (var i = 0; i < tickets.length; i++) {
           var seat_num = tickets[i].seat_num;
           if (tickets[i].paid) {
             seatStatus[seat_num] = 't';
@@ -367,13 +373,11 @@ app.controller('MapController', function ($scope, $http, $interval) {
             seatStatus[seat_num] = 'r';
           }
         }
-      }
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err.error, status: status};
-    });
-
-  $scope.selectedSeat = null;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.error, status: status};
+      });
+  }
 
   $scope.isAvail = function (seat) {
     return !seatStatus.hasOwnProperty(seat);
@@ -392,10 +396,6 @@ app.controller('MapController', function ($scope, $http, $interval) {
   $scope.times = function (x) {
     return new Array(x);
   };
-
-  $interval(function () {
-    // TODO refresh
-  }, 5000);
 });
 
 app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {

@@ -538,6 +538,7 @@ def login_in_please(message='Vous devez vous connecter.'):
 
 
 def setup(conf_path):
+    global app, games, tournaments
     app.config.from_pyfile(conf_path)
     init_engine(app.config['DATABASE_URI'])
     init_db()
