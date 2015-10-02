@@ -87,7 +87,7 @@ app.controller('TournamentsController', function($scope, $http) {
                 location.reload();
             })
             .error(function(err, status) {
-
+                $scope.error = {message: err.message, status: status};
             });
     }
 
@@ -98,7 +98,7 @@ app.controller('TournamentsController', function($scope, $http) {
                     $scope.teams.splice(index, 1);
                 })
                 .error(function(err, status) {
-
+                    $scope.error = {message: err.error, status: status};
                 });
         }
     }

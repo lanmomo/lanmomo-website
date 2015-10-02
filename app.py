@@ -41,13 +41,13 @@ def username_exists(username):
 
 
 def team_exists(game, team):
-    return Team.query.filter(Team.game == game and
-                            Team.name == team).count() > 0
+    return Team.query.filter(Team.game == game) \
+                            .filter(Team.name == team).count() > 0
 
 
 def captain_has_team(game, captain_id):
-    return Team.query.filter(Team.game == game and
-                            Team.captain_id == captain_id).count() > 0
+    return Team.query.filter(Team.game == game) \
+                            .filter(Team.captain_id == captain_id).count() > 0
 
 
 def send_email(to_email, to_name, subject, message):
@@ -93,11 +93,12 @@ def add_team(game, name):
     team = Team(name, game, user_id)
     if team_exists(team.game, team.name) or \
         captain_has_team(team.game, team.captain_id):
-        return bad_request()
+        return jsonify({'message': 'Vous avez déja une équipe pour ce jeu ' +
+                    'ou le nom d\'équipe est deja utilisé'}), 400
 
     db_session.add(team)
     db_session.commit()
-    return jsonify({'Sucess': 'Team Created'}), 200
+    return jsonify({'message': 'Team Created'}), 200
 
 
 @app.route('/api/teams/<game>/<name>', methods=['DELETE'])
@@ -106,17 +107,18 @@ def delete_team(game, name):
         return login_in_please()
     user_id = session['user_id']
 
-    team = Team.query.filter(Team.game == game and
-            Team.name == name).first()
+    team = Team.query.filter(Team.game == game) \
+                            .filter(Team.name == name).first()
     if not team:
-        return jsonify({'error': 'no team found'}), 500
+        return jsonify({'message': 'no team found'}), 500
 
     if team.captain_id != user_id:
-        return jsonify({'error': 'you are not the captain of this team'}), 401
+        return jsonify({'message':
+                        'Vous n\'êtes pas le capitaine de cette équipe'}), 401
     else:
         db_session.delete(team)
         db_session.commit()
-        return jsonify({'Success': 'Team Deleted!'}), 200
+        return jsonify({'message': 'Team Deleted!'}), 200
 
 
 @app.route('/api/servers', methods=['GET'])
