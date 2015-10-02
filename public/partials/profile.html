@@ -1,6 +1,6 @@
 <div class="container">
   <div class="page-header">
-      <h1>Bonjour {{userData.firstname}}</h1>
+      <h1>Bonjour {{userData.username}}</h1>
   </div>
   <div class="alert alert-success" role="alert" ng-show="message">
     <i class="fa fa-info-circle"></i> {{message}}
@@ -26,6 +26,27 @@
     <div class="well well-lg">
       <p class="text-info">Il semble que vous n'avez pas encore de billet !</p>
       <a ng-href="/tickets" class="btn btn-info btn-lg">Acheter un billet <i class="fa fa-chevron-right fa-3"></i></a>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Information du profil</h3>
+      </div>
+      <div class="panel-body col-md-4">
+        <table class="table">
+          <tr>
+            <th>Pseudonyme</th>
+            <td>{{userData.username}}</td>
+          </tr>
+          <tr>
+            <th>Prenom</th>
+            <td>{{userData.firstname}}</td>
+          </tr>
+          <tr>
+            <th>Nom</th>
+            <td>{{userData.lastname}}</td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 </div>

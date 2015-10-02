@@ -13,7 +13,8 @@ from flask import Flask, send_from_directory, jsonify, request, session, redirec
 from sqlalchemy import or_
 
 from database import db_session, init_db, init_engine
-from models import Ticket, User, Payment
+
+from models import Ticket, User, Payment, Team, TeamUser
 
 import mail
 from paypal import Paypal
@@ -41,7 +42,8 @@ app = Flask(__name__)
 
 
 def validate_signup_body(req):
-    needed = ['password', 'username', 'firstname', 'lastname', 'email', 'phone']
+    needed = ['password', 'username', 'firstname',
+              'lastname', 'email', 'phone']
     for n in needed:
         if n not in req.keys():
             return False
@@ -63,6 +65,16 @@ def username_exists(username):
     return User.query.filter(User.username == username).count() > 0
 
 
+def team_exists(game, team):
+    return Team.query.filter(Team.game == game) \
+        .filter(Team.name == team).count() > 0
+
+
+def captain_has_team(game, captain_id):
+    return Team.query.filter(Team.game == game) \
+        .filter(Team.captain_id == captain_id).count() > 0
+
+
 def send_email(to_email, to_name, subject, message):
     mail.send_email(to_email, to_name, subject, message,
                     app.config['MAILGUN_USER'], app.config['MAILGUN_KEY'],
@@ -77,6 +89,60 @@ def func():
 @app.route('/api/games', methods=['GET'])
 def get_games():
     return jsonify(games), 200
+
+
+@app.route('/api/tournaments', methods=['GET'])
+def get_tournaments():
+    return jsonify(tournaments), 200
+
+
+@app.route('/api/teams', methods=['GET'])
+def get_all_teams():
+    pub_teams = []
+    teams = Team.query.all()
+
+    for team in teams:
+        pub_teams.append(team.as_pub_dict())
+    return jsonify({'teams': pub_teams}), 200
+
+
+# TODO check if the game exists before creating a team
+@app.route('/api/teams', methods=['POST'])
+def add_team():
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    req = request.get_json()
+
+    team = Team(req['name'], req['game'], user_id)
+    if team_exists(team.game, team.name) or \
+            captain_has_team(team.game, team.captain_id):
+        return jsonify({'message': "Vous avez déja une équipe pour ce jeu " +
+                        "ou le nom d'équipe est deja utilisé"}), 400
+
+    db_session.add(team)
+    db_session.commit()
+    return jsonify({'message': 'Team Created'}), 200
+
+
+@app.route('/api/teams/<id>', methods=['DELETE'])
+def delete_team(id):
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    team = Team.query.filter(Team.id == id).first()
+    if not team:
+        return jsonify({'message': 'no team found'}), 500
+
+    if team.captain_id != user_id:
+        return jsonify({'message':
+                        "Vous n'êtes pas le capitaine de cette équipe"}), 401
+    else:
+        db_session.delete(team)
+        db_session.commit()
+        return jsonify({'message': 'Team Deleted!'}), 200
 
 
 @app.route('/api/servers', methods=['GET'])
@@ -346,7 +412,7 @@ def is_logged_in():
 @app.route('/api/login', methods=['POST'])
 def login():
     req = request.get_json()
-    if 'password' not in req or 'password' not in req:
+    if 'email' not in req or 'password' not in req:
         return bad_request()
 
     email = req['email']
@@ -472,7 +538,6 @@ def login_in_please(message='Vous devez vous connecter.'):
 
 
 def setup(conf_path):
-    global app, games, paypal_api
     app.config.from_pyfile(conf_path)
     init_engine(app.config['DATABASE_URI'])
     init_db()
@@ -485,6 +550,8 @@ def setup(conf_path):
 
     with open('config/games.json') as data_file:
         games = json.load(data_file)
+    with open('config/tournaments.json') as data_file:
+        tournaments = json.load(data_file)
     return app
 
 if __name__ == '__main__':
