@@ -229,6 +229,7 @@ def execute_payment():
         except:
             pass
         # TODO logging and error redirect
+        print(e)
         return jsonify({'error': 'Une erreur inconnue est survenue.'}), 500
 
 
@@ -266,7 +267,7 @@ def get_err_from_ticket(ticket):
         return jsonify({'error': 'aucun billet'}), 409
 
     # Check if ticket is already paid
-    if ticket.pid:
+    if ticket.paid:
         return jsonify({'error': 'Votre billet a déjà été payé !'}), 409
 
     # Check if reservation is expired
