@@ -232,7 +232,9 @@ def book_ticket():
     r = Ticket.book_temp(user_id, ticket_type, price, tickets_max, seat_num)
 
     if r[0]:
-        ticket = Ticket.query.filter(Ticket.owner_id == user_id).one()
+        ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
+            .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+            .one()
         return jsonify({'ticket': ticket.as_pub_dict()}), 201
 
     # Conflict while booking ticket
