@@ -360,6 +360,21 @@ app.controller('MapController', function ($scope, $http, $interval) {
       refresh();
   }, 5000);
 
+  $scope.buy = function(seatNum) {
+    console.log(seatNum);
+    var ticket = {};
+    $scope.submitted = true;
+    ticket.type = TICKET_TYPES.PC;
+    ticket.seat = seatNum;
+    $http.post('/api/tickets', ticket)
+      .success(function(data) {
+        $location.path('/pay');
+      })
+      .error(function(err, status) {
+        $scope.error = err.error;
+      });
+  };
+
   function refresh() {
     $http.get('/api/tickets/type/0')
       .success(function(data) {

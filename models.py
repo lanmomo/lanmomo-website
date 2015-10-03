@@ -55,14 +55,15 @@ class User():
 class Ticket():
     query = db_session.query_property()
 
-    def __init__(self, type_id, owner_id, price,
-                 paid=False, reserved_until=None, reserved_at=None):
+    def __init__(self, type_id, owner_id, price, paid=False,
+                 reserved_until=None, reserved_at=None, seat_num=None):
         self.type_id = type_id
         self.owner_id = owner_id
         self.price = price
         self.paid = paid
         self.reserved_until = reserved_until
         self.reserved_at = reserved_at
+        self.seat_num = seat_num
 
     def __repr__(self):
         return '<Ticket %r>' % (self.id)
@@ -81,7 +82,7 @@ class Ticket():
             pub_dict['seat_num'] = self.seat_num
         return pub_dict
 
-    def book_temp(user_id, ticket_type, price, tickets_max, seat=None):
+    def book_temp(user_id, ticket_type, price, tickets_max, seat_num=None):
         try:
             db_session.execute('LOCK TABLES tickets WRITE;')
 
@@ -113,17 +114,12 @@ class Ticket():
                 return False, \
                     'Le maximum de billet a été réservé pour le moment !'
 
-            if seat:
-                # Check is seat is taken
-                # TODO
-                pass
-
             # Book ticket for 10 minutes
             reserved_until = datetime.now() + timedelta(minutes=10)
 
             # Insert ticket
             ticket = Ticket(ticket_type, user_id, price,
-                            reserved_until=reserved_until)
+                            reserved_until=reserved_until, seat_num=seat_num)
             db_session.add(ticket)
 
             db_session.commit()

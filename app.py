@@ -220,17 +220,16 @@ def book_ticket():
 
     if ticket_type not in app.config['TYPE_IDS'].values():
         return bad_request()
-
-    seat = None
+    seat_num = None
     if ticket_type == app.config['TYPE_IDS']['pc']:
         if 'seat' not in req:
             return bad_request()
-        seat = req['seat']
+        seat_num = req['seat']
 
     tickets_max = app.config['TICKETS_MAX']
     price = app.config['PRICING'][ticket_type]
 
-    r = Ticket.book_temp(user_id, ticket_type, price, tickets_max, seat)
+    r = Ticket.book_temp(user_id, ticket_type, price, tickets_max, seat_num)
 
     if r[0]:
         ticket = Ticket.query.filter(Ticket.owner_id == user_id).one()
