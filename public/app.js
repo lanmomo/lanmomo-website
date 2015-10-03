@@ -378,6 +378,12 @@ app.controller('MapController', function ($scope, $http, $interval) {
         $scope.error = {message: err.error, status: status};
       });
   }
+  function resetSelectedSeat() {
+    delete $scope.selectedSeatTicket;
+    delete $scope.selectedSeatUser;
+    delete $scope.error;
+    delete $scope.selectSeatIsFree;
+  }
 
   $scope.isAvail = function (seat) {
     return !seatStatus.hasOwnProperty(seat);
@@ -389,9 +395,23 @@ app.controller('MapController', function ($scope, $http, $interval) {
     return seatStatus[seat] == 't';
   };
   $scope.selectSeat = function (seat) {
-    if ($scope.isAvail(seat)) {
-      $scope.selectedSeat = seat;
-    }
+    $http.get('/api/tickets/seat/' + seat + '/free')
+      .success(function(data) {
+        resetSelectedSeat();
+        $scope.selectedSeatID = seat;
+        if (!data.free) {
+          $scope.error = 'siège occupé par ' + data.user.username;
+          $scope.selectedSeatTicket = data.ticket;
+          $scope.selectedSeatUser = data.user;
+        } else {
+          $scope.selectSeatIsFree = true;
+        }
+      })
+      .error(function(err, status) {
+        resetSelectedSeat();
+        $scope.error = {message: err.error, status: status};
+      });
+
   };
   $scope.times = function (x) {
     return new Array(x);

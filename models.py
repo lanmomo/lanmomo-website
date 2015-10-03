@@ -35,6 +35,13 @@ class User():
 
     def as_pub_dict(self):
         pub_dict = {
+            'id': self.id,
+            'username': self.username
+            }
+        return pub_dict
+
+    def as_private_dict(self):
+        priv_dict = {
             'username': self.username,
             'firstname': self.firstname,
             'lastname': self.lastname,
@@ -42,7 +49,7 @@ class User():
             'phone': self.phone,
             'created_at': self.created_at
             }
-        return pub_dict
+        return priv_dict
 
 
 class Ticket():

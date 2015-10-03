@@ -155,6 +155,36 @@ def update_server():
     return jsonify({'error': 'Not implemented'}), 500
 
 
+def get_ticket_from_seat_num(seat_num):
+    ticket = Ticket.query \
+        .filter(Ticket.seat_num == seat_num) \
+        .filter(or_(Ticket.paid,
+                    Ticket.reserved_until >= datetime.now())).first()
+    return ticket
+
+
+@app.route('/api/tickets/seat/<seat_num>/free', methods=['GET'])
+def seat_is_free(seat_num):
+    ticket = get_ticket_from_seat_num(seat_num)
+    if ticket:
+        user = User.query.filter(User.id == ticket.owner_id).first()
+        return jsonify({
+            'free': False,
+            'ticket': ticket.as_pub_dict(),
+            'user': user.as_pub_dict()}
+        ), 200
+    return jsonify({'free': True}), 200
+
+
+@app.route('/api/tickets/seat/<seat_num>', methods=['GET'])
+def ticket_from_seat(seat_num):
+    ticket = get_ticket_from_seat_num(seat_num)
+
+    if ticket:
+        return jsonify({'ticket': seat.as_pub_dict()}), 200
+    return jsonify({}), 404
+
+
 @app.route('/api/tickets/type/<type_id>', methods=['GET'])
 def get_tickets_by_type(type_id):
     pub_tickets = []
@@ -397,7 +427,7 @@ def get_profile():
     user = User.query.filter(User.id == user_id).first()
 
     if user:
-        return jsonify({'user': user.as_pub_dict()}), 200
+        return jsonify({'user': user.as_private_dict()}), 200
     return jsonify({'error': 'Non authorisé'}), 403
 
 
