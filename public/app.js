@@ -361,11 +361,11 @@ app.controller('MapController', function ($scope, $http, $interval) {
   }, 5000);
 
   $scope.buy = function(seatNum) {
-    console.log(seatNum);
     var ticket = {};
     $scope.submitted = true;
     ticket.type = TICKET_TYPES.PC;
     ticket.seat = seatNum;
+
     $http.post('/api/tickets', ticket)
       .success(function(data) {
         $location.path('/pay');
@@ -388,6 +388,7 @@ app.controller('MapController', function ($scope, $http, $interval) {
             seatStatus[seat_num] = 'r';
           }
         }
+        // TODO check if selectedSeatTicket is updated !
       })
       .error(function(err, status) {
         $scope.error = {message: err.error, status: status};
