@@ -356,9 +356,13 @@ app.controller('MapController', function ($scope, $http, $interval) {
   var seatStatus = {};
   refresh();
 
-  $interval(function () {
+  var refreshInterval = $interval(function () {
       refresh();
   }, 5000);
+
+  $scope.$on('$destroy', function () {
+    $interval.cancel(refreshInterval);
+  });
 
   $scope.buy = function(seatNum) {
     var ticket = {};
