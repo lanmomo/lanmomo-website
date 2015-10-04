@@ -21,9 +21,36 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
           }
         }
       }
-    ]);
+    ]).factory('Auth', function($rootScope, $http) {
+      return {
+        login : function() {
+          $rootScope.loggedIn = true;
+          $rootScope.$broadcast('login');
+        },
+        isLoggedIn : function() {
+          return $rootScope.loggedIn;
+        },
+        logout : function() {
+          $rootScope.loggedIn = false;
+          $rootScope.$broadcast('login');
+        },
+        refresh: function() {
+          $http.get('/api/login')
+            .success(function(data) {
+              if (data.logged_in) {
+                Auth.login();
+              } else {
+                $rootScope.loggedIn = false;
+              }
+            })
+            .error(function(err, status) {
+              $rootScope.loggedIn = false;
+            });
+        }
+      }
+    });
 
-app.run(function($rootScope, $http) {
+app.run(function($rootScope, $http, Auth) {
   // runs on first page load or refresh
   $http.get('/api/login')
     .success(function(data) {
@@ -38,6 +65,14 @@ app.controller('NavbarController', function($scope, $location) {
   $scope.isActive = function(url) {
     return $location.path() === url;
   };
+
+  $scope.refresh = function () {
+    $scope.loggedIn = Auth.isLoggedIn();
+  }
+
+  $scope.$on("login", function() {
+    $scope.refresh();
+  });
 
   $('.navbar-nav li a').click(function() {
     if ($('.navbar-collapse.collapse').hasClass('in')) {
@@ -228,7 +263,7 @@ app.controller('VerifyController', function($scope, $http, $routeParams) {
     });
 });
 
-app.controller('LoginController', function ($scope, $http, $location, $rootScope) {
+app.controller('LoginController', function ($scope, $http, $location, $rootScope, Auth) {
   $scope.submitLogin = function () {
     var data = {
         email: $scope.user.email,
@@ -236,7 +271,7 @@ app.controller('LoginController', function ($scope, $http, $location, $rootScope
     }
     $http.post('/api/login', data)
       .success(function(data) {
-        $rootScope.loggedIn
+        Auth.login();
         $location.path('/profile');
       })
       .error(function(err, status) {
@@ -245,9 +280,10 @@ app.controller('LoginController', function ($scope, $http, $location, $rootScope
   };
 });
 
-app.controller('LogoutController', function ($scope, $http, $location) {
+app.controller('LogoutController', function ($scope, $http, $location, Auth) {
   $http.get('/api/logout')
     .success(function(data) {
+      Auth.logout();
       $location.path('/');
     })
     .error(function(err, status) {
