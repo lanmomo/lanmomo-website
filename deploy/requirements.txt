@@ -1,3 +1,3 @@
-apt-get install nginx uwsgi uwsgi-plugin-python3
+apt-get install nginx uwsgi uwsgi-plugin-python3 libssl-dev libffi-dev
 pip3 install -r requirements.txt
 pip3 install mysql-connector-python --allow-external mysql-connector-python

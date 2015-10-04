@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="col-lg-12">
+    <div ng-repeat="(row, _) in times(4) track by $index">
+      <div class="row">
+        <div ng-repeat="(col, _) in times(24) track by $index" ng-init="seat = row * 24 + col + 1;"
+             ng-attr-id="{{ seat }}" ng-click="selectSeat(seat)"
+             ng-class="{bottom: row==1 || row==3, right: col==23, selected: selectedSeatID == seat, taken: isTaken(seat), reserved: isReserved(seat)}"
+             class="seat">
+          {{ seat }}
+        </div>
+      </div>
+      <div class="splitter" ng-show="row == 1"></div>
+    </div>
+  </div>
+  <div class="col-lg-12" ng-show="selectedSeatTicket && selectedSeatUser">
+    <p class="text-danger" ng-show="selectedSeatTicket.paid">
+      Ce siège est acheté par {{selectedSeatUser.username}} !
+    </p>
+    <p class="text-warning" ng-show="!selectedSeatTicket.paid">
+      Ce siège est réservé par {{selectedSeatUser.username}} jusqu'à {{selectedSeatTicket.reserved_until}}
+    </p>
+  </div>
+  <div ng-show="selectSeatIsFree" class="col-lg-12">
+    <p class="text-success">
+      <button class="btn btn-success" ng-click="buy(selectedSeatID)">Réserver ce siège !</button>
+    </p>
+  </div>
+</div>

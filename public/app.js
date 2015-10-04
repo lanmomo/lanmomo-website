@@ -170,13 +170,13 @@ app.controller('TicketsController', function($scope, $http, $location) {
           $scope.error = err.error;
         });
     } else if (ticketType === TICKET_TYPES.PC) {
-      $location.path('/map/buy');
+      $location.path('/map');
     } else {
       console.log('wrong type id');
     }
   };
 });
-app.controller('PayController', function($scope, $http) {
+app.controller('PayController', function($scope, $http, $window) {
   $http.get('/api/users/ticket')
     .success(function(data) {
       $scope.ticket = data.ticket;
@@ -202,7 +202,7 @@ app.controller('PayController', function($scope, $http) {
 
       $http.post('/api/tickets/pay', data)
         .success(function(data) {
-          // TODO
+          $window.location.href = data.redirect_url;
         })
         .error(function(data) {
           $scope.error = "too bad man"
@@ -255,6 +255,23 @@ app.controller('LogoutController', function ($scope, $http, $location) {
     });
 });
 
+app.controller('ExecuteController', function ($scope, $http, $location, $routeParams) {
+  var data = {
+    'payment_id' : $routeParams.paymentId,
+    'payer_id' : $routeParams.PayerID
+  };
+
+  $http.put('/api/tickets/pay/execute', data)
+    .success(function(data) {
+      console.log(data);
+      $scope.message = data.message;
+    })
+    .error(function(err, status) {
+      console.log(err);
+      $scope.error = {message: err.error, status: status};
+    });
+});
+
 app.controller('ProfileController', function ($scope, $http) {
   $http.get('/api/profile')
     .success(function(data) {
@@ -284,7 +301,7 @@ app.controller('SignupController', function($scope, $http) {
     usernameChanged: false,
     emailChanged: false,
     usernameAvailable: false,
-    emailAvailable: false
+    emailAvailable: false,
   };
   $scope.signup = function(data) {
     $scope.state.loading = true;
@@ -333,6 +350,94 @@ app.controller('SignupController', function($scope, $http) {
   };
 });
 
+app.controller('MapController', function ($scope, $http, $interval) {
+
+  $scope.selectedSeat = null;
+  var seatStatus = {};
+  refresh();
+
+  var refreshInterval = $interval(function () {
+      refresh();
+  }, 5000);
+
+  $scope.$on('$destroy', function () {
+    $interval.cancel(refreshInterval);
+  });
+
+  $scope.buy = function(seatNum) {
+    var ticket = {};
+    $scope.submitted = true;
+    ticket.type = TICKET_TYPES.PC;
+    ticket.seat = seatNum;
+
+    $http.post('/api/tickets', ticket)
+      .success(function(data) {
+        $location.path('/pay');
+      })
+      .error(function(err, status) {
+        $scope.error = err.error;
+      });
+  };
+
+  function refresh() {
+    $http.get('/api/tickets/type/0')
+      .success(function(data) {
+        seatStatus = {};
+        var tickets = data.tickets;
+        for (var i = 0; i < tickets.length; i++) {
+          var seat_num = tickets[i].seat_num;
+          if (tickets[i].paid) {
+            seatStatus[seat_num] = 't';
+          } else {
+            seatStatus[seat_num] = 'r';
+          }
+        }
+        // TODO check if selectedSeatTicket is updated !
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.error, status: status};
+      });
+  }
+  function resetSelectedSeat() {
+    delete $scope.selectedSeatTicket;
+    delete $scope.selectedSeatUser;
+    delete $scope.error;
+    delete $scope.selectSeatIsFree;
+  }
+
+  $scope.isAvail = function (seat) {
+    return !seatStatus.hasOwnProperty(seat);
+  };
+  $scope.isReserved = function (seat) {
+    return seatStatus[seat] == 'r';
+  };
+  $scope.isTaken = function (seat) {
+    return seatStatus[seat] == 't';
+  };
+  $scope.selectSeat = function (seat) {
+    $http.get('/api/tickets/seat/' + seat + '/free')
+      .success(function(data) {
+        resetSelectedSeat();
+        $scope.selectedSeatID = seat;
+        if (!data.free) {
+          $scope.error = 'siège occupé par ' + data.user.username;
+          $scope.selectedSeatTicket = data.ticket;
+          $scope.selectedSeatUser = data.user;
+        } else {
+          $scope.selectSeatIsFree = true;
+        }
+      })
+      .error(function(err, status) {
+        resetSelectedSeat();
+        $scope.error = {message: err.error, status: status};
+      });
+
+  };
+  $scope.times = function (x) {
+    return new Array(x);
+  };
+});
+
 app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/home.html'
@@ -341,9 +446,13 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
     templateUrl: 'partials/tickets.html',
     controller: 'TicketsController'
   })
-  .when('/pay/:pay?', {
+  .when('/pay', {
     templateUrl: 'partials/pay.html',
     controller: 'PayController'
+  })
+  .when('/pay/execute', {
+    templateUrl: 'partials/execute.html',
+    controller: 'ExecuteController'
   })
   .when('/map', {
     templateUrl: 'partials/map.html',

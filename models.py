@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, \
-    ForeignKey, DateTime, Float, text
+    ForeignKey, DateTime, Float, text, or_
 from sqlalchemy.orm import mapper
 
 from database import metadata, db_session
@@ -35,6 +35,13 @@ class User():
 
     def as_pub_dict(self):
         pub_dict = {
+            'id': self.id,
+            'username': self.username
+            }
+        return pub_dict
+
+    def as_private_dict(self):
+        priv_dict = {
             'username': self.username,
             'firstname': self.firstname,
             'lastname': self.lastname,
@@ -42,20 +49,21 @@ class User():
             'phone': self.phone,
             'created_at': self.created_at
             }
-        return pub_dict
+        return priv_dict
 
 
 class Ticket():
     query = db_session.query_property()
 
-    def __init__(self, type_id, owner_id, price,
-                 paid=False, reserved_until=None, reserved_at=None):
+    def __init__(self, type_id, owner_id, price, paid=False,
+                 reserved_until=None, reserved_at=None, seat_num=None):
         self.type_id = type_id
         self.owner_id = owner_id
         self.price = price
         self.paid = paid
         self.reserved_until = reserved_until
         self.reserved_at = reserved_at
+        self.seat_num = seat_num
 
     def __repr__(self):
         return '<Ticket %r>' % (self.id)
@@ -70,48 +78,68 @@ class Ticket():
             'discount_amount': self.discount_amount,
             'total': self.total
             }
+        if self.seat_num:
+            pub_dict['seat_num'] = self.seat_num
         return pub_dict
 
-    def book_temp(user_id, ticket_type, price, tickets_max, seat=None):
-        db_session.execute('LOCK TABLES tickets write;')
+    def book_temp(user_id, ticket_type, price, tickets_max, seat_num=None):
+        try:
+            db_session.execute('LOCK TABLES tickets WRITE;')
 
-        # Check if user can order a ticket
-        r = text('SELECT COUNT(1) FROM tickets WHERE tickets.owner_id = :id;')
-        r = r.bindparams(id=user_id)
+            # Get reservation and paid ticket total count for user
+            user_ticket_count = Ticket.query \
+                .filter(Ticket.owner_id == user_id) \
+                .filter(or_(
+                    Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+                .count()
 
-        if db_session.execute(r).scalar() > 0:
+            # Check if user can order a ticket
+            if user_ticket_count > 0:
+                db_session.rollback()
+                db_session.execute('UNLOCK TABLES;')
+                return False, \
+                    'Vous avez déjà un billet ou une réservation en cours !'
+
+            # Get reservation and paid ticket total count for ticket type
+            ticket_type_count = Ticket.query \
+                .filter(Ticket.type_id == ticket_type) \
+                .filter(or_(
+                    Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+                .count()
+
+            # Check if more tickets is allowed for this type
+            if ticket_type_count >= tickets_max[ticket_type]:
+                db_session.rollback()
+                db_session.execute('UNLOCK TABLES;')
+                return False, \
+                    'Le maximum de billet a été réservé pour le moment !'
+
+            # Book ticket for 10 minutes
+            reserved_until = datetime.now() + timedelta(minutes=10)
+
+            # Insert ticket
+            ticket = Ticket(ticket_type, user_id, price,
+                            reserved_until=reserved_until, seat_num=seat_num)
+            db_session.add(ticket)
+
+            db_session.commit()
+            db_session.execute('UNLOCK TABLES;')
+            return True, ticket
+        except Exception as e:
             db_session.rollback()
             db_session.execute('UNLOCK TABLES;')
-            raise Exception("Vous avez déjà un billet !")
-
-        # Check if more tickets is allowed
-        r = text('SELECT COUNT(1) FROM tickets WHERE tickets.type_id = :id;')
-        r = r.bindparams(id=ticket_type)
-
-        if db_session.execute(r).scalar() >= tickets_max[ticket_type]:
-            db_session.rollback()
-            db_session.execute('UNLOCK TABLES;')
-            raise Exception('Le maximum de billet a été réservé pour ' +
-                            'le moment !')
-
-        # Book ticket for 10 minutes
-        reserved_until = datetime.now() + timedelta(minutes=10)
-
-        # Insert ticket
-        ticket = Ticket(ticket_type, user_id, price,
-                        reserved_until=reserved_until)
-        db_session.add(ticket)
-
-        db_session.commit()
-        db_session.execute('UNLOCK TABLES;')
-        return True
+            print(str(e))
+            return False, '''\
+Une erreur inconnue être survenue lors de la réservation de votre bilet.'''
 
 
-class Seat():
+class Payment():
     query = db_session.query_property()
 
-    def __init__(self, ticket_id, reserved_until=None, reserved_at=None):
+    def __init__(self, amount, ticket_id, paypal_payment_id):
+        self.amount = amount
         self.ticket_id = ticket_id
+        self.paypal_payment_id = paypal_payment_id
 
     def __repr__(self):
         return '<Seat %r>' % (self.id)
@@ -177,7 +205,6 @@ class TeamUser():
                 }
             return pub_dict
 
-
 teams = Table('teams', metadata,
               Column('id', Integer, primary_key=True),
               Column('name', String(255), nullable=False),
@@ -217,6 +244,7 @@ tickets = Table('tickets', metadata,
                 # avoid n-n for now...
                 Column('owner_id', Integer, ForeignKey('users.id'),
                        nullable=False),
+                Column('seat_num', Integer),
                 # Look for related payment and remove this field ?
                 Column('paid', Boolean, default=False, nullable=False),
                 Column('price', Float, nullable=False),
@@ -228,15 +256,18 @@ tickets = Table('tickets', metadata,
                 Column('modified_at', DateTime, onupdate=datetime.now)
                 )
 
-seats = Table('seats', metadata,
-              Column('id', Integer, primary_key=True),
-              Column('ticket_id', Integer, ForeignKey('tickets.id')),
-              Column('created_at', DateTime, default=datetime.now),
-              Column('modified_at', DateTime, onupdate=datetime.now)
-              )
+payments = Table('payments', metadata,
+                 Column('id', Integer, primary_key=True),
+                 Column('ticket_id', Integer, ForeignKey('tickets.id')),  # SKU
+                 Column('paypal_payer_id', String(255)),  # nullable
+                 Column('paypal_payment_id', String(255), nullable=False),
+                 Column('amount', Float, nullable=False),
+                 Column('created_at', DateTime, default=datetime.now),
+                 Column('modified_at', DateTime, onupdate=datetime.now)
+                 )
 
 mapper(User, users)
 mapper(Ticket, tickets)
-mapper(Seat, seats)
 mapper(Team, teams)
 mapper(TeamUser, team_users)
+mapper(Payment, payments)

@@ -4,7 +4,7 @@ server {
 
     server_name lanmomo.org www.lanmomo.org;
 
-    rewrite ^/(users|games|servers|about|terms|faq|contact|signup|congratulations|confirmed)$ / last;
+    rewrite ^/(about|contact|execute|faq|games|home|login|pay|profile|servers|signup|terms|tickets|users|verify|)$ / last;
 
     access_log off;
     error_log off;
