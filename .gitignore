@@ -64,3 +64,6 @@ node_modules
 static
 
 app.dev.mysql.py
+
+# tmp directory for minification
+tmp

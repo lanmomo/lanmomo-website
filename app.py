@@ -569,7 +569,7 @@ Un message de confirmation a été envoyé à votre adresse courriel. Si le mess
 
 @app.route('/')
 def index():
-    return send_from_directory('public', 'index.html')
+    return send_from_directory('static', 'index.html')
 
 
 @app.route('/<path:path>')
@@ -578,7 +578,7 @@ def static_files(path):
     if '.' not in path:
         return index()
 
-    return send_from_directory('public', path)
+    return send_from_directory('static', path)
 
 
 @app.teardown_appcontext
