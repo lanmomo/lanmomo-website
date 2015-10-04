@@ -44,7 +44,6 @@ class Paypal():
         })
 
         if payment.create():
-            print(payment)
             temp_payment = {}
 
             for link in payment.links:

@@ -450,7 +450,7 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
     templateUrl: 'partials/pay.html',
     controller: 'PayController'
   })
-  .when('/execute', {
+  .when('/pay/execute', {
     templateUrl: 'partials/execute.html',
     controller: 'ExecuteController'
   })

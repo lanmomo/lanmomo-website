@@ -254,7 +254,9 @@ def pay_ticket():
         discount = 0
 
     try:
-        ticket = Ticket.query.filter(Ticket.owner_id == user_id).one()
+        ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
+            .filter(Ticket.reserved_until >= datetime.now()) \
+            .one()
 
         # Update ticket with discount and total
         ticket.discount_amount = discount
@@ -302,17 +304,18 @@ def err_execute_and_complete_payment(paypal_payment_id, paypal_payer_id):
     # Unlock tables (we do not want to lock while we query the paypal api)
     db_session.execute('UNLOCK TABLES;')
 
+    # Validate payment is created
     paypal_payment = PaypalPayment.find(paypal_payment_id)
+    if paypal_payment.state.lower() != 'created':
+        # TODO log status
+        print(paypal_payment)
+        return jsonify({'message': ERR_CREATE_PAYPAL}), 402
+
     # Execute the payment
     if (not paypal_payment.execute({"payer_id": paypal_payer_id}) or
             paypal_payment.state.lower() != 'approved'):
         # Could not execute or execute did not approve transaction
         return jsonify({'message': ERR_INVALID_PAYPAL}), 402
-
-    # Validate payment is created
-    paypal_payment = PaypalPayment.find(paypal_payment_id)
-    if paypal_payment.state.lower() != 'created':
-        return jsonify({'message': ERR_CREATE_PAYPAL}), 402
 
     return complete_purchase(ticket)
 
@@ -355,7 +358,9 @@ def get_og_payment(paypal_payment_id):
 def get_ticket_from_payment(payment):
     try:
         return Ticket.query.filter(
-            Payment.ticket_id == payment.ticket_id).one()
+            Payment.ticket_id == payment.ticket_id) \
+            .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+            .one()
     except:
         return None
 
@@ -390,7 +395,7 @@ def get_err_from_ticket(ticket):
 
 def complete_purchase(ticket):
     try:
-        db_session.execute('LOCK TABLES tickets WRITE;')
+        db_session.execute('LOCK TABLES tickets WRITE, payments WRITE;')
         # update ticket
         ticket.paid = True
         db_session.add(ticket)
@@ -398,7 +403,8 @@ def complete_purchase(ticket):
 
         db_session.execute('UNLOCK TABLES;')
         # TODO send email with payment confirmation
-    except:
+    except Exception as e:
+        print(str(e))
         return jsonify({'message': ERR_COMPLETION}), 409
 
     return None
@@ -412,7 +418,9 @@ def get_ticket_from_user(user_id):
             return bad_request()
         user_id = session['user_id']
 
-    ticket = Ticket.query.filter(Ticket.owner_id == user_id).first()
+    ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
+        .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+        .first()
     if not ticket:
         return jsonify({}), 200
 
@@ -572,7 +580,7 @@ def login_in_please(message='Vous devez vous connecter.'):
 
 
 def setup(conf_path):
-    global app, games, tournaments
+    global app, games, tournaments, paypal_api
     app.config.from_pyfile(conf_path)
     init_engine(app.config['DATABASE_URI'])
     init_db()
