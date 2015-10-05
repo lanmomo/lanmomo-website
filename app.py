@@ -510,21 +510,6 @@ def has_email():
     return jsonify({'exists': email_exists(req['email'])}), 200
 
 
-@app.route('/api/verify/<token>', methods=['GET'])
-def verify_user_email(token):
-    user = User.query.filter(User.confirmation_token == token).first()
-    if not user:
-        return bad_request('Mauvais jeton fournis !')
-
-    if user.confirmed:
-        return jsonify({'first': False}), 200
-
-    user.confirmed = True
-    db_session.add(user)
-    db_session.commit()
-    return jsonify({'first': True}), 200
-
-
 @app.route('/api/users', methods=['POST'])
 def signup():
     req = request.get_json()
@@ -565,6 +550,50 @@ Merci et à bientôt !<br><br>
     return jsonify({'message': """\
 Un message de confirmation a été envoyé à votre adresse courriel. Si le message
  n'est pas reçu dans les prochaines minutes, vérifiez vos pourriel !"""}), 201
+
+
+@app.route('/api/users', methods=['PUT'])
+def mod_user():
+    if 'user_id' not in session:
+        return login_in_please()
+
+    user_id = session['user_id']
+    user = User.query.filter(User.id == user_id).one()
+
+    has_update = False
+    req = request.get_json()
+    mod_keys = ['lastname', 'firstname', 'email', 'username', 'phone']
+
+    for mod_key in mod_keys:
+        if mod_key in req and getattr(user, mod_key) != req[mod_key]:
+            if mod_key == 'email' and email_exists(req['email']):
+                return jsonify({'Courriel déjà utilisé.'}), 409
+            if mod_key == 'username' and username_exists(req['username']):
+                return jsonify({'Pseudonyme déjà utilisé.'}), 409
+            has_update = True
+            setattr(user, mod_key, req[mod_key])
+
+    if has_update:
+        db_session.add(user)
+        db_session.commit()
+        return jsonify({'user': user.as_private_dict()}), 200
+
+    return jsonify({'error': 'Aucune information différente.'}), 400
+
+
+@app.route('/api/verify/<token>', methods=['GET'])
+def verify_user_email(token):
+    user = User.query.filter(User.confirmation_token == token).first()
+    if not user:
+        return bad_request('Mauvais jeton fournis !')
+
+    if user.confirmed:
+        return jsonify({'first': False}), 200
+
+    user.confirmed = True
+    db_session.add(user)
+    db_session.commit()
+    return jsonify({'first': True}), 200
 
 
 @app.route('/')

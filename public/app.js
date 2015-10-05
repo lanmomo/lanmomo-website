@@ -346,9 +346,22 @@ app.controller('ExecuteController', function ($scope, $http, $location, $routePa
 });
 
 app.controller('ProfileController', function ($scope, $http) {
+  $scope.state = {
+    submitted: false,
+    loading: false,
+    success: false,
+    error: false,
+    usernameChanged: false,
+    emailChanged: false,
+    usernameAvailable: false,
+    emailAvailable: false,
+  };
+
   $http.get('/api/profile')
     .success(function(data) {
       $scope.userData = data.user;
+      $scope.formUser = angular.copy($scope.userData);
+      $scope.resetMods();
     })
     .error(function(err, status) {
       $scope.error = {message: err.error, status: status};
@@ -358,12 +371,72 @@ app.controller('ProfileController', function ($scope, $http) {
       if (data.ticket) {
         $scope.userTicket = data.ticket;
         $scope.qrCodeString = 'https://lanmomo.org/qr/' + data.ticket.qr_token;
-        console.log($scope.qrCodeString);
       }
     })
     .error(function(err, status) {
       $scope.error = {message: err.error, status: status};
     });
+
+    $scope.submitUserMods = function () {
+      $http.put('/api/users', $scope.formUser)
+        .success(function(data) {
+          $scope.userData = data.user;
+          $scope.resetMods();
+          $scope.message = 'Vos informations ont été mises à jour.'
+        })
+        .error(function(err, status) {
+          console.log(err);
+          console.log(status);
+        });
+    }
+
+    $scope.resetMods = function () {
+      $scope.edit = false;
+      $scope.formUser = angular.copy($scope.userData);
+      $scope.state.emailAvailable = true;
+      $scope.state.emailChanged = true;
+      $scope.state.usernameAvailable = true;
+      $scope.state.usernameChanged = true;
+    }
+
+    $scope.isUsernameAvailable = function(user) {
+      if (user.username == $scope.userData.username){
+        $scope.state.usernameAvailable = true;
+        $scope.state.usernameChanged = true;
+        return;
+      }
+      $http.post('/api/users/has/username', {username: user.username})
+        .success(function(data) {
+          $scope.state.usernameAvailable = !data.exists;
+          $scope.state.usernameChanged = true;
+        })
+        .error(function(data) {
+          $scope.state.usernameAvailable = false;
+          $scope.state.usernameChanged = true;
+        });
+    };
+    $scope.resetUsernameChanged = function() {
+      $scope.state.usernameChanged = false;
+    };
+    $scope.isEmailAvailable = function(user) {
+      if (user.email == $scope.userData.email){
+        $scope.state.emailAvailable = true;
+        $scope.state.emailChanged = true;
+        return;
+      }
+      $http.post('/api/users/has/email', {email: user.email})
+        .success(function(data) {
+          $scope.state.emailAvailable = !data.exists;
+          $scope.state.emailChanged = true;
+        })
+        .error(function(data) {
+          $scope.state.emailAvailable = false;
+          $scope.state.emailChanged = true;
+        });
+    };
+    $scope.resetEmailChanged = function() {
+      $scope.state.emailChanged = false;
+    };
 });
 
 app.controller('QRController', function ($scope, $http, $routeParams) {
