@@ -122,20 +122,20 @@ app.controller('TournamentsController', function($scope, $http, $location) {
 
   $scope.createTeam = function(_name, _game) {
     var data = {
-        game: _game,
-        name: _name
+      game: _game,
+      name: _name
     };
     $http.post('/api/teams',data)
-        .success(function(data) {
-            refreshData();
-        })
-        .error(function(err, status) {
-            $scope.error = {message: err.message, status: status};
-        });
+      .success(function(data) {
+        refreshData();
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.message, status: status};
+      });
   };
 
   $scope.deleteTeam = function(id, index) {
-    if (confirm('Etes vous certain de vouloir supprimer cette équipe ?')) {
+    if (confirm('Êtes vous certain de vouloir supprimer cette équipe ?')) {
       $http.delete('/api/teams/' + id)
         .success(function(data) {
           $scope.teams.splice(index, 1);
@@ -186,20 +186,43 @@ app.controller('ServersController', function($scope, $http, $interval) {
 });
 
 app.controller('TicketsController', function($scope, $http, $location) {
-  $scope.max = {};
-  $scope.max.pc = 96;
-  $scope.max.console = 32;
+  $scope.max = {
+    pc: 96,
+    console: 32
+  };
 
-  $scope.ticketCount = {};
-  $scope.ticketCount.pc = {};
-  $scope.ticketCount.pc.real = 54;
-  $scope.ticketCount.pc.temp = 4;
-  $scope.ticketCount.pc.total = $scope.ticketCount.pc.temp + $scope.ticketCount.pc.real;
+  var ticketCounts = {
+    'temp': {0: 0, 1: 0},
+    'paid': {0: 0, 1: 0}
+  };
+  $http.get('/api/tickets')
+    .success(function(data) {
+      var tickets = data.tickets;
 
-  $scope.ticketCount.console = {};
-  $scope.ticketCount.console.real = 14;
-  $scope.ticketCount.console.temp = 2;
-  $scope.ticketCount.console.total = $scope.ticketCount.console.temp + $scope.ticketCount.console.real;
+      for (var i = 0; i < tickets.length; i++) {
+        var ticket = tickets[i];
+        var count = ticketCounts['temp'];
+        if (ticket.paid) {
+          count = ticketCounts['paid'];
+        }
+        count[ticket.type_id]++;
+      }
+      $scope.ticketCount = {
+        pc: {
+          real: ticketCounts['paid'][0],
+          temp: ticketCounts['temp'][0],
+          total: ticketCounts['paid'][0] + ticketCounts['temp'][0]
+        },
+        console: {
+          real: ticketCounts['paid'][1],
+          temp: ticketCounts['temp'][1],
+          total: ticketCounts['paid'][1] + ticketCounts['temp'][1]
+        }
+      };
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err.error, status: status};
+    });
 
   $scope.go = function(path) {
     $location.path(path);
