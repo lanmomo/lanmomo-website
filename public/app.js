@@ -21,9 +21,36 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
           }
         }
       }
-    ]);
+    ]).factory('Auth', function($rootScope, $http) {
+      return {
+        login : function() {
+          $rootScope.loggedIn = true;
+          $rootScope.$broadcast('login');
+        },
+        isLoggedIn : function() {
+          return $rootScope.loggedIn;
+        },
+        logout : function() {
+          $rootScope.loggedIn = false;
+          $rootScope.$broadcast('login');
+        },
+        refresh: function() {
+          $http.get('/api/login')
+            .success(function(data) {
+              if (data.logged_in) {
+                Auth.login();
+              } else {
+                $rootScope.loggedIn = false;
+              }
+            })
+            .error(function(err, status) {
+              $rootScope.loggedIn = false;
+            });
+        }
+      }
+    });
 
-app.run(function($rootScope, $http) {
+app.run(function($rootScope, $http, Auth) {
   // runs on first page load or refresh
   $http.get('/api/login')
     .success(function(data) {
@@ -38,6 +65,14 @@ app.controller('NavbarController', function($scope, $location) {
   $scope.isActive = function(url) {
     return $location.path() === url;
   };
+
+  $scope.refresh = function () {
+    $scope.loggedIn = Auth.isLoggedIn();
+  }
+
+  $scope.$on("login", function() {
+    $scope.refresh();
+  });
 
   $('.navbar-nav li a').click(function() {
     if ($('.navbar-collapse.collapse').hasClass('in')) {
@@ -56,56 +91,66 @@ app.controller('GamesController', function($scope, $http) {
     });
 });
 
-app.controller('TournamentsController', function($scope, $http) {
-  $http.get('/api/tournaments')
-    .success(function(data) {
-      $scope.tournaments = data.tournaments;
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err, status: status};
-    });
-
-    $http.get('/api/teams')
+app.controller('TournamentsController', function($scope, $http, $location) {
+  function refreshData() {
+    $http.get('/api/tournaments')
       .success(function(data) {
-        $scope.teams = data.teams;
+        $scope.tournaments = data.tournaments;
       })
       .error(function(err, status) {
-        $scope.error = {message: err.error, status: status};
+        $scope.error = {message: err, status: status};
       });
 
-    $http.get('/api/profile')
-    .success(function(data) {
-      $scope.user = data.user;
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err.error, status: status};
-    });
+      $http.get('/api/teams')
+        .success(function(data) {
+          $scope.teams = data.teams;
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.error, status: status};
+        });
 
-    $scope.createTeam = function(_name, _game) {
-        var data = {
-            game: _game,
-            name: _name
-        };
-        $http.post('/api/teams',data)
-            .success(function(data) {
-                location.reload();
-            })
-            .error(function(err, status) {
-                $scope.error = {message: err.message, status: status};
-            });
-    }
+      if ($scope.loggedIn) {
+        $http.get('/api/profile')
+        .success(function(data) {
+          $scope.user = data.user;
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.error, status: status};
+        });
+      }
+  }
 
-    $scope.deleteTeam = function(id, index) {
-        if(confirm('Etes vous sure de vouloir supprimer cette equipe?')) {
-            $http.delete('/api/teams/' + id)
-                .success(function(data) {
-                    $scope.teams.splice(index, 1);
-                })
-                .error(function(err, status) {
-                    $scope.error = {message: err.error, status: status};
-                });
-        }
+  $scope.createTeam = function(_name, _game) {
+    var data = {
+        game: _game,
+        name: _name
+    };
+    $http.post('/api/teams',data)
+        .success(function(data) {
+            refreshData();
+        })
+        .error(function(err, status) {
+            $scope.error = {message: err.message, status: status};
+        });
+  };
+
+  $scope.deleteTeam = function(id, index) {
+    if (confirm('Etes vous certain de vouloir supprimer cette équipe ?')) {
+      $http.delete('/api/teams/' + id)
+        .success(function(data) {
+          $scope.teams.splice(index, 1);
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.error, status: status};
+        });
     }
+  };
+
+  $scope.go = function(path) {
+    $location.path(path);
+  };
+
+  refreshData();
 });
 
 app.controller('ServersController', function($scope, $http, $interval) {
@@ -155,6 +200,10 @@ app.controller('TicketsController', function($scope, $http, $location) {
   $scope.ticketCount.console.real = 14;
   $scope.ticketCount.console.temp = 2;
   $scope.ticketCount.console.total = $scope.ticketCount.console.temp + $scope.ticketCount.console.real;
+
+  $scope.go = function(path) {
+    $location.path(path);
+  }
 
   $scope.buy = function(ticketType) {
     var ticket = {};
@@ -228,7 +277,7 @@ app.controller('VerifyController', function($scope, $http, $routeParams) {
     });
 });
 
-app.controller('LoginController', function ($scope, $http, $location, $rootScope) {
+app.controller('LoginController', function ($scope, $http, $location, $rootScope, Auth) {
   $scope.submitLogin = function () {
     var data = {
         email: $scope.user.email,
@@ -236,7 +285,7 @@ app.controller('LoginController', function ($scope, $http, $location, $rootScope
     }
     $http.post('/api/login', data)
       .success(function(data) {
-        $rootScope.loggedIn
+        Auth.login();
         $location.path('/profile');
       })
       .error(function(err, status) {
@@ -245,9 +294,10 @@ app.controller('LoginController', function ($scope, $http, $location, $rootScope
   };
 });
 
-app.controller('LogoutController', function ($scope, $http, $location) {
+app.controller('LogoutController', function ($scope, $http, $location, Auth) {
   $http.get('/api/logout')
     .success(function(data) {
+      Auth.logout();
       $location.path('/');
     })
     .error(function(err, status) {
@@ -350,7 +400,7 @@ app.controller('SignupController', function($scope, $http) {
   };
 });
 
-app.controller('MapController', function ($scope, $http, $interval) {
+app.controller('MapController', function ($scope, $http, $interval, $location) {
 
   $scope.selectedSeat = null;
   var seatStatus = {};
@@ -363,6 +413,10 @@ app.controller('MapController', function ($scope, $http, $interval) {
   $scope.$on('$destroy', function () {
     $interval.cancel(refreshInterval);
   });
+
+  $scope.go = function(path) {
+    $location.path(path);
+  }
 
   $scope.buy = function(seatNum) {
     var ticket = {};

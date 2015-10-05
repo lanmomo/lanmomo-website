@@ -1,4 +1,18 @@
 <div class="container">
+  <div ng-hide="loggedIn">
+    <div class="alert alert-warning" role="alert">
+      <i class="fa fa-info-circle"></i> Vous devez être connecté pour acheter un billet !
+    </div>
+    <div class="row" style="margin-bottom: 12px;">
+      <div class="col-md-4 col-md-offset-4">
+        <div class="btn-group" role="group">
+          <button ng-click="go('/login')" class="btn btn-info">Se connecter <i class="fa fa-sign-in"></i></button>
+          <button ng-click="go('/signup')" class="btn btn-info">Créer un compte <i class="fa fa-pencil-square-o"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="col-lg-12">
     <div ng-repeat="(row, _) in times(4) track by $index">
       <div class="row">
@@ -20,9 +34,7 @@
       Ce siège est réservé par {{selectedSeatUser.username}} jusqu'à {{selectedSeatTicket.reserved_until}}
     </p>
   </div>
-  <div ng-show="selectSeatIsFree" class="col-lg-12">
-    <p class="text-success">
-      <button class="btn btn-success" ng-click="buy(selectedSeatID)">Réserver ce siège !</button>
-    </p>
+  <div ng-show="selectSeatIsFree && loggedIn" class="col-lg-12">
+    <button class="btn btn-success" ng-click="buy(selectedSeatID)">Réserver ce siège !</button>
   </div>
 </div>
