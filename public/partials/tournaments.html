@@ -1,7 +1,6 @@
 <div class="container">
   <div class="page-header row">
-    <span class="col-md-4 pull-left"><h1>Équipes</h1></span>
-    <button data-toggle="modal" data-target="#myModal" ng-hide="!loggedIn" type="submit" class="btn btn-success pull-right">Crée une équipe</button>
+    <h1>Équipes</h1>
   </div>
   <div ng-hide="loggedIn">
     <div class="alert alert-warning" role="alert">
@@ -21,6 +20,7 @@
     <i class="fa fa-info-circle"></i> status: {{error.status}} | {{error.message}}
   </div>
 
+  <button data-toggle="modal" data-target="#myModal" ng-show="loggedIn" type="submit" class="btn btn-success">Créer une équipe</button>
   <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments">
     <div class="panel-heading">
       <div class="panel-title row tournaments-text">
@@ -32,7 +32,7 @@
         <thead>
           <tr>
             <th>Nom de l'équipe</th>
-            <th>Capitain</th>
+            <th>Capitaine</th>
             <th></th>
           </tr>
         </thead>
@@ -41,7 +41,7 @@
             <th>{{team.name}}</th>
             <td>{{team.captain_name}}</td>
             <td>
-              <button ng-click="deleteTeam(team.id, key)" ng-hide="user.username != team.captain_name" type="submit" class="btn btn-danger pull-right">supprimer</i></button>
+              <button ng-click="deleteTeam(team.id, key)" ng-hide="user.username != team.captain_name" class="btn btn-danger pull-right">supprimer</i></button>
               <!-- <button ng-show="user.username != team.captain_id" type="submit" class="btn btn-success pull-right">JOIN</i></button> -->
             </td>
           </tr>
@@ -57,7 +57,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Crée une équipe</h4>
+        <h4 class="modal-title">Créer une équipe</h4>
       </div>
       <div class="modal-body">
         <table>

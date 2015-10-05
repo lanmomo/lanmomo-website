@@ -91,7 +91,7 @@ app.controller('GamesController', function($scope, $http) {
     });
 });
 
-app.controller('TournamentsController', function($scope, $http) {
+app.controller('TournamentsController', function($scope, $http, $location) {
   $http.get('/api/tournaments')
     .success(function(data) {
       $scope.tournaments = data.tournaments;
