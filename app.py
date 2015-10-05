@@ -284,6 +284,16 @@ def pay_ticket():
             ' paiement'}), 500
 
 
+@app.route('/api/qr/<qr_token>', methods=['GET'])
+def find_ticket_by_qr_token(qr_token):
+    try:
+        ticket = Ticket.query.filter(
+            Ticket.qr_token == qr_token).one().as_private_dict()
+        return jsonify({'ticket': ticket}), 200
+    except:
+        return jsonify({'message': 'aucun billet'}), 404
+
+
 def err_execute_and_complete_payment(paypal_payment_id, paypal_payer_id):
     """"Returns ERROR or None"""
     # lock table tickets
@@ -417,13 +427,15 @@ def get_ticket_from_user(user_id):
         if 'user_id' not in session:
             return bad_request()
         user_id = session['user_id']
+        owner = True
 
     ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
         .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
         .first()
     if not ticket:
         return jsonify({}), 200
-
+    if owner:
+        return jsonify({'ticket': ticket.as_private_dict()}), 200
     return jsonify({'ticket': ticket.as_pub_dict()}), 200
 
 

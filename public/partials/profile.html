@@ -19,7 +19,12 @@
   <div ng-show="userTicket && userTicket.paid">
     <div class="well well-lg">
       <p class="text-success">Votre billet a été payé.</p>
-      <p>Voir mon code QR</p>
+      <p>Votre code QR est nécessaire lors de votre arrivée au LAN.</p>
+      <p>Vous pourrez faire scanner cette page web sur un appareil mobile ou l'imprimer.</p>
+      <p>Pour imprimer le code QR vous pouvez enregistrer l'image sur votre ordinateur.</p>
+      <div ng-if="qrCodeString" style="padding: 25px;background-color: #BABABA;">
+        <qr type-number="0" correction-level="'M'" size="250" text="qrCodeString" image="true"></qr>
+      </div>
     </div>
   </div>
   <div ng-hide="userTicket">

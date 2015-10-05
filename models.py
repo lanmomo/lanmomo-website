@@ -64,6 +64,7 @@ class Ticket():
         self.reserved_until = reserved_until
         self.reserved_at = reserved_at
         self.seat_num = seat_num
+        self.qr_token = uuid.uuid4().hex
 
     def __repr__(self):
         return '<Ticket %r>' % (self.id)
@@ -81,6 +82,11 @@ class Ticket():
         if self.seat_num:
             pub_dict['seat_num'] = self.seat_num
         return pub_dict
+
+    def as_private_dict(self):
+        priv_dict = self.as_pub_dict()
+        priv_dict['qr_token'] = self.qr_token
+        return priv_dict
 
     def book_temp(user_id, ticket_type, price, tickets_max, seat_num=None):
         try:
@@ -252,6 +258,7 @@ tickets = Table('tickets', metadata,
                 Column('total', Float, default=0, nullable=False),
                 Column('reserved_until', DateTime, nullable=False),
                 # private fields
+                Column('qr_token', String(32), nullable=False),
                 Column('created_at', DateTime, default=datetime.now),
                 Column('modified_at', DateTime, onupdate=datetime.now)
                 )

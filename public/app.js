@@ -3,7 +3,7 @@ var TICKET_TYPES = {PC: 0, CONSOLE: 1};
 
 var TICKET_TYPES_STR = {0: 'BYOC', 1: 'Console'};
 
-var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment', 'ngCookies'])
+var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment', 'ngCookies', 'ja.qr'])
   .directive('passwordCheck', [function () {
         return {
           restrict: 'A',
@@ -61,7 +61,7 @@ app.run(function($rootScope, $http, Auth) {
     });
 });
 
-app.controller('NavbarController', function($scope, $location) {
+app.controller('NavbarController', function($scope, $location, Auth) {
   $scope.isActive = function(url) {
     return $location.path() === url;
   };
@@ -357,6 +357,8 @@ app.controller('ProfileController', function ($scope, $http) {
     .success(function(data) {
       if (data.ticket) {
         $scope.userTicket = data.ticket;
+        $scope.qrCodeString = 'https://lanmomo.org/qr/' + data.ticket.qr_token;
+        console.log($scope.qrCodeString);
       }
     })
     .error(function(err, status) {
