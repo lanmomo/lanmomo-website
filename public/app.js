@@ -108,13 +108,15 @@ app.controller('TournamentsController', function($scope, $http) {
         $scope.error = {message: err.error, status: status};
       });
 
-    $http.get('/api/profile')
-    .success(function(data) {
-      $scope.user = data.user;
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err.error, status: status};
-    });
+    if ($scope.loggedIn) {
+      $http.get('/api/profile')
+      .success(function(data) {
+        $scope.user = data.user;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.error, status: status};
+      });
+    }
 
     $scope.createTeam = function(_name, _game) {
         var data = {
@@ -140,6 +142,10 @@ app.controller('TournamentsController', function($scope, $http) {
                     $scope.error = {message: err.error, status: status};
                 });
         }
+    }
+
+    $scope.go = function(path) {
+      $location.path(path);
     }
 });
 

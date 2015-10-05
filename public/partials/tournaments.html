@@ -1,12 +1,24 @@
 <div class="container">
   <div class="page-header row">
-    <div class="alert alert-danger alert-dismissible fade-in" role="alert" ng-show="error">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-      <i class="fa fa-info-circle"></i> status: {{error.status}} | {{error.message}}
-    </div>
     <span class="col-md-4 pull-left"><h1>Équipes</h1></span>
     <button data-toggle="modal" data-target="#myModal" ng-hide="!loggedIn" type="submit" class="btn btn-success pull-right">Crée une équipe</button>
-    <span class="pull-right" ng-show="!loggedIn"><a href="/login">Connectez-vous</a> pour crée une eéipe!</span>
+  </div>
+  <div ng-hide="loggedIn">
+    <div class="alert alert-warning" role="alert">
+      <i class="fa fa-info-circle"></i> Vous devez être connecté pour acheter un billet !
+    </div>
+    <div class="row" style="margin-bottom: 12px;">
+      <div class="col-md-4 col-md-offset-4">
+        <div class="btn-group" role="group">
+          <button ng-click="go('/login')" class="btn btn-info">Se connecter <i class="fa fa-sign-in"></i></button>
+          <button ng-click="go('/signup')" class="btn btn-info">Créer un compte <i class="fa fa-pencil-square-o"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="alert alert-danger alert-dismissible fade-in" role="alert" ng-show="error">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+    <i class="fa fa-info-circle"></i> status: {{error.status}} | {{error.message}}
   </div>
 
   <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments">
