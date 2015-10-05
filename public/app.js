@@ -191,6 +191,10 @@ app.controller('TicketsController', function($scope, $http, $location) {
   $scope.ticketCount.console.temp = 2;
   $scope.ticketCount.console.total = $scope.ticketCount.console.temp + $scope.ticketCount.console.real;
 
+  $scope.go = function(path) {
+    $location.path(path);
+  }
+
   $scope.buy = function(ticketType) {
     var ticket = {};
     $scope.submitted = true;
@@ -386,7 +390,7 @@ app.controller('SignupController', function($scope, $http) {
   };
 });
 
-app.controller('MapController', function ($scope, $http, $interval) {
+app.controller('MapController', function ($scope, $http, $interval, $location) {
 
   $scope.selectedSeat = null;
   var seatStatus = {};
@@ -399,6 +403,10 @@ app.controller('MapController', function ($scope, $http, $interval) {
   $scope.$on('$destroy', function () {
     $interval.cancel(refreshInterval);
   });
+
+  $scope.go = function(path) {
+    $location.path(path);
+  }
 
   $scope.buy = function(seatNum) {
     var ticket = {};
