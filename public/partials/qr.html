@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="page-header">
+    <h1>Informations sur le billet</h1>
+  </div>
+
+  <div class="alert alert-success" role="alert" ng-show="message">
+    <i class="fa fa-info-circle"></i> {{message}}
+  </div>
+
+  <div class="alert alert-danger" role="alert" ng-show="error">
+    <i class="fa fa-info-circle"></i> {{error.message}}
+  </div>
+
+  <div>
+    <div ng-hide="ticket.paid" class="alert alert-danger" role="alert" ng-show="error">
+      <i class="fa fa-info-circle"></i> Attention, ce billet n'est pas payé
+    </div>
+    <div ng-show="ticket.discount_amount > 0" class="alert alert-warning" role="alert" ng-show="error">
+      <i class="fa fa-info-circle"></i> Attention, ce billet nécessite la carte étudiante de Montmorency !
+    </div>
+    <div ng-show="ticket.discount_amount > 0" class="alert alert-warning" role="alert" ng-show="error">
+      <i class="fa fa-info-circle"></i> Si le joueur n'a pas sa carte, il doit payer un supplément de {{ticket.discount_amount}} $
+    </div>
+    <p class="text-info">Prix du billet: {{ticket.total}} $</p>
+    <p class="text-info">Type du billet: {{ticketTypes[ticket.type_id]}}</p>
+    <p ng-if="ticket.seat_num" class="text-info">Siège BYOC: {{ticket.seat_num}}</p>
+    <h3>Informations du détenteur de billet</h3>
+    <p class="text-info">Nom: {{owner.firstname}} {{owner.lastname}}</p>
+    <p class="text-info">Pseudonyme: {{owner.username}}</p>
+    <p class="text-info">Courriel: {{owner.email}}</p>
+  </div>
+</div>

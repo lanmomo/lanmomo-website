@@ -366,6 +366,23 @@ app.controller('ProfileController', function ($scope, $http) {
     });
 });
 
+app.controller('QRController', function ($scope, $http, $routeParams) {
+  var token = $routeParams.token;
+  $scope.ticketTypes = TICKET_TYPES_STR;
+
+  $http.get('/api/qr/' + token)
+    .success(function(data) {
+      if (data.ticket && data.owner) {
+        $scope.ticket = data.ticket;
+        $scope.owner = data.owner;
+      }
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err.error, status: status};
+    });
+});
+
+
 app.controller('SignupController', function($scope, $http) {
   $('[data-toggle="tooltip"]').tooltip();
   $scope.state = {
@@ -580,7 +597,11 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   .when('/verify/:token', {
     templateUrl: 'partials/verify.html',
     controller: 'VerifyController'
-  });
+  })
+  .when('/qr/:token', {
+      templateUrl: 'partials/qr.html',
+      controller: 'QRController'
+    });;
   $routeProvider.otherwise({redirectTo: '/'});
 
   $locationProvider.html5Mode(true);

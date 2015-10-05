@@ -289,7 +289,10 @@ def find_ticket_by_qr_token(qr_token):
     try:
         ticket = Ticket.query.filter(
             Ticket.qr_token == qr_token).one().as_private_dict()
-        return jsonify({'ticket': ticket}), 200
+
+        owner = User.query.filter(
+            User.id == ticket['owner_id']).one().as_private_dict()
+        return jsonify({'ticket': ticket, 'owner': owner}), 200
     except:
         return jsonify({'message': 'aucun billet'}), 404
 
