@@ -36,7 +36,7 @@
          aria-valuemin="0" aria-valuemax="{{max.pc}}" style="min-width:3em; width: {{ticketCount.pc.real / max.pc * 100}}%">
       {{ticketCount.pc.real}} / {{max.pc}}
     </div>
-    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{ticketCount.pc.temp}}"
+    <div class="progress-bar progress-bar-warning" ng-show="ticketCount.pc.temp > 0" role="progressbar" aria-valuenow="{{ticketCount.pc.temp}}"
          aria-valuemin="0" aria-valuemax="{{max.pc}}" style="min-width:3em; width: {{ticketCount.pc.temp / max.pc * 100}}%">
       {{ticketCount.pc.temp}} / {{max.pc}}
     </div>
@@ -55,7 +55,7 @@
          aria-valuemin="0" aria-valuemax="{{max.console}}" style="min-width:3em; width: {{ticketCount.console.real / max.console * 100}}%">
       {{ticketCount.console.real}} / {{max.console}}
     </div>
-    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{ticketCount.console.temp}}"
+    <div class="progress-bar progress-bar-warning" ng-show="ticketCount.console.temp > 0" role="progressbar" aria-valuenow="{{ticketCount.console.temp}}"
          aria-valuemin="0" aria-valuemax="{{max.console}}" style="min-width:3em; width: {{ticketCount.console.temp / max.console * 100}}%">
       {{ticketCount.console.temp}} / {{max.console}}
     </div>
