@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var TICKET_TYPES = {PC: 0, CONSOLE: 1};
 
 var TICKET_TYPES_STR = {0: 'BYOC', 1: 'Console'};
@@ -16,7 +16,7 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
               return password1 == password2;
             };
             scope.$watch(checker, function (n) {
-              control.$setValidity("unique", n);
+              control.$setValidity('unique', n);
             });
           }
         }
@@ -68,9 +68,9 @@ app.controller('NavbarController', function($scope, $location, Auth) {
 
   $scope.refresh = function () {
     $scope.loggedIn = Auth.isLoggedIn();
-  }
+  };
 
-  $scope.$on("login", function() {
+  $scope.$on('login', function() {
     $scope.refresh();
   });
 
@@ -226,7 +226,7 @@ app.controller('TicketsController', function($scope, $http, $location) {
 
   $scope.go = function(path) {
     $location.path(path);
-  }
+  };
 
   $scope.buy = function(ticketType) {
     var ticket = {};
@@ -248,38 +248,39 @@ app.controller('TicketsController', function($scope, $http, $location) {
     }
   };
 });
+
 app.controller('PayController', function($scope, $http, $window) {
   $http.get('/api/users/ticket')
     .success(function(data) {
       $scope.ticket = data.ticket;
       $scope.ticket_type_str = TICKET_TYPES_STR[data.ticket.type_id];
     })
-    .error(function(data) {
-      $scope.error = "too bad man"
+    .error(function(err, status) {
+      $scope.error = {message: err, status: status};
     });
 
-    $scope.getTotal = function () {
-      if (!$scope.ticket) {
-        return 0;
-      }
-      if ($scope.discountMomo) {
-        return $scope.ticket.price - 5;
-      }
-      return $scope.ticket.price;
+  $scope.getTotal = function () {
+    if (!$scope.ticket) {
+      return 0;
     }
-
-    $scope.payNow = function () {
-      var data = {};
-      data.discount_momo = $scope.discountMomo;
-
-      $http.post('/api/tickets/pay', data)
-        .success(function(data) {
-          $window.location.href = data.redirect_url;
-        })
-        .error(function(data) {
-          $scope.error = "too bad man"
-        });
+    if ($scope.discountMomo) {
+      return $scope.ticket.price - 5;
     }
+    return $scope.ticket.price;
+  };
+
+  $scope.payNow = function () {
+    var data = {};
+    data.discount_momo = $scope.discountMomo;
+
+    $http.post('/api/tickets/pay', data)
+      .success(function(data) {
+        $window.location.href = data.redirect_url;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err, status: status};
+      });
+  }
 });
 
 app.controller('VerifyController', function($scope, $http, $routeParams) {
@@ -288,15 +289,15 @@ app.controller('VerifyController', function($scope, $http, $routeParams) {
   $http.get('/api/verify/' + token)
     .success(function(data, status) {
       if (data.first) {
-        $scope.message = "Votre compte a bien été créé ! Vous pouvez maintenant vous connecter.";
+        $scope.message = 'Votre compte a bien été créé ! Vous pouvez maintenant vous connecter.';
       } else if (data.first === false) {
-        $scope.message = "Votre compte a déjà été créé ! Vous pouvez vous connecter.";
+        $scope.message = 'Votre compte a déjà été créé ! Vous pouvez vous connecter.';
       } else {
-        $scope.error = "Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !"
+        $scope.error = 'Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !'
       }
     })
     .error(function(data) {
-      $scope.error = "Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !"
+      $scope.error = 'Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !'
     });
 });
 
@@ -305,7 +306,7 @@ app.controller('LoginController', function ($scope, $http, $location, $rootScope
     var data = {
         email: $scope.user.email,
         password: $scope.user.password
-    }
+    };
     $http.post('/api/login', data)
       .success(function(data) {
         Auth.login();
@@ -516,7 +517,6 @@ app.controller('SignupController', function($scope, $http) {
 });
 
 app.controller('MapController', function ($scope, $http, $interval, $location) {
-
   $scope.selectedSeat = null;
   var seatStatus = {};
   refresh();
@@ -531,7 +531,7 @@ app.controller('MapController', function ($scope, $http, $interval, $location) {
 
   $scope.go = function(path) {
     $location.path(path);
-  }
+  };
 
   $scope.buy = function(seatNum) {
     var ticket = {};
@@ -672,9 +672,10 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
     controller: 'VerifyController'
   })
   .when('/qr/:token', {
-      templateUrl: 'partials/qr.html',
-      controller: 'QRController'
-    });;
+    templateUrl: 'partials/qr.html',
+    controller: 'QRController'
+  });
+
   $routeProvider.otherwise({redirectTo: '/'});
 
   $locationProvider.html5Mode(true);
