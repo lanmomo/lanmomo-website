@@ -10,7 +10,7 @@ from datetime import datetime
 
 from flask import Flask, send_from_directory, jsonify, request, session, redirect
 
-from sqlalchemy import or_
+from sqlalchemy import or_, not_
 from sqlalchemy.orm import contains_eager
 
 from database import db_session, init_db, init_engine
@@ -215,6 +215,7 @@ def change_seat():
     if 'user_id' not in session:
         return login_in_please()
     user_id = session['user_id']
+    req = request.get_json()
 
     if 'seat_num' not in req:
         return bad_request()
@@ -222,8 +223,8 @@ def change_seat():
 
     res = None
     try:
-        db_session.execute('LOCK TABLES tickets WRITE;')
-        err = change_seat_from_ticket(user_id, seat_num)
+        db_session.execute('LOCK TABLES tickets WRITE, users READ;')
+        err = change_seat_for_user(user_id, seat_num)
 
         if err:
             res = err
@@ -233,9 +234,10 @@ def change_seat():
                 .one()
 
             db_session.commit()
-            res = jsonify({'ticket': ticket}), 200
+            res = jsonify({'ticket': ticket.as_pub_dict()}), 200
     except Exception as e:
         # TODO log
+        print(e)
         res = jsonify({'error': 'Erreur inconnue.'}), 500
     finally:
         db_session.execute('UNLOCK TABLES;')
@@ -249,10 +251,12 @@ def change_seat_for_user(user_id, seat_num):
     try:
         current_ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
             .filter(Ticket.reserved_until >= datetime.now()) \
-            .filter(not Ticket.paid) \
+            .filter(not_(Ticket.paid)) \
             .one()
     except:
-        return 'Aucun billet valide, billet expiré ou billet déjà payé.'
+        return jsonify({
+            'error':
+                'Aucun billet valide, billet expiré ou billet déjà payé.'}), 409
 
     wanted_seat_count = Ticket.query \
         .filter(Ticket.seat_num == seat_num) \
@@ -260,7 +264,7 @@ def change_seat_for_user(user_id, seat_num):
             Ticket.paid, Ticket.reserved_until >= datetime.now())) \
         .count()
     if wanted_seat_count > 0:
-        return 'Ce siège est déjà occupé.'
+        return jsonify({'error': 'Ce siège est déjà occupé.'}), 409
 
     current_ticket.seat_num = seat_num
     db_session.add(current_ticket)
