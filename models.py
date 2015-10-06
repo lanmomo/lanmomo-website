@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, \
     ForeignKey, DateTime, Float, text, or_
-from sqlalchemy.orm import mapper
+from sqlalchemy.orm import mapper, relationship
 
 from database import metadata, db_session
 
@@ -81,6 +81,8 @@ class Ticket():
             }
         if self.seat_num:
             pub_dict['seat_num'] = self.seat_num
+        if self.owner:
+            pub_dict['owner_username'] = self.owner.username
         return pub_dict
 
     def as_private_dict(self):
@@ -196,7 +198,7 @@ class TeamUser():
     def get_team_name(self):
         team = User.query.filter(Team.id == self.team_id).first()
         if team:
-            return user.name
+            return team.name
 
     def get_user_name(self):
         user = User.query.filter(User.id == self.user_id).first()
@@ -274,7 +276,9 @@ payments = Table('payments', metadata,
                  )
 
 mapper(User, users)
-mapper(Ticket, tickets)
+mapper(Ticket, tickets, properties={
+  'owner': relationship(User)
+})
 mapper(Team, teams)
 mapper(TeamUser, team_users)
 mapper(Payment, payments)

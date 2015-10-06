@@ -11,6 +11,7 @@ from datetime import datetime
 from flask import Flask, send_from_directory, jsonify, request, session, redirect
 
 from sqlalchemy import or_
+from sqlalchemy.orm import contains_eager
 
 from database import db_session, init_db, init_engine
 
@@ -181,7 +182,7 @@ def ticket_from_seat(seat_num):
     ticket = get_ticket_from_seat_num(seat_num)
 
     if ticket:
-        return jsonify({'ticket': seat.as_pub_dict()}), 200
+        return jsonify({'ticket': ticket.as_pub_dict()}), 200
     return jsonify({}), 404
 
 
@@ -189,6 +190,8 @@ def ticket_from_seat(seat_num):
 def get_tickets_by_type(type_id):
     pub_tickets = []
     tickets = Ticket.query \
+        .join(Ticket.owner) \
+        .options(contains_eager(Ticket.owner)) \
         .filter(Ticket.type_id == type_id) \
         .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())).all()
 

@@ -123,6 +123,65 @@ footer a {
 }
 /* END SUBSCRIPTION */
 
+/* BEGIN SEAT-MAP */
+.seat {
+  display: inline;
+  float: left;
+  width: 4%;
+  text-align: center;
+  height: 40px;
+  box-sizing: border-box;
+  border-left: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  font-size: 20px;
+  padding-top: 5px;
+  background-color: #2e3338;
+  cursor: pointer;
+}
+.seat.right {
+  border-right: 1px solid #ccc;
+}
+.seat.bottom {
+  border-bottom: 1px solid #ccc;
+}
+.seat:hover {
+  color: #fff;
+  background-color: #46b8da;
+}
+.seat.selected {
+  color: #fff;
+  background-color: #62c462;
+}
+.seat.selected:hover {
+  background-color: #4fbd4f;
+}
+.seat.reserved {
+  color: #fff;
+  background-color: #f89406;
+}
+.seat.reserved:hover {
+  background-color: #df8505;
+}
+.seat.taken {
+  color: #fff;
+  background-color: #ee5f5b;
+}
+.seat.taken:hover {
+  background-color: #ec4844;
+}
+.splitter {
+  height: 20px;
+  width: 100%;
+}
+/* END SEAT-MAP */
+
+/* BEGIN TOURNAMENTS */
+.tournaments-text {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+/* END TOURNAMENTS */
+
 /* BEGIN BTN-SUBSCRIBE */
 .btn-subscribe {
   color: #ffffff;
@@ -188,45 +247,3 @@ fieldset[disabled] .btn-subscribe.active {
   filter: none;
 }
 /* END BTN-SUBSCRIBE */
-.seat {
-  display: inline;
-  float: left;
-  width: 4%;
-  text-align: center;
-  height: 40px;
-  box-sizing: border-box;
-  border-left: 1px solid #ccc;
-  border-top: 1px solid #ccc;
-  font-size: 20px;
-  padding-top: 5px;
-}
-.seat.right {
-  border-right: 1px solid #ccc;
-}
-.seat.bottom {
-  border-bottom: 1px solid #ccc;
-}
-.seat:hover {
-  background-color: #123AB3;
-  cursor: pointer;
-}
-.seat.taken {
-  background-color: #B01515;
-  cursor: not-allowed;
-}
-.seat.reserved {
-  background-color: #7A7A05;
-  cursor: not-allowed;
-}
-.seat.selected {
-  background-color: #36B385;
-}
-.splitter {
-  height: 20px;
-  width: 100%;
-}
-
-.tournaments-text {
-  margin-left: 5px;
-  margin-right: 5px;
-}
