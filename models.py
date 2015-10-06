@@ -122,6 +122,19 @@ class Ticket():
                 return False, \
                     'Le maximum de billet a été réservé pour le moment !'
 
+            # Check if seat is taken
+            if seat_num:
+                wanted_seat_count = Ticket.query \
+                    .filter(Ticket.seat_num == seat_num) \
+                    .filter(or_(
+                        Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+                    .count()
+                if wanted_seat_count > 0:
+                    db_session.rollback()
+                    db_session.execute('UNLOCK TABLES;')
+                    return False, \
+                        'Ce siège est déjà occupé ou réservé !'
+
             # Book ticket for 10 minutes
             reserved_until = datetime.now() + timedelta(minutes=10)
 
