@@ -18,7 +18,9 @@
         </div>
         <div class="form-group">
             <div class="col-sm-offset-4 col-sm-4 col-md-4">
-                <input ng-disabled="!user.password || !user.email" type="submit" value="Connexion" class="btn btn-primary btn-block">
+                <button class="btn btn-primary btn-block" type="submit" ng-disabled="!user.password || !user.email">
+                    <i class="fa fa-sign-in"></i> Connexion
+                </button>
             </div>
         </div>
     </form>
