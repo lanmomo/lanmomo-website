@@ -1,30 +1,20 @@
 <div class="container">
-    <div class="page-header">
-        <h1>Connexion</h1>
+  <div class="page-header">
+    <h1>Connexion</h1>
+  </div>
+
+  <form class="form-login" name="login" ng-submit="submitLogin()">
+    <div ng-show="error" class="alert alert-danger text-center" role="alert">
+      <i class="fa fa-exclamation-triangle"></i> {{ error.message }}
     </div>
-    <div class="col-sm-offset-3 col-sm-6 col-md-6" ng-show="error">
-        <div class="alert alert-danger text-center">{{error.message}}</div>
-    </div>
-    <form name="login" class="form-horizontal" ng-submit="submitLogin()">
-        <div class="form-group">
-            <div class="col-sm-offset-4 col-sm-4 col-md-4">
-                <input type="text" name="email" ng-model="user.email" class="form-control" placeholder="Courriel">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-4 col-sm-4 col-md-4">
-                <input type="password" name="password" ng-model="user.password" class="form-control" placeholder="Mot de passe">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-4 col-sm-4 col-md-4">
-                <input ng-disabled="!user.password || !user.email" type="submit" value="Connexion" class="btn btn-primary btn-block">
-            </div>
-        </div>
-    </form>
-    <div class="row">
-      <div class="col-sm-offset-4 col-sm-4 col-md-4">
-        <p class="text-center"><a href="/signup">Pas encore membre ?</a></p>
-      </div>
-    </div>
+
+    <input type="email" name="email" ng-model="user.email" class="form-control" placeholder="Adresse courriel" autofocus>
+    <input type="password" name="password" ng-model="user.password" class="form-control" placeholder="Mot de passe">
+
+    <button class="btn btn-primary btn-block btn-lg" type="submit" ng-disabled="!user.password || !user.email">
+      <i class="fa fa-sign-in"></i> Connexion
+    </button>
+
+    <p class="text-center"><a href="/signup">Pas encore membre ?</a></p>
+  </form>
 </div>
