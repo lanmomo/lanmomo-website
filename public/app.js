@@ -519,6 +519,7 @@ app.controller('SignupController', function($scope, $http) {
 app.controller('MapController', function ($scope, $http, $interval, $location) {
   $scope.selectedSeat = null;
   var seatStatus = {};
+  var seatOwners = {};
   refresh();
 
   var refreshInterval = $interval(function () {
@@ -560,6 +561,7 @@ app.controller('MapController', function ($scope, $http, $interval, $location) {
           } else {
             seatStatus[seat_num] = 'r';
           }
+          seatOwners[seat_num] = tickets[i].owner_username;
         }
         // TODO check if selectedSeatTicket is updated !
       })
@@ -582,6 +584,9 @@ app.controller('MapController', function ($scope, $http, $interval, $location) {
   };
   $scope.isTaken = function (seat) {
     return seatStatus[seat] == 't';
+  };
+  $scope.getOwner = function (seat) {
+    return seatOwners[seat];
   };
   $scope.selectSeat = function (seat) {
     $http.get('/api/tickets/seat/' + seat + '/free')
