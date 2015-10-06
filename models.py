@@ -277,7 +277,7 @@ payments = Table('payments', metadata,
 
 mapper(User, users)
 mapper(Ticket, tickets, properties={
-  'owner': relationship(User)
+    'owner': relationship(User)
 })
 mapper(Team, teams)
 mapper(TeamUser, team_users)
