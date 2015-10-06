@@ -553,6 +553,7 @@ app.controller('MapController', function ($scope, $http, $interval, $location) {
     $http.get('/api/tickets/type/0')
       .success(function(data) {
         seatStatus = {};
+        seatOwners = {};
         var tickets = data.tickets;
         for (var i = 0; i < tickets.length; i++) {
           var seat_num = tickets[i].seat_num;
