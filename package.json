@@ -1,0 +1,17 @@
+{
+  "name": "lanmomo-website",
+  "version": "1.0.0",
+  "description": "Website for LAN Montmorency",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lanmomo/lanmomo-website"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-cache-bust": "^0.6.0",
+    "grunt-contrib-copy": "^0.8.1",
+    "load-grunt-tasks": "^3.3.0"
+  }
+}
