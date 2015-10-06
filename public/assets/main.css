@@ -64,9 +64,20 @@ footer a {
   background-repeat: no-repeat;
   background-position: center;
 }
+.jumbotron-home h1 {
+  margin-top: 0;
+}
+.jumbotron h1 small,
+.jumbotron-home h3 {
+  color: #99A2AA;
+}
 .jumbotron-home h1,
+.jumbotron-home h2,
 .jumbotron-home h3 {
   text-shadow: 2px 2px 10px black;
+}
+.jumbotron-home p {
+  margin-top: 30px;
 }
 .featurette, .featurette-divider {
   margin: 80px 0; /* Space out the Bootstrap <hr> more */
