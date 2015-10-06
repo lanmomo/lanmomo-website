@@ -11,6 +11,8 @@ MAILGUN_KEY = 'secret'
 PAYPAL_API_ID = ''
 PAYPAL_API_SECRET = ''
 PAYPAL_API_MODE = 'live'
+PAYPAL_RETURN_URL = 'https://lanmomo.org/pay/execute'
+PAYPAL_CANCEL_URL = 'https://lanmomo.org/pay/cancel'  # TODO check cancel url
 
 # Lanmomo
 TYPE_IDS = {'pc': 0, 'console': 1}
