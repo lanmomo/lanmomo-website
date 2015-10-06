@@ -4,13 +4,18 @@ from paypalrestsdk import Payment
 
 
 class Paypal():
+    def __init__(self):
+        self.return_url = None
+        self.cancel_url = None
 
-    def configure(self, client_id, client_secret, mode):
+    def configure(self, client_id, client_secret, mode, return_url, cancel_url):
         paypalrestsdk. \
             configure({
                       "mode": mode,
                       "client_id": client_id,
                       "client_secret": client_secret})
+        self.return_url = return_url
+        self.cancel_url = cancel_url
 
     def create(self, ticket):
         price_str = ("%.2f" % ticket.total)
@@ -21,9 +26,8 @@ class Paypal():
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": "https://lanmomo.org/pay/execute",
-                # TODO check cancel url
-                "cancel_url": "https://lanmomo.org/pay/cancel"
+                "return_url": self.return_url,
+                "cancel_url": self.cancel_url
             },
             "transactions": [{
                 "item_list": {

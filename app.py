@@ -604,7 +604,9 @@ def setup(conf_path):
     paypal_api.configure(
         client_id=app.config['PAYPAL_API_ID'],
         client_secret=app.config['PAYPAL_API_SECRET'],
-        mode=app.config['PAYPAL_API_MODE'])
+        mode=app.config['PAYPAL_API_MODE'],
+        return_url=app.config['PAYPAL_RETURN_URL'],
+        cancel_url=app.config['PAYPAL_CANCEL_URL'])
 
     with open('config/games.json') as data_file:
         games = json.load(data_file)
