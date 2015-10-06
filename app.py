@@ -181,7 +181,7 @@ def ticket_from_seat(seat_num):
     ticket = get_ticket_from_seat_num(seat_num)
 
     if ticket:
-        return jsonify({'ticket': seat.as_pub_dict()}), 200
+        return jsonify({'ticket': ticket.as_pub_dict()}), 200
     return jsonify({}), 404
 
 

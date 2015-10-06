@@ -196,7 +196,7 @@ class TeamUser():
     def get_team_name(self):
         team = User.query.filter(Team.id == self.team_id).first()
         if team:
-            return user.name
+            return team.name
 
     def get_user_name(self):
         user = User.query.filter(User.id == self.user_id).first()
