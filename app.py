@@ -573,6 +573,12 @@ def mod_user():
             has_update = True
             setattr(user, mod_key, req[mod_key])
 
+    if 'password' in req and 'oldPassword' in req:
+        if get_hash(req['oldPassword'], user.salt) != user.password:
+            return jsonify({'error': 'Mauvais mot de passe actuel.'}), 400
+        user.password = get_hash(req['password'], user.salt)
+        has_update = True
+
     if has_update:
         db_session.add(user)
         db_session.commit()

@@ -346,6 +346,7 @@ app.controller('ExecuteController', function ($scope, $http, $location, $routePa
 });
 
 app.controller('ProfileController', function ($scope, $http) {
+  $scope.alerts= [];
   $scope.state = {
     submitted: false,
     loading: false,
@@ -374,7 +375,7 @@ app.controller('ProfileController', function ($scope, $http) {
       }
     })
     .error(function(err, status) {
-      $scope.error = {message: err.error, status: status};
+      $scope.alerts.push({msg: err.error, type: 'danger'});
     });
 
     $scope.submitUserMods = function () {
@@ -382,11 +383,10 @@ app.controller('ProfileController', function ($scope, $http) {
         .success(function(data) {
           $scope.userData = data.user;
           $scope.resetMods();
-          $scope.message = 'Vos informations ont été mises à jour.'
+          $scope.alerts.push({msg: 'Vos informations ont été mises à jour.', type: 'success'});
         })
         .error(function(err, status) {
-          console.log(err);
-          console.log(status);
+          $scope.alerts.push({msg: err.error, type: 'danger'});
         });
     }
 
