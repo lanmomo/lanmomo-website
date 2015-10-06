@@ -10,7 +10,7 @@ from datetime import datetime
 
 from flask import Flask, send_from_directory, jsonify, request, session, redirect
 
-from sqlalchemy import or_
+from sqlalchemy import or_, not_
 from sqlalchemy.orm import contains_eager
 
 from database import db_session, init_db, init_engine
@@ -208,6 +208,66 @@ def get_all_tickets():
 
     pub = map(lambda ticket: ticket.as_pub_dict(), tickets)
     return jsonify({'tickets': list(pub)}), 200
+
+
+@app.route('/api/tickets/seat', methods=['PUT'])
+def change_seat():
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+    req = request.get_json()
+
+    if 'seat_num' not in req:
+        return bad_request()
+    seat_num = req['seat_num']
+
+    res = None
+    try:
+        db_session.execute('LOCK TABLES tickets WRITE, users READ;')
+        err = change_seat_for_user(user_id, seat_num)
+
+        if err:
+            res = err
+        else:
+            ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
+                .filter(Ticket.reserved_until >= datetime.now()) \
+                .one()
+
+            db_session.commit()
+            res = jsonify({'ticket': ticket.as_pub_dict()}), 200
+    except Exception as e:
+        # TODO log
+        print(e)
+        res = jsonify({'error': 'Erreur inconnue.'}), 500
+    finally:
+        db_session.execute('UNLOCK TABLES;')
+
+    return res
+
+
+def change_seat_for_user(user_id, seat_num):
+    """Please lock tables before calling. Returns error or None.
+    """
+    try:
+        current_ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
+            .filter(Ticket.reserved_until >= datetime.now()) \
+            .filter(not_(Ticket.paid)) \
+            .one()
+    except:
+        return jsonify({
+            'error':
+                'Aucun billet valide, billet expiré ou billet déjà payé.'}), 409
+
+    wanted_seat_count = Ticket.query \
+        .filter(Ticket.seat_num == seat_num) \
+        .filter(or_(
+            Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+        .count()
+    if wanted_seat_count > 0:
+        return jsonify({'error': 'Ce siège est déjà occupé.'}), 409
+
+    current_ticket.seat_num = seat_num
+    db_session.add(current_ticket)
 
 
 @app.route('/api/tickets', methods=['POST'])
