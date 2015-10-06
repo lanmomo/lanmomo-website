@@ -146,10 +146,6 @@ app.controller('TournamentsController', function($scope, $http, $location) {
     }
   };
 
-  $scope.go = function(path) {
-    $location.path(path);
-  };
-
   refreshData();
 });
 
@@ -223,10 +219,6 @@ app.controller('TicketsController', function($scope, $http, $location) {
     .error(function(err, status) {
       $scope.error = {message: err.error, status: status};
     });
-
-  $scope.go = function(path) {
-    $location.path(path);
-  };
 
   $scope.buy = function(ticketType) {
     var ticket = {};
@@ -529,10 +521,6 @@ app.controller('MapController', function ($scope, $http, $interval, $location) {
   $scope.$on('$destroy', function () {
     $interval.cancel(refreshInterval);
   });
-
-  $scope.go = function(path) {
-    $location.path(path);
-  };
 
   $scope.buy = function(seatNum) {
     var ticket = {};
