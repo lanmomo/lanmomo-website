@@ -172,54 +172,120 @@ footer a {
 /* END LOGIN */
 
 /* BEGIN SEAT-MAP */
-.seat {
-  display: inline;
+.seat-map {
+  margin-bottom: 20px;
+}
+.seat-map-section {
+  position: relative;
   float: left;
-  width: 4%;
+  min-height: 1px;
+}
+.seat-map-left,
+.seat-map-right {
+  width: 3%;
+}
+.seat-map-center {
+  width: 94%;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.seat-map-section .scene,
+.seat-map-section .console {
+  position: relative;
+  height: 180px;
+  padding-top: 5px;
+  border: 1px solid #ccc;
   text-align: center;
+  text-transform: uppercase;
+  background-color: #2e3338;
+
+}
+.seat-map-section .scene div,
+.seat-map-section .console div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%) rotate(-90deg);
+  -moz-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
+  -webkit-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
+
+}
+.seat-map-section .seat {
+  float: left;
+  width: 4.16%;
   height: 40px;
-  box-sizing: border-box;
+  padding-top: 10px;
   border-left: 1px solid #ccc;
   border-top: 1px solid #ccc;
-  font-size: 20px;
-  padding-top: 5px;
-  background-color: #2e3338;
+  text-align: center;
   cursor: pointer;
+  background-color: #2e3338;
 }
-.seat.right {
+@media (min-width: 768px) {
+  .seat-map-section .seat,
+  .seat-map-section .scene,
+  .seat-map-section .console {
+    padding-top: 8px;
+    font-size: 16px;
+  }
+}
+@media (min-width: 992px) {
+  .seat-map-section .seat,
+  .seat-map-section .scene,
+  .seat-map-section .console {
+    padding-top: 5px;
+    font-size: 20px;
+  }
+}
+.seat-map-section .seat.right {
   border-right: 1px solid #ccc;
 }
-.seat.bottom {
+.seat-map-section .seat.bottom {
   border-bottom: 1px solid #ccc;
 }
-.seat:hover {
+.seat-map-section .seat:hover {
   color: #fff;
   background-color: #46b8da;
 }
-.seat.selected {
+.seat-map-section .seat.selected {
   color: #fff;
   background-color: #62c462;
 }
-.seat.selected:hover {
+.seat-map-section .seat.selected:hover {
   background-color: #4fbd4f;
 }
-.seat.reserved {
+.seat-map-section .seat.reserved {
   color: #fff;
   background-color: #f89406;
 }
-.seat.reserved:hover {
+.seat-map-section .seat.reserved:hover {
   background-color: #df8505;
 }
-.seat.taken {
+.seat-map-section .seat.taken {
   color: #fff;
   background-color: #ee5f5b;
 }
-.seat.taken:hover {
+.seat-map-section .seat.taken:hover {
   background-color: #ec4844;
 }
-.splitter {
+.seat-map-section .splitter {
   height: 20px;
-  width: 100%;
+}
+.seat-map-preview .media-left {
+  padding-right: 20px;
+}
+.seat-map-preview .preview-seat {
+  height: 64px;
+  width: 64px;
+  line-height: 62px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 20px;
+  background-color: #2e3338;
+}
+.seat-map-preview .preview-text p {
+  margin-top: 10px;
+  margin-bottom: 0;
 }
 /* END SEAT-MAP */
 

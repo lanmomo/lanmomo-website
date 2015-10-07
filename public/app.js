@@ -508,82 +508,43 @@ app.controller('SignupController', function($scope, $http) {
   };
 });
 
-app.controller('MapController', function ($scope, $http, $interval, $location) {
+app.controller('MapController', function($scope, $http, $interval, $location) {
   $scope.selectedSeat = null;
   var seatStatus = {};
   var seatOwners = {};
-  refresh();
 
-  var refreshInterval = $interval(function () {
-      refresh();
-  }, 5000);
-
-  $scope.$on('$destroy', function () {
-    $interval.cancel(refreshInterval);
-  });
-
-  $scope.buy = function(seatNum) {
-    var ticket = {};
-    $scope.submitted = true;
-    ticket.type = TICKET_TYPES.PC;
-    ticket.seat = seatNum;
-
-    $http.post('/api/tickets', ticket)
-      .success(function(data) {
-        $location.path('/pay');
-      })
-      .error(function(err, status) {
-        $scope.error = err.error;
-      });
-  };
-
-  function refresh() {
-    $http.get('/api/tickets/type/0')
-      .success(function(data) {
-        seatStatus = {};
-        seatOwners = {};
-        var tickets = data.tickets;
-        for (var i = 0; i < tickets.length; i++) {
-          var seat_num = tickets[i].seat_num;
-          if (tickets[i].paid) {
-            seatStatus[seat_num] = 't';
-          } else {
-            seatStatus[seat_num] = 'r';
-          }
-          seatOwners[seat_num] = tickets[i].owner_username;
-        }
-        // TODO check if selectedSeatTicket is updated !
-      })
-      .error(function(err, status) {
-        $scope.error = {message: err.error, status: status};
-      });
-  }
-  function resetSelectedSeat() {
+  $scope.resetSelectedSeat = function() {
+    $scope.selectedSeat = false;
+    delete $scope.selectedSeatID;
+    delete $scope.selectSeatIsFree;
     delete $scope.selectedSeatTicket;
     delete $scope.selectedSeatUser;
     delete $scope.error;
-    delete $scope.selectSeatIsFree;
-  }
-
-  $scope.isAvail = function (seat) {
+  };
+  $scope.isAvail = function(seat) {
     return !seatStatus.hasOwnProperty(seat);
   };
-  $scope.isReserved = function (seat) {
+  $scope.isReserved = function(seat) {
     return seatStatus[seat] == 'r';
   };
-  $scope.isTaken = function (seat) {
+  $scope.isTaken = function(seat) {
     return seatStatus[seat] == 't';
   };
-  $scope.getOwner = function (seat) {
+  $scope.getOwner = function(seat) {
     return seatOwners[seat];
   };
-  $scope.selectSeat = function (seat) {
+  $scope.times = function(x) {
+    return new Array(x);
+  };
+
+  $scope.selectSeat = function(seat) {
     $http.get('/api/tickets/seat/' + seat + '/free')
       .success(function(data) {
-        resetSelectedSeat();
+        $scope.resetSelectedSeat();
+        $scope.selectedSeat = true;
         $scope.selectedSeatID = seat;
         if (!data.free) {
-          $scope.error = 'siège occupé par ' + data.user.username;
+          $scope.selectSeatIsFree = false;
           $scope.selectedSeatTicket = data.ticket;
           $scope.selectedSeatUser = data.user;
         } else {
@@ -591,14 +552,58 @@ app.controller('MapController', function ($scope, $http, $interval, $location) {
         }
       })
       .error(function(err, status) {
-        resetSelectedSeat();
+        $scope.resetSelectedSeat();
         $scope.error = {message: err.error, status: status};
       });
 
   };
-  $scope.times = function (x) {
-    return new Array(x);
+
+  $scope.buy = function(seat) {
+    var ticket = {};
+    $scope.submitted = true;
+    ticket.type = TICKET_TYPES.PC;
+    ticket.seat = seat;
+
+    $http.post('/api/tickets', ticket)
+      .success(function(data) {
+        $location.path('/pay');
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.error, status: status};
+      });
   };
+
+  $scope.refresh = function() {
+    $http.get('/api/tickets/type/0')
+      .success(function(data) {
+        seatStatus = {};
+        seatOwners = {};
+        var tickets = data.tickets;
+        for (var i = 0; i < tickets.length; i++) {
+          var seat = tickets[i].seat_num;
+          if (tickets[i].paid) {
+            seatStatus[seat] = 't';
+          } else {
+            seatStatus[seat] = 'r';
+          }
+          seatOwners[seat] = tickets[i].owner_username;
+        }
+        if ($scope.selectedSeat) {
+          $scope.selectSeat($scope.selectedSeatID);
+        }
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.error, status: status};
+      });
+  };
+
+  $scope.refresh();
+  $scope.intervalPromise = $interval(function() {
+    $scope.refresh();
+  }, 5000);
+  $scope.$on('$destroy', function() {
+    $interval.cancel($scope.intervalPromise);
+  });
 });
 
 app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
