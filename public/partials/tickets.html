@@ -2,13 +2,6 @@
   <div class="page-header">
       <h1>Achat de billet</h1>
   </div>
-  <div class="alert alert-success" role="alert" ng-show="message">
-    <i class="fa fa-info-circle"></i> {{message}}
-  </div>
-
-  <div class="alert alert-danger" role="alert" ng-show="error">
-    <i class="fa fa-info-circle"></i> {{error}}
-  </div>
 
   <div ng-hide="loggedIn">
     <div class="well">
@@ -20,45 +13,101 @@
     </div>
   </div>
 
-  <p class="text-warning">Lorsque vous procéderez à l'achat, votre billet sera réservé pour 10 minutes.</p>
-  <p class="text-warning">Les billets temporairements réservés sont attribuées à des joueurs qui n'ont pas encore payé. Ces places peuvent donc se libérer.</p>
-
-  <h2>BYOC - 20$</h2>
-  <p>{{ticketCount.pc.real}} billets réservés</p>
-  <p>{{ticketCount.pc.temp}} billets réservés temporairements</p>
-
-  <div class="progress">
-    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{ticketCount.pc.real}}"
-         aria-valuemin="0" aria-valuemax="{{max.pc}}" style="min-width:3em; width: {{ticketCount.pc.real / max.pc * 100}}%">
-      {{ticketCount.pc.real}} / {{max.pc}}
-    </div>
-    <div class="progress-bar progress-bar-warning" ng-show="ticketCount.pc.temp > 0" role="progressbar" aria-valuenow="{{ticketCount.pc.temp}}"
-         aria-valuemin="0" aria-valuemax="{{max.pc}}" style="min-width:3em; width: {{ticketCount.pc.temp / max.pc * 100}}%">
-      {{ticketCount.pc.temp}} / {{max.pc}}
-    </div>
-  </div>
-  <div class="row" ng-show="loggedIn">
-    <div class="col-md-2 col-md-offset-5">
-      <button ng-disabled="submitted" ng-click="buy(0)" class="btn btn-info btn-lg">Acheter un billet BYOC <i class="fa fa-chevron-right fa-3"></i></button>
-    </div>
+  <div class="alert alert-danger" role="alert" ng-show="error">
+    <i class="fa fa-exclamation-triangle"></i> {{ error.message }}
   </div>
 
-  <h2>Console - 10$</h2>
-  <p>{{ticketCount.console.real}} billets réservés</p>
-  <p>{{ticketCount.console.temp}} billets réservés temporairements</p>
-  <div class="progress">
-    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{ticketCount.console.real}}"
-         aria-valuemin="0" aria-valuemax="{{max.console}}" style="min-width:3em; width: {{ticketCount.console.real / max.console * 100}}%">
-      {{ticketCount.console.real}} / {{max.console}}
+  <div class="alert alert-info">
+    <p><i class="fa fa-exclamation-circle"></i> Lorsque vous cliquez sur acheter, votre billet sera réservé pour une période de 10 minutes. Vous avez donc 10 minutes pour compléter votre transaction avant que votre billets soit de nouveau disponible aux autres joueurs.</p>
+  </div>
+
+  <div class="tickets">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="media">
+          <div class="media-left">
+            <img class="media-object" src="assets/a-logo.png" alt="LAN Montmorency Logo">
+          </div>
+          <div class="media-body">
+            <h3 class="media-heading">LAN Montmorency BYOC</h3>
+            <div class="ticket-date">14 et 15 novembre 2015</div>
+            <div class="ticket-venue">Collège Montmorency</div>
+          </div>
+          <div class="media-right">
+            <div class="ticket-price">
+              20,00$
+            </div>
+            <div ng-show="loggedIn">
+              <button ng-disabled="submitted" ng-click="buy(0)" class="btn btn-success">Acheter <i class="fa fa-chevron-right"></i></button>
+            </div>
+            <div ng-show="!loggedIn">
+              <span class="label label-success">Disponible</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="progress progress-striped">
+        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{ticketCount.pc.real}}"
+             aria-valuemin="0" aria-valuemax="{{max.pc}}" style="width: {{ticketCount.pc.real / max.pc * 100}}%">
+          {{ ticketCount.pc.real }} vendus
+        </div>
+        <div class="progress-bar progress-bar-warning" ng-show="ticketCount.pc.temp > 0" role="progressbar" aria-valuenow="{{ticketCount.pc.temp}}"
+             aria-valuemin="0" aria-valuemax="{{max.pc}}" style="width: {{ticketCount.pc.temp / max.pc * 100}}%">
+          {{ ticketCount.pc.temp }} réservés
+        </div>
+        <div class="progress-bar progress-bar-success" ng-show="ticketCount.pc.avail > 0" role="progressbar" aria-valuenow="{{ticketCount.pc.avail}}"
+             aria-valuemin="0" aria-valuemax="{{max.pc}}" style="width: {{ticketCount.pc.avail / max.pc * 100}}%">
+          {{ ticketCount.pc.avail }} disponibles
+        </div>
+      </div>
     </div>
-    <div class="progress-bar progress-bar-warning" ng-show="ticketCount.console.temp > 0" role="progressbar" aria-valuenow="{{ticketCount.console.temp}}"
-         aria-valuemin="0" aria-valuemax="{{max.console}}" style="min-width:3em; width: {{ticketCount.console.temp / max.console * 100}}%">
-      {{ticketCount.console.temp}} / {{max.console}}
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="media">
+          <div class="media-left">
+            <img class="media-object" src="assets/a-logo.png" alt="LAN Montmorency Logo">
+          </div>
+          <div class="media-body">
+            <h3 class="media-heading">LAN Montmorency Console</h3>
+            <div class="ticket-date">14 et 15 novembre 2015</div>
+            <div class="ticket-venue">Collège Montmorency</div>
+          </div>
+          <div class="media-right">
+            <div class="ticket-price">
+              10,00$
+            </div>
+            <div ng-show="ticketCount.console.soldout">
+              <span class="label label-danger">Épuisé</span>
+            </div>
+            <div ng-show="!ticketCount.console.soldout">
+              <button ng-show="loggedIn" ng-disabled="submitted" ng-click="buy(1)" class="btn btn-success">Acheter <i class="fa fa-chevron-right"></i></button>
+              <span ng-show="!loggedIn" class="label label-success">Disponible</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="progress progress-striped">
+        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{ticketCount.console.real}}"
+             aria-valuemin="0" aria-valuemax="{{max.console}}" style="width: {{ticketCount.console.real / max.console * 100}}%">
+          {{ ticketCount.console.real }} vendus
+        </div>
+        <div class="progress-bar progress-bar-warning" ng-show="ticketCount.console.temp > 0" role="progressbar" aria-valuenow="{{ticketCount.console.temp}}"
+             aria-valuemin="0" aria-valuemax="{{max.console}}" style="width: {{ticketCount.console.temp / max.console * 100}}%">
+          {{ ticketCount.console.temp }} réservés
+        </div>
+        <div class="progress-bar progress-bar-success" ng-show="ticketCount.console.avail > 0" role="progressbar" aria-valuenow="{{ticketCount.console.avail}}"
+             aria-valuemin="0" aria-valuemax="{{max.console}}" style="width: {{ticketCount.console.avail / max.console * 100}}%">
+          {{ ticketCount.console.avail }} disponibles
+        </div>
+      </div>
     </div>
   </div>
-  <div class="row" ng-show="loggedIn">
-    <div class="col-md-2 col-md-offset-5">
-      <button ng-disabled="submitted" ng-click="buy(1)" class="btn btn-info btn-lg">Acheter un billet console <i class="fa fa-chevron-right fa-3"></i></button>
-    </div>
+
+  <div class="well">
+    Légendes
+    <span class="label label-success">Disponibles</span>
+    <span class="label label-warning">Réservés</span>
+    <span class="label label-danger">Vendus</span>
   </div>
 </div>

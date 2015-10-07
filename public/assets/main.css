@@ -171,6 +171,41 @@ footer a {
 }
 /* END LOGIN */
 
+/**/
+.progress-bar {
+  text-shadow: 0 0 20px black;
+}
+/**/
+
+/* BEGIN TICKETS */
+.tickets .panel .media .media-left {
+  padding-right: 20px;
+}
+.tickets .panel .media .media-left img {
+  /*width: 90px;*/
+  height: 90px;
+}
+.tickets .panel .media .media-body .ticket-date {
+  font-size: 1.2em;
+  margin-top: 10px;
+}
+.tickets .panel .media .media-body .ticket-venue {
+  font-style: oblique;
+  font-size: 1.2em;
+  margin-top: 9px;
+}
+.tickets .panel .media .media-right {
+  text-align: right;
+}
+.tickets .panel .media .media-right .ticket-price {
+  font-size: 200%;
+  margin-bottom: 5px;
+}
+.tickets .panel .progress {
+  margin-bottom: 0;
+}
+/* END TICKETS */
+
 /* BEGIN SEAT-MAP */
 .seat-map {
   margin-bottom: 20px;

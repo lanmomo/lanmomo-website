@@ -207,14 +207,18 @@ app.controller('TicketsController', function($scope, $http, $location) {
         pc: {
           real: ticketCounts['paid'][0],
           temp: ticketCounts['temp'][0],
-          total: ticketCounts['paid'][0] + ticketCounts['temp'][0]
+          total: ticketCounts['paid'][0] + ticketCounts['temp'][0],
+          avail: $scope.max.pc - ticketCounts['paid'][0] - ticketCounts['temp'][0]
         },
         console: {
           real: ticketCounts['paid'][1],
           temp: ticketCounts['temp'][1],
-          total: ticketCounts['paid'][1] + ticketCounts['temp'][1]
+          total: ticketCounts['paid'][1] + ticketCounts['temp'][1],
+          avail: $scope.max.console - ticketCounts['paid'][1] - ticketCounts['temp'][1]
         }
       };
+      $scope.ticketCount.pc.soldout = !($scope.ticketCount.pc.avail > 0);
+      $scope.ticketCount.console.soldout = !($scope.ticketCount.console.avail > 0);
     })
     .error(function(err, status) {
       $scope.error = {message: err.error, status: status};
@@ -231,7 +235,7 @@ app.controller('TicketsController', function($scope, $http, $location) {
           $location.path('/pay');
         })
         .error(function(err, status) {
-          $scope.error = err.error;
+          $scope.error = {message: err.error, status: status};
         });
     } else if (ticketType === TICKET_TYPES.PC) {
       $location.path('/map');
