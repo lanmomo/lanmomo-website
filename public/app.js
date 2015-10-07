@@ -562,14 +562,31 @@ app.controller('MapController', function($scope, $http, $interval, $location) {
   };
 
   $scope.buy = function(seat) {
-    var ticket = {};
     $scope.submitted = true;
+
+    var ticket = {};
     ticket.type = TICKET_TYPES.PC;
     ticket.seat = seat;
 
-    $http.post('/api/tickets', ticket)
+    $http.get('/api/users/ticket')
       .success(function(data) {
-        $location.path('/pay');
+        if (data.ticket) {
+          $http.put('/api/tickets/seat', ticket)
+            .success(function(data) {
+              $location.path('/pay');
+            })
+            .error(function(err, status) {
+              $scope.error = {message: err.error, status: status};
+            });
+        } else {
+          $http.post('/api/tickets', ticket)
+            .success(function(data) {
+              $location.path('/pay');
+            })
+            .error(function(err, status) {
+              $scope.error = {message: err.error, status: status};
+            });
+        }
       })
       .error(function(err, status) {
         $scope.error = {message: err.error, status: status};
