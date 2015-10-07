@@ -13,7 +13,7 @@
   <form class="form-horizontal" name="form" ng-submit="submitForm(form.$valid)" ng-hide="state.success" novalidate>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.username.$invalid && form.username.$dirty) || (!state.usernameAvailable && state.usernameChanged), 'has-success' : form.username.$valid && state.usernameChanged && state.usernameAvailable }">
-      <label for="username" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Saisissez un pseudonyme ou gamertag qui vous représente">Pseudonyme <i class="fa fa-info-circle"></i></label>
+      <label for="username" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Saisissez un pseudonyme ou gamertag qui vous représente">Pseudonyme <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
         <input type="text" name="username" id="username" ng-model="user.username" ng-blur="isUsernameAvailable(user)" ng-change="resetUsernameChanged()" class="form-control" placeholder="Saisissez votre pseudonyme" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.email.$invalid && form.email.$dirty) || (!state.emailAvailable && state.emailChanged), 'has-success' : form.email.$valid && state.emailChanged && state.emailAvailable }">
-      <label for="email" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Un code de confirmation sera envoyé à l'adresse courriel saisie">Courriel <i class="fa fa-info-circle"></i></label>
+      <label for="email" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Un code de confirmation sera envoyé à l'adresse courriel saisie">Courriel <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
         <input type="email" name="email" id="email" ng-model="user.email" ng-blur="isEmailAvailable(user)" ng-change="resetEmailChanged()" class="form-control" placeholder="Saisissez votre courriel" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
@@ -55,7 +55,7 @@
     </div>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.phone.$invalid || form.phone.$error.pattern) && form.phone.$dirty, 'has-success' : form.phone.$valid }">
-      <label for="phone" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Le numéro de téléphone est requis par les autorités du cégep">Numéro de téléphone <i class="fa fa-info-circle"></i></label>
+      <label for="phone" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Le numéro de téléphone est requis par les autorités du cégep">Numéro de téléphone <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
         <input type="text" name="phone" id="phone" ng-model="user.phone" ng-pattern="/^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i" class="form-control" placeholder="Saisissez votre numéro de téléphone" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
@@ -65,7 +65,7 @@
     </div>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : form.password.$invalid && form.password.$dirty, 'has-success' : form.password.$valid }">
-      <label for="password" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Mot de passe d'au moins 8 caractères">Mot de passe <i class="fa fa-info-circle"></i></label>
+      <label for="password" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Mot de passe d'au moins 8 caractères">Mot de passe <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
         <input type="password" name="password" id="password" ng-model="user.password" class="form-control" ng-minlength="8" placeholder="Saisissez votre mot de passe" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
@@ -74,7 +74,7 @@
       </div>
     </div>
     <div class="form-group has-feedback" ng-class="{ 'has-error' : form.conf.$invalid && form.conf.$dirty && !form.conf.$error.passwordCheck, 'has-success' : form.conf.$valid }">
-      <label for="conf" class="col-sm-4 col-md-3 col-lg-2 control-label" data-toggle="tooltip" data-placement="top" title="Confirmez votre mot de passe">Confirmation <i class="fa fa-info-circle"></i></label>
+      <label for="conf" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Confirmez votre mot de passe">Confirmation <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
         <input type="password" name="conf" id="conf" class="form-control" ng-minlength="8" ng-model="none" password-check="user.password" placeholder="Confirmez votre mot de passe" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>

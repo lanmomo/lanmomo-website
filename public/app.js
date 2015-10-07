@@ -454,7 +454,6 @@ app.controller('QRController', function ($scope, $http, $routeParams) {
 
 
 app.controller('SignupController', function($scope, $http) {
-  $('[data-toggle="tooltip"]').tooltip();
   $scope.state = {
     submitted: false,
     loading: false,
