@@ -28,7 +28,7 @@
         <div class="clearfix">
           <div ng-repeat="(col, _) in times(24) track by $index" ng-init="seat = row * 24 + col + 1;"
                ng-attr-id="{{ seat }}" ng-click="selectSeat(seat)"
-               ng-class="{bottom: row==1 || row==3, right: col==23, selected: selectedSeatID == seat, taken: isTaken(seat), reserved: isReserved(seat)}"
+               ng-class="{bottom: row==1 || row==3, right: col==23, selected: selectedSeatID == seat, taken: isTaken(seat), reserved: isReserved(seat), user: userPaidSeatID == seat}"
                class="seat" tooltip-placement="bottom" tooltip="{{ getOwner(seat) }}">
             {{ seat }}
           </div>
@@ -69,13 +69,17 @@
         <p ng-show="loggedIn"><button class="btn btn-success btn-sm" ng-click="buy(selectedSeatID)">Réserver ce siège <i class="fa fa-chevron-right"></i></button></p>
         <p ng-show="!loggedIn">Ce siège est disponible.</p>
       </div>
-      <div class="media-body preview-text" ng-show="!selectSeatIsFree && !selectedSeatTicket.paid">
+      <div class="media-body preview-text" ng-show="!selectSeatIsFree && !selectedSeatTicket.paid && !selectedSeatIsUserPaidSeat">
         <h4 class="media-heading text-warning">Réservé</h4>
         <p>Ce siège est réservé par <strong>{{ selectedSeatUser.username }}</strong> jusqu'à {{ selectedSeatTicket.reserved_until | amDateFormat:'HH:mm:ss' }}.</p>
       </div>
-      <div class="media-body preview-text" ng-show="!selectSeatIsFree && selectedSeatTicket.paid">
+      <div class="media-body preview-text" ng-show="!selectSeatIsFree && selectedSeatTicket.paid && !selectedSeatIsUserPaidSeat">
         <h4 class="media-heading text-danger">Vendu</h4>
-        <p>Ce siège a été vendu à <strong>{{ selectedSeatUser.username }}<strong>.</p>
+        <p>Ce siège a été vendu à <strong>{{ selectedSeatUser.username }}</strong>.</p>
+      </div>
+      <div class="media-body preview-text" ng-show="selectedSeatIsUserPaidSeat">
+        <h4 class="media-heading text-info">Votre siège</h4>
+        <p>Ce siège a été vendu à vous, <strong>{{ selectedSeatUser.username }}</strong>.</p>
       </div>
     </div>
   </div>
