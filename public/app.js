@@ -676,7 +676,7 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
 
   cfpLoadingBarProvider.includeSpinner = false;
 
-  moment.locale('fr');
+  moment.locale('fr-ca');
 });
 
 app.filter('capitalize', function() {
