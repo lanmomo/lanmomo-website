@@ -522,7 +522,6 @@ app.controller('MapController', function($scope, $http, $interval, $location) {
     delete $scope.selectSeatIsFree;
     delete $scope.selectedSeatTicket;
     delete $scope.selectedSeatUser;
-    delete $scope.error;
   };
   $scope.isAvail = function(seat) {
     return !seatStatus.hasOwnProperty(seat);
