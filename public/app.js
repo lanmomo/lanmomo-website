@@ -361,6 +361,7 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
 
     var data = {};
     data.discount_momo = $scope.discountMomo;
+    // TODO: Send $scope.participateGG too!
 
     $http.post('/api/tickets/pay', data)
       .success(function(data) {

@@ -311,7 +311,7 @@ def pay_ticket():
     user_id = session['user_id']
 
     req = request.get_json()
-    if 'discount_momo' in req:
+    if req.get('discount_momo', False):
         discount = app.config['DISCOUNT_MOMO']
     else:
         discount = 0
