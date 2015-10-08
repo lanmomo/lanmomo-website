@@ -64,7 +64,7 @@
         </div>
       </div>
       <div class="media-body preview-text">
-        <h4 class="media-heading">Veuillez selectionner un siège</h4>
+        <h3 class="media-heading">Veuillez selectionner un siège</h3>
         <p>Cliquez sur un siège pour obtenir plus d'information et prendre connaissance des options disponibles.</p>
       </div>
     </div>
@@ -78,20 +78,20 @@
         </div>
       </div>
       <div class="media-body preview-text" ng-show="selectSeatIsFree">
-        <h4 class="media-heading text-success">Disponible</h4>
-        <p ng-show="loggedIn"><button class="btn btn-success btn-sm" ng-click="buy(selectedSeatID)">Réserver ce siège <i class="fa fa-chevron-right"></i></button></p>
+        <h3 class="media-heading text-success">Disponible</h3>
+        <p ng-show="loggedIn"><button class="btn btn-success" ng-click="buy(selectedSeatID)">Réserver ce siège <i class="fa fa-chevron-right"></i></button></p>
         <p ng-show="!loggedIn">Ce siège est disponible.</p>
       </div>
       <div class="media-body preview-text" ng-show="!selectSeatIsFree && !selectedSeatTicketPaid && !selectedSeatIsUserPaidSeat">
-        <h4 class="media-heading text-warning">Réservé</h4>
+        <h3 class="media-heading text-warning">Réservé</h3>
         <p>Ce siège est réservé par <strong>{{ selectedSeatUser }}</strong> jusqu'à {{ selectedSeatUntil | amDateFormat:'HH:mm:ss' }}.</p>
       </div>
       <div class="media-body preview-text" ng-show="!selectSeatIsFree && selectedSeatTicketPaid && !selectedSeatIsUserPaidSeat">
-        <h4 class="media-heading text-danger">Vendu</h4>
+        <h3 class="media-heading text-danger">Vendu</h3>
         <p>Ce siège a été vendu à <strong>{{ selectedSeatUser }}</strong>.</p>
       </div>
       <div class="media-body preview-text" ng-show="selectedSeatIsUserPaidSeat">
-        <h4 class="media-heading text-info">Votre siège</h4>
+        <h3 class="media-heading text-info">Votre siège</h3>
         <p>Ce siège a été vendu à vous, <strong>{{ selectedSeatUser }}</strong>.</p>
       </div>
     </div>
