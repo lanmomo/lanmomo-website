@@ -6,7 +6,7 @@ from database import db_session, clear_db
 class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
-        app.setup('config/default_config.py');
+        app.setup('config/test_config.py');
 
     def tearDown(self):
         clear_db()
