@@ -479,7 +479,7 @@ app.controller('SignupController', function($scope, $http) {
         $scope.state.success = true;
       })
       .error(function(data) {
-        $scope.message = 'Malheuresement, une erreur est survenue lors de votre inscription !' +
+        $scope.message = 'Malheureusement, une erreur est survenue lors de votre inscription !' +
           ' Veuillez réessayer plus tard et contacter info@lanmomo.org si le problème persiste.';
         $scope.state.loading = false;
         $scope.state.error = true;
