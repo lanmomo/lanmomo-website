@@ -179,6 +179,9 @@ footer a {
   margin-top: 0;
   margin-bottom: 0;
 }
+.timer {
+  cursor:help;
+}
 /* BEGIN TIMER */
 
 /* BEGIN TICKETS */
