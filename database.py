@@ -17,3 +17,9 @@ def init_engine(uri):
 def init_db():
     global engine
     metadata.create_all(bind=engine)
+
+
+def clear_db():
+    global engine
+    for tbl in reversed(metadata.sorted_tables):
+        engine.execute(tbl.delete())
