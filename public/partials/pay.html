@@ -1,35 +1,85 @@
 <div class="container">
   <div class="page-header">
-      <h1>Paiement de billet</h1>
-  </div>
-  <div class="alert alert-success" role="alert" ng-show="message">
-    <i class="fa fa-info-circle"></i> {{message}}
+    <div class="row header-with-timer">
+      <div class="col-xs-9">
+        <h1 ng-show="!loading">Sommaire</h1>
+        <h1 ng-show="loading">Redirection vers PayPal...</h1>
+      </div>
+      <div class="col-xs-3 text-right">
+        <span class="btn timer" ng-show="timerTime" ng-class="{ 'btn-warning': !timerTimeDanger, 'btn-danger': timerTimeDanger }" tooltip-placement="bottom" tooltip="Temps restant pour compléter votre transaction">
+            <i class="fa fa-clock-o"></i> <span class="time-container">{{ timerTime }}</span>
+        </span>
+      </div>
+    </div>
   </div>
 
   <div class="alert alert-danger" role="alert" ng-show="error">
-    <i class="fa fa-info-circle"></i> {{error}}
+    <i class="fa fa-exclamation-triangle"></i> {{ error.message }}
   </div>
 
-  <p class="text-warning">Votre billet est réservé pour encore: <timer countdown="{{}}" max-time-unit="'minute'" interval="{{ticket.reserved_until}}">{{mminutes}} minute{{minutesS}}, {{sseconds}} second{{secondsS}}</timer></p>
-
-  <h2>Confirmer l'achat d'un billet de type {{ticket_type_str}}</h2>
-
-  <div class="checkbox">
-    <label>
-      <input type="checkbox" ng-model="discountMomo" ng-init="checked = false">
-      Je suis un étudiant de Montmorency (5$ de rabais)
-    </label>
+  <div ng-show="loading" class="progress progress-striped active">
+    <div class="progress-bar progress-bar-loading">
+      Chargement
+    </div>
   </div>
 
-  <div class="checkbox">
-    <label>
-      <input type="checkbox" ng-model="participateGG" ng-init="checked = true">
-      Je souhaite participer au concours de Gamer's Giveaway. Votre adresse courriel leur sera envoyé.
-    </label>
+  <div ng-show="ticket" ng-hide="loading">
+    <div class="alert alert-info">
+      <p><i class="fa fa-exclamation-circle"></i> Vous êtes maintenant prêt à compléter votre achat. Avant d'effectuer le paiement, assurez-vous que toute les informations sont exactes. Faites attention de ne pas manquer de temps (visible sur le minuteur en haut à droite de l'écran), sans quoi votre billet ne vous sera plus réservé et vous devrez recommencer la transaction.</p>
+    </div>
+
+    <table class="table table-striped table-with-total">
+      <thead>
+      <tr>
+        <th>Description</th>
+        <th>Siège</th>
+        <th>Date</th>
+        <th>Lieu</th>
+        <th>Prix</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+        <td>Billet LAN Montmorency {{ ticket_type_str }}</td>
+        <td>{{ getSeat() }}</td>
+        <td>14 et 15 novembre 2015</td>
+        <td>Collège Montmorency</td>
+        <td>{{ formatMoney(ticket.price) }}</td>
+      </tr>
+      <tr ng-show="discountMomo">
+        <td colspan="4">Rabais pour étudiant du Collège Montmorency</td>
+        <td>-5,00$</td>
+      </tr>
+      <tr>
+        <td colspan="4">Total:</td>
+        <td>{{ formatMoney(getTotal()) }}</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Confirmations avant de compléter votre achat</h3>
+      </div>
+      <div class="panel-body">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-model="participateGG" ng-checked="true">
+            Je souhaite transmettre mon adresse courriel à Gamer's Giveaway pour participer aux tirages de prix de présence lors du LAN.
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-model="discountMomo">
+            Je suis étudiant du Collège Montmorency et j'aimerais bénificier du rabais de 5$
+          </label>
+        </div>
+        <div class="alert alert-warning" ng-show="discountMomo">
+          <p><i class="fa fa-exclamation-triangle"></i> <strong>Attention!</strong> En cochant cette case, vous attestez que vous êtes actuellement étudiant du Collège Montmorency. En plus d'une pièce d'identité, vous devrez aussi présenter votre carte étudiante lors de votre enregistrement, sans quoi vous devrez payer la différence du billet en argent comptant ou l'accès au site vous sera refusé.</p>
+        </div>
+        <button class="btn btn-warning" ng-click="payNow()"><i class="fa fa-paypal"></i> Payer avec PayPal</button>
+      </div>
+    </div>
   </div>
-
-  <p>Total à payer {{getTotal()}} $</p>
-
-  <button class="btn btn-warning" ng-click="payNow()"><i class="fa fa-paypal"></i> Payer avec PayPal</button>
-
 </div>

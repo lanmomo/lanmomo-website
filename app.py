@@ -217,9 +217,9 @@ def change_seat():
     user_id = session['user_id']
     req = request.get_json()
 
-    if 'seat_num' not in req:
+    if 'seat' not in req:
         return bad_request()
-    seat_num = req['seat_num']
+    seat_num = req['seat']
 
     res = None
     try:

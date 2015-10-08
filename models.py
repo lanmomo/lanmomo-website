@@ -74,7 +74,7 @@ class Ticket():
             'type_id': self.type_id,
             'owner_id': self.owner_id,
             'paid': self.paid,
-            'reserved_until': self.reserved_until,
+            'reserved_until': self.reserved_until.strftime('%Y-%m-%dT%H:%M:%S'),
             'price': self.price,
             'discount_amount': self.discount_amount,
             'total': self.total
