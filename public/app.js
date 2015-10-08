@@ -249,15 +249,17 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
     'paid': {0: 0, 1: 0}
   };
 
-  $http.get('/api/users/ticket')
-    .success(function(data) {
-      if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
-        Timer.bootstrap($scope, data.ticket.reserved_until);
-      }
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err.error, status: status};
-    });
+  if ($scope.loggedIn) {
+    $http.get('/api/users/ticket')
+      .success(function (data) {
+        if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
+          Timer.bootstrap($scope, data.ticket.reserved_until);
+        }
+      })
+      .error(function (err, status) {
+        $scope.error = {message: err.error, status: status};
+      });
+  }
 
   $http.get('/api/tickets')
     .success(function(data) {
@@ -613,18 +615,20 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
     return new Array(x);
   };
 
-  $http.get('/api/users/ticket')
-    .success(function(data) {
-      if (data.ticket && data.ticket.paid) {
-        $scope.userPaidSeatID = data.ticket.seat_num;
-      }
-      if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
-        Timer.bootstrap($scope, data.ticket.reserved_until);
-      }
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err.error, status: status};
-    });
+  if ($scope.loggedIn) {
+    $http.get('/api/users/ticket')
+      .success(function (data) {
+        if (data.ticket && data.ticket.paid) {
+          $scope.userPaidSeatID = data.ticket.seat_num;
+        }
+        if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
+          Timer.bootstrap($scope, data.ticket.reserved_until);
+        }
+      })
+      .error(function (err, status) {
+        $scope.error = {message: err.message, status: status};
+      });
+  }
 
   $scope.selectSeat = function(seat) {
     $http.get('/api/tickets/seat/' + seat + '/free')
