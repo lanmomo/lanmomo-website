@@ -3,10 +3,11 @@ import unittest
 from models import User
 from database import db_session, clear_db
 
+
 class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
-        app.setup('config/test_config.py');
+        app.setup('config/test_config.py')
 
     def tearDown(self):
         clear_db()
@@ -22,7 +23,10 @@ class EmailExistsTestCase(BaseTestCase):
         phone = '123-123-1234'
         salt = 'salt'
         password = app.get_hash('test', salt)
-        user = User(username, firstname, lastname, email, phone, password, salt)
+
+        user = User(username, firstname, lastname, email,
+                    phone, password, salt)
+
         db_session.add(user)
         db_session.commit()
 
@@ -34,7 +38,6 @@ class EmailExistsTestCase(BaseTestCase):
         self.insert_email_fixture()
         actual = app.email_exists("test@test.com")
         self.assertTrue(actual)
-
 
 
 if __name__ == '__main__':
