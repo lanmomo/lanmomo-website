@@ -338,6 +338,16 @@ footer a {
 }
 /* END SEAT-MAP */
 
+/* BEGIN PAY */
+.table-with-total tr:last-child td {
+  border-top-width: 2px;
+}
+.table-with-total tr:last-child td:first-child {
+  font-weight: bold;
+  text-align: right;
+}
+/* END PAY */
+
 /* BEGIN TOURNAMENTS */
 .tournaments-text {
   margin-left: 5px;

@@ -12,32 +12,63 @@
     </div>
   </div>
 
-  <div class="alert alert-success" role="alert" ng-show="message">
-    <i class="fa fa-info-circle"></i> {{message}}
-  </div>
-
   <div class="alert alert-danger" role="alert" ng-show="error">
-    <i class="fa fa-info-circle"></i> {{error}}
+    <i class="fa fa-exclamation-triangle"></i> {{ error.message }}
   </div>
 
-  <h2>Confirmer l'achat d'un billet de type {{ticket_type_str}}</h2>
+  <div ng-show="ticket">
+    <table class="table table-striped table-with-total">
+      <thead>
+      <tr>
+        <th>Item</th>
+        <th>Siège</th>
+        <th>Date</th>
+        <th>Lieu</th>
+        <th>Prix</th>
+      </tr>
+      </thead>
 
-  <div class="checkbox">
-    <label>
-      <input type="checkbox" ng-model="discountMomo" ng-init="checked = false">
-      Je suis un étudiant de Montmorency (5$ de rabais)
-    </label>
+      <tbody>
+      <tr>
+        <td>Billet LAN Montmorency {{ ticket_type_str }}</td>
+        <td>{{ getSeat() }}</td>
+        <td>14 et 15 novembre 2015</td>
+        <td>Collège Montmorency</td>
+        <td>{{ formatMoney(ticket.price) }}</td>
+      </tr>
+      <tr ng-show="discountMomo">
+        <td colspan="4">Rabais pour étudiant du Collège Montmorency</td>
+        <td>-5,00$</td>
+      </tr>
+      <tr>
+        <td colspan="4">Total:</td>
+        <td>{{ formatMoney(getTotal()) }}</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Confirmations avant de compléter votre achat</h3>
+      </div>
+      <div class="panel-body">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-model="participateGG" ng-checked="true">
+            Je souhaite transmettre mon adresse courriel à Gamer's Giveaway pour participer aux tirages de prix de présence lors du LAN.
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-model="discountMomo">
+            Je suis étudiant du Collège Montmorency et j'aimerais bénificier du rabais de 5$
+          </label>
+        </div>
+        <div class="alert alert-warning" ng-show="discountMomo">
+          <p><i class="fa fa-exclamation-triangle"></i> <strong>Attention!</strong> En cochant cette case, vous attestez que vous êtes actuellement étudiant du Collège Montmorency. En plus d'une pièce d'identité, vous devrez aussi présenter votre carte étudiante lors de votre enregistrement, sans quoi vous devrez payer la différence du billet en argent comptant ou l'accès au site vous sera refusé.</p>
+        </div>
+        <button class="btn btn-warning" ng-click="payNow()"><i class="fa fa-paypal"></i> Payer avec PayPal</button>
+      </div>
+    </div>
   </div>
-
-  <div class="checkbox">
-    <label>
-      <input type="checkbox" ng-model="participateGG" ng-init="checked = true">
-      Je souhaite participer au concours de Gamer's Giveaway. Votre adresse courriel leur sera envoyé.
-    </label>
-  </div>
-
-  <p>Total à payer {{getTotal()}} $</p>
-
-  <button class="btn btn-warning" ng-click="payNow()"><i class="fa fa-paypal"></i> Payer avec PayPal</button>
-
 </div>

@@ -318,9 +318,12 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
 app.controller('PayController', function($scope, $http, $window, $interval, Timer) {
   $http.get('/api/users/ticket')
     .success(function(data) {
-      $scope.ticket = data.ticket;
-      $scope.ticket_type_str = TICKET_TYPES_STR[data.ticket.type_id];
-
+      if (data.ticket) {
+        $scope.ticket = data.ticket;
+        $scope.ticket_type_str = TICKET_TYPES_STR[data.ticket.type_id];
+      } else {
+        $scope.error = {message: 'Vous n\'avez sélectionné aucun billet.'};
+      }
       if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
         Timer.bootstrap($scope, data.ticket.reserved_until);
       }
@@ -329,7 +332,19 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
       $scope.error = {message: err, status: status};
     });
 
-  $scope.getTotal = function () {
+  $scope.getSeat = function() {
+    if ($scope.ticket && $scope.ticket.seat_num) {
+      return $scope.ticket.seat_num;
+    } else {
+      return '-';
+    }
+  };
+
+  $scope.formatMoney = function(value) {
+    return value + ',00$'
+  };
+
+  $scope.getTotal = function() {
     if (!$scope.ticket) {
       return 0;
     }
@@ -339,7 +354,7 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
     return $scope.ticket.price;
   };
 
-  $scope.payNow = function () {
+  $scope.payNow = function() {
     var data = {};
     data.discount_momo = $scope.discountMomo;
 
@@ -348,7 +363,7 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
         $window.location.href = data.redirect_url;
       })
       .error(function(err, status) {
-        $scope.error = {message: err, status: status};
+        $scope.error = {message: err.error, status: status};
       });
   }
 });
