@@ -82,17 +82,17 @@
         <p ng-show="loggedIn"><button class="btn btn-success btn-sm" ng-click="buy(selectedSeatID)">Réserver ce siège <i class="fa fa-chevron-right"></i></button></p>
         <p ng-show="!loggedIn">Ce siège est disponible.</p>
       </div>
-      <div class="media-body preview-text" ng-show="!selectSeatIsFree && !selectedSeatTicket.paid && !selectedSeatIsUserPaidSeat">
+      <div class="media-body preview-text" ng-show="!selectSeatIsFree && !selectedSeatTicketPaid && !selectedSeatIsUserPaidSeat">
         <h4 class="media-heading text-warning">Réservé</h4>
-        <p>Ce siège est réservé par <strong>{{ selectedSeatUser.username }}</strong> jusqu'à {{ selectedSeatTicket.reserved_until | amDateFormat:'HH:mm:ss' }}.</p>
+        <p>Ce siège est réservé par <strong>{{ selectedSeatUser }}</strong> jusqu'à {{ selectedSeatUntil | amDateFormat:'HH:mm:ss' }}.</p>
       </div>
-      <div class="media-body preview-text" ng-show="!selectSeatIsFree && selectedSeatTicket.paid && !selectedSeatIsUserPaidSeat">
+      <div class="media-body preview-text" ng-show="!selectSeatIsFree && selectedSeatTicketPaid && !selectedSeatIsUserPaidSeat">
         <h4 class="media-heading text-danger">Vendu</h4>
-        <p>Ce siège a été vendu à <strong>{{ selectedSeatUser.username }}</strong>.</p>
+        <p>Ce siège a été vendu à <strong>{{ selectedSeatUser }}</strong>.</p>
       </div>
       <div class="media-body preview-text" ng-show="selectedSeatIsUserPaidSeat">
         <h4 class="media-heading text-info">Votre siège</h4>
-        <p>Ce siège a été vendu à vous, <strong>{{ selectedSeatUser.username }}</strong>.</p>
+        <p>Ce siège a été vendu à vous, <strong>{{ selectedSeatUser }}</strong>.</p>
       </div>
     </div>
   </div>

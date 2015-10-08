@@ -590,13 +590,15 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
   $scope.userPaidSeatID = 0;
   var seatStatus = {};
   var seatOwners = {};
+  var seatUntils = {};
 
   $scope.resetSelectedSeat = function() {
     $scope.selectedSeat = false;
     delete $scope.selectedSeatID;
     delete $scope.selectSeatIsFree;
-    delete $scope.selectedSeatTicket;
+    delete $scope.selectedSeatTicketPaid;
     delete $scope.selectedSeatUser;
+    delete $scope.selectedSeatUntil;
     delete $scope.selectedSeatIsUserPaidSeat;
   };
   $scope.isAvail = function(seat) {
@@ -610,6 +612,9 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
   };
   $scope.getOwner = function(seat) {
     return seatOwners[seat];
+  };
+  $scope.getUntil = function(seat) {
+    return seatUntils[seat];
   };
   $scope.times = function(x) {
     return new Array(x);
@@ -631,28 +636,22 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
   }
 
   $scope.selectSeat = function(seat) {
-    $http.get('/api/tickets/seat/' + seat + '/free')
-      .success(function(data) {
-        $scope.resetSelectedSeat();
-        $scope.selectedSeat = true;
-        $scope.selectedSeatID = seat;
-        if (!data.free) {
-          $scope.selectSeatIsFree = false;
-          $scope.selectedSeatTicket = data.ticket;
-          $scope.selectedSeatUser = data.user;
+    $scope.resetSelectedSeat();
+    $scope.selectedSeat = true;
+    $scope.selectedSeatID = seat;
 
-          if ($scope.selectedSeatID == $scope.userPaidSeatID) {
-            $scope.selectedSeatIsUserPaidSeat = true;
-          }
-        } else {
-          $scope.selectSeatIsFree = true;
-        }
-      })
-      .error(function(err, status) {
-        $scope.resetSelectedSeat();
-        $scope.error = {message: err.error, status: status};
-      });
+    if (!$scope.isAvail(seat)) {
+      $scope.selectSeatIsFree = false;
+      $scope.selectedSeatTicketPaid = $scope.isTaken(seat);
+      $scope.selectedSeatUser = $scope.getOwner(seat);
+      $scope.selectedSeatUntil =  $scope.getUntil(seat);
 
+      if ($scope.selectedSeatID == $scope.userPaidSeatID) {
+        $scope.selectedSeatIsUserPaidSeat = true;
+      }
+    } else {
+      $scope.selectSeatIsFree = true;
+    }
   };
 
   $scope.buy = function(seat) {
@@ -692,6 +691,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
       .success(function(data) {
         seatStatus = {};
         seatOwners = {};
+        seatUntils = {};
         var tickets = data.tickets;
         for (var i = 0; i < tickets.length; i++) {
           var seat = tickets[i].seat_num;
@@ -701,6 +701,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
             seatStatus[seat] = 'r';
           }
           seatOwners[seat] = tickets[i].owner_username;
+          seatUntils[seat] = tickets[i].reserved_until;
         }
         if ($scope.selectedSeat) {
           $scope.selectSeat($scope.selectedSeatID);
