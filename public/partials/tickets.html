@@ -1,6 +1,15 @@
 <div class="container">
   <div class="page-header">
-      <h1>Achat de billet</h1>
+    <div class="row header-with-timer">
+      <div class="col-xs-9">
+        <h1>Achat de billet</h1>
+      </div>
+      <div class="col-xs-3 text-right">
+        <span class="btn btn-disabled timer" ng-show="timerTime" ng-class="{ 'btn-warning': !timerTimeDanger, 'btn-danger': timerTimeDanger }">
+            <i class="fa fa-clock-o"></i> <span class="time-container">{{ timerTime }}</span>
+        </span>
+      </div>
+    </div>
   </div>
 
   <div ng-hide="loggedIn">

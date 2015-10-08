@@ -171,11 +171,15 @@ footer a {
 }
 /* END LOGIN */
 
-/**/
-.progress-bar {
-  text-shadow: 0 0 20px black;
+/* BEGIN TIMER */
+.header-with-timer {
+  margin-bottom: 10px;
 }
-/**/
+.header-with-timer h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+/* BEGIN TIMER */
 
 /* BEGIN TICKETS */
 .tickets .panel .media .media-left {
@@ -203,6 +207,9 @@ footer a {
 }
 .tickets .panel .progress {
   margin-bottom: 0;
+}
+.tickets .panel .progress .progress-bar {
+  text-shadow: 0 0 20px black;
 }
 /* END TICKETS */
 

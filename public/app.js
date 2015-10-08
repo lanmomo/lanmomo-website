@@ -48,7 +48,65 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
             });
         }
       }
-    });
+    })
+  .factory('Timer', function($rootScope, $interval) {
+    return {
+      intervalPromise: null,
+      timestamp: null,
+      /**
+       * Timer bootstrap method.
+       *
+       * To setup and initiate the Timer, call:
+       *
+       *     Timer.bootstrap($scope, datetime);
+       *
+       * @param {Scope} $scope Current scope where the Timer is being bootstrap.
+       * @param {Date} datetime Date object or string representing a date.
+       *
+       */
+      bootstrap: function($scope, datetime) {
+        this.cleanup();
+        this.timestamp = moment(datetime).valueOf();
+
+        this.intervalPromise = $interval(function() {
+          this.refresh();
+        }.bind(this), 100);
+
+        $scope.$on('$destroy', function() {
+          this.cleanup();
+        }.bind(this));
+      },
+      refresh: function() {
+        var date = this.timestamp - Date.now();
+
+        if (date < 1) {
+            $interval.cancel(this.intervalPromise);
+            return;
+        }
+
+        var minutes = Math.floor(date % 3600000 / 60000);
+        var seconds = Math.floor(date % 60000 / 1000);
+        seconds = String("00" + seconds).slice(-2);
+
+        $rootScope.timerTime = minutes + ':' + seconds;
+
+        if (minutes < 1) {
+          $rootScope.timerTimeDanger = true;
+        }
+      },
+      cleanup: function() {
+        $rootScope.timerTime = null;
+        $rootScope.timerTimeDanger = null;
+
+        if (this.intervalPromise) {
+          $interval.cancel(this.intervalPromise);
+        }
+
+        this.intervalPromise = null;
+        this.timestamp = null;
+      }
+    };
+  });
 
 app.run(function($rootScope, $http, Auth) {
   // runs on first page load or refresh
@@ -181,16 +239,26 @@ app.controller('ServersController', function($scope, $http, $interval) {
   });
 });
 
-app.controller('TicketsController', function($scope, $http, $location) {
+app.controller('TicketsController', function($scope, $http, $location, Timer) {
   $scope.max = {
     pc: 96,
     console: 32
   };
-
   var ticketCounts = {
     'temp': {0: 0, 1: 0},
     'paid': {0: 0, 1: 0}
   };
+
+  $http.get('/api/users/ticket')
+    .success(function(data) {
+      if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
+        Timer.bootstrap($scope, data.ticket.reserved_until);
+      }
+    })
+    .error(function(err, status) {
+      $scope.error = {message: err.error, status: status};
+    });
+
   $http.get('/api/tickets')
     .success(function(data) {
       var tickets = data.tickets;
@@ -245,11 +313,15 @@ app.controller('TicketsController', function($scope, $http, $location) {
   };
 });
 
-app.controller('PayController', function($scope, $http, $window) {
+app.controller('PayController', function($scope, $http, $window, $interval, Timer) {
   $http.get('/api/users/ticket')
     .success(function(data) {
       $scope.ticket = data.ticket;
       $scope.ticket_type_str = TICKET_TYPES_STR[data.ticket.type_id];
+
+      if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
+        Timer.bootstrap($scope, data.ticket.reserved_until);
+      }
     })
     .error(function(err, status) {
       $scope.error = {message: err, status: status};
@@ -511,7 +583,7 @@ app.controller('SignupController', function($scope, $http) {
   };
 });
 
-app.controller('MapController', function($scope, $http, $interval, $location) {
+app.controller('MapController', function($scope, $http, $interval, $location, Timer) {
   $scope.selectedSeat = null;
   $scope.userPaidSeatID = 0;
   var seatStatus = {};
@@ -545,6 +617,9 @@ app.controller('MapController', function($scope, $http, $interval, $location) {
     .success(function(data) {
       if (data.ticket && data.ticket.paid) {
         $scope.userPaidSeatID = data.ticket.seat_num;
+      }
+      if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
+        Timer.bootstrap($scope, data.ticket.reserved_until);
       }
     })
     .error(function(err, status) {
