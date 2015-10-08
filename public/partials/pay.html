@@ -1,4 +1,13 @@
 <div class="container">
+  <div class="checkout-breadcrumb-container">
+      <div class="checkout-breadcrumb">
+        <a href="/tickets" class="success">Billet</a>
+        <a href="/map" class="success">Siège</a>
+        <a href="/pay" ng-class="{ 'active': !loading, 'success': loading }">Sommaire</a>
+        <span ng-class="{ 'active': loading }">Payement</span>
+        <span>Confirmation</span>
+      </div>
+  </div>
   <div class="page-header">
     <div class="row header-with-timer">
       <div class="col-xs-9">

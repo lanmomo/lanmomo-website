@@ -184,6 +184,154 @@ footer a {
 }
 /* BEGIN TIMER */
 
+/* BEGIN CHECKOUT-BREADCRUMB */
+.checkout-breadcrumb-container {
+  float: left;
+  width: 100%;
+  text-align: center;
+}
+/* source: http://thecodeplayer.com/walkthrough/css3-breadcrumb-navigation */
+.checkout-breadcrumb {
+  display: inline-block;
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  border-radius: 5px;
+  counter-reset: flag; /* lets add the numbers for each link using CSS counters. flag is the name of the counter. to be defined using counter-reset in the parent element of the links. */
+}
+.checkout-breadcrumb a,
+.checkout-breadcrumb span {
+  text-decoration: none;
+  outline: none;
+  display: block;
+  float: left;
+  font-size: 12px;
+  line-height: 32px;
+  color: white;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  padding: 0 10px 0 55px; /* need more margin on the left of links to accomodate the numbers */
+  background-color: #3a3f44;
+  background-image: -webkit-linear-gradient(#484e55, #3a3f44 60%, #313539);
+  background-image: -o-linear-gradient(#484e55, #3a3f44 60%, #313539);
+  background-image: linear-gradient(#484e55, #3a3f44 60%, #313539);
+  background-repeat: no-repeat;
+  -webkit-filter: none;
+  filter: none;
+  position: relative;
+}
+.checkout-breadcrumb a:first-child,
+.checkout-breadcrumb span:first-child {
+  padding-left: 40px; /* since the first link does not have a triangle before it we can reduce the left padding to make it look consistent with other links */
+  border-radius: 5px 0 0 5px; /* to match with the parent's radius */
+}
+.checkout-breadcrumb a:first-child:before,
+.checkout-breadcrumb span:first-child:before {
+  left: 14px;
+}
+.checkout-breadcrumb a:last-child,
+.checkout-breadcrumb span:last-child {
+  padding-right: 20px;
+  border-radius: 0 5px 5px 0; /* this was to prevent glitches on hover */
+}
+.checkout-breadcrumb a.success,
+.checkout-breadcrumb span.success {
+  background-image: -webkit-linear-gradient(#78cc78, #62c462 60%, #53be53);
+  background-image: -o-linear-gradient(#78cc78, #62c462 60%, #53be53);
+  background-image: linear-gradient(#78cc78, #62c462 60%, #53be53);
+  background-repeat: no-repeat;
+}
+.checkout-breadcrumb a.success:hover {
+  background-image: -webkit-linear-gradient(#2f7d2f, #379337 40%, #3da23d);
+  background-image: -o-linear-gradient(#2f7d2f, #379337 40%, #3da23d);
+  background-image: linear-gradient(#2f7d2f, #379337 40%, #3da23d);
+  background-repeat: no-repeat;
+}
+.checkout-breadcrumb a.active,
+.checkout-breadcrumb span.active {
+  background-image: -webkit-linear-gradient(#74cae3, #5bc0de 60%, #4ab9db);
+  background-image: -o-linear-gradient(#74cae3, #5bc0de 60%, #4ab9db);
+  background-image: linear-gradient(#74cae3, #5bc0de 60%, #4ab9db);
+  background-repeat: no-repeat;
+}
+.checkout-breadcrumb a.active:hover {
+  background-image: -webkit-linear-gradient(#20829f, #2596b8 40%, #28a4c9);
+  background-image: -o-linear-gradient(#20829f, #2596b8 40%, #28a4c9);
+  background-image: linear-gradient(#20829f, #2596b8 40%, #28a4c9);
+  background-repeat: no-repeat;
+}
+/* adding the arrows for the breadcrumbs using rotated pseudo elements */
+.checkout-breadcrumb a:after,
+.checkout-breadcrumb span:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -16px; /* half of square's length */
+  /* same dimension as the line-height of .checkout-breadcrumb a */
+  width: 32px;
+  height: 32px;
+  /* as you see the rotated square takes a larger height. which makes it tough to position it properly. So we are going to scale it down so that the diagonals become equal to the line-height of the link. We scale it to 70.7% because if square's: */
+  /* length = 1; diagonal = (1^2 + 1^2)^0.5 = 1.414 (pythagoras theorem) */
+  /* if diagonal required = 1; length = 1/1.414 = 0.707 */
+  transform: scale(0.707) rotate(45deg);
+  /* we need to prevent the arrows from getting buried under the next link */
+  z-index: 1;
+  /* background same as links but the gradient will be rotated to compensate with the transform applied */
+  background-image: -webkit-linear-gradient(135deg, #484e55, #3a3f44 60%, #313539);
+  background-image: -o-linear-gradient(135deg, #484e55, #3a3f44 60%, #313539);
+  background-image: linear-gradient(135deg, #484e55, #3a3f44 60%, #313539);
+  background-repeat: no-repeat;
+  box-shadow: 2px -2px 0 2px rgba(0, 0, 0, 0.4), 3px -3px 0 2px rgba(255, 255, 255, 0.1); /* stylish arrow design using box shadow */
+  /* 5px - for rounded arrows and */
+  /* 50px - to prevent hover glitches on the border created using shadows */
+  border-radius: 0 5px 0 50px;
+}
+.checkout-breadcrumb a.success:after,
+.checkout-breadcrumb span.success:after {
+  background-image: -webkit-linear-gradient(135deg, #78cc78, #62c462 60%, #53be53);
+  background-image: -o-linear-gradient(135deg, #78cc78, #62c462 60%, #53be53);
+  background-image: linear-gradient(135deg, #78cc78, #62c462 60%, #53be53);
+  background-repeat: no-repeat;
+}
+.checkout-breadcrumb a.success:hover:after {
+  background-image: -webkit-linear-gradient(135deg, #2f7d2f, #379337 40%, #3da23d);
+  background-image: -o-linear-gradient(135deg, #2f7d2f, #379337 40%, #3da23d);
+  background-image: linear-gradient(135deg, #2f7d2f, #379337 40%, #3da23d);
+  background-repeat: no-repeat;
+}
+.checkout-breadcrumb a.active:after,
+.checkout-breadcrumb span.active:after {
+  background-image: -webkit-linear-gradient(135deg, #74cae3, #5bc0de 60%, #4ab9db);
+  background-image: -o-linear-gradient(135deg, #74cae3, #5bc0de 60%, #4ab9db);
+  background-image: linear-gradient(135deg, #74cae3, #5bc0de 60%, #4ab9db);
+  background-repeat: no-repeat;
+}
+.checkout-breadcrumb a.active:hover:after {
+  background-image: -webkit-linear-gradient(135deg, #20829f, #2596b8 40%, #28a4c9);
+  background-image: -o-linear-gradient(135deg, #20829f, #2596b8 40%, #28a4c9);
+  background-image: linear-gradient(135deg, #20829f, #2596b8 40%, #28a4c9);
+  background-repeat: no-repeat;
+}
+.checkout-breadcrumb a:last-child:after,
+.checkout-breadcrumb span:last-child:after {
+  content: none; /* we dont need an arrow after the last link */
+}
+/* we will use the :before element to show numbers */
+.checkout-breadcrumb a:before,
+.checkout-breadcrumb span:before {
+  content: counter(flag);
+  counter-increment: flag;
+  border-radius: 100%;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  margin: 7px 0;
+  position: absolute;
+  top: 0;
+  left: 30px;
+  font-weight: bold;
+  background-color: #7a8288;
+}
+/* END CHECKOUT-BREADCRUMB */
+
 /* BEGIN TICKETS */
 .tickets .panel .media .media-left {
   padding-right: 20px;
