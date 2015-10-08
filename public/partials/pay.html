@@ -2,7 +2,8 @@
   <div class="page-header">
     <div class="row header-with-timer">
       <div class="col-xs-9">
-        <h1>Sommaire</h1>
+        <h1 ng-show="!loading">Sommaire</h1>
+        <h1 ng-show="loading">Redirection vers PayPal...</h1>
       </div>
       <div class="col-xs-3 text-right">
         <span class="btn timer" ng-show="timerTime" ng-class="{ 'btn-warning': !timerTimeDanger, 'btn-danger': timerTimeDanger }" tooltip-placement="bottom" tooltip="Temps restant pour compléter votre transaction">
@@ -16,7 +17,13 @@
     <i class="fa fa-exclamation-triangle"></i> {{ error.message }}
   </div>
 
-  <div ng-show="ticket">
+  <div ng-show="loading" class="progress progress-striped active">
+    <div class="progress-bar progress-bar-loading">
+      Chargement
+    </div>
+  </div>
+
+  <div ng-show="ticket" ng-hide="loading">
     <div class="alert alert-info">
       <p><i class="fa fa-exclamation-circle"></i> Vous êtes maintenant prêt à compléter votre achat. Avant d'effectuer le paiement, assurez-vous que toute les informations sont exactes. Faites attention de ne pas manquer de temps (visible sur le minuteur en haut à droite de l'écran), sans quoi votre billet ne vous sera plus réservé et vous devrez recommencer la transaction.</p>
     </div>

@@ -316,6 +316,8 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
 });
 
 app.controller('PayController', function($scope, $http, $window, $interval, Timer) {
+  $scope.loading = false;
+
   $http.get('/api/users/ticket')
     .success(function(data) {
       if (data.ticket) {
@@ -355,6 +357,8 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
   };
 
   $scope.payNow = function() {
+    $scope.loading = true;
+
     var data = {};
     data.discount_momo = $scope.discountMomo;
 
@@ -363,6 +367,7 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
         $window.location.href = data.redirect_url;
       })
       .error(function(err, status) {
+        $scope.loading = false;
         $scope.error = {message: err.error, status: status};
       });
   }
@@ -415,6 +420,8 @@ app.controller('LogoutController', function ($scope, $http, $location, Auth) {
 });
 
 app.controller('ExecuteController', function ($scope, $http, $location, $routeParams) {
+  $scope.loading = true;
+
   var data = {
     'payment_id' : $routeParams.paymentId,
     'payer_id' : $routeParams.PayerID
@@ -422,11 +429,11 @@ app.controller('ExecuteController', function ($scope, $http, $location, $routePa
 
   $http.put('/api/tickets/pay/execute', data)
     .success(function(data) {
-      console.log(data);
+      $scope.loading = false;
       $scope.message = data.message;
     })
     .error(function(err, status) {
-      console.log(err);
+      $scope.loading = false;
       $scope.error = {message: err.error, status: status};
     });
 });

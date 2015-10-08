@@ -1,6 +1,7 @@
 <div class="container">
   <div class="page-header">
-    <h1>Réception de votre paiement</h1>
+    <h1 ng-show="loading">Réception de votre paiement...</h1>
+    <h1 ng-show="!loading">Confirmation de votre achat</h1>
   </div>
 
   <div class="alert alert-success" role="alert" ng-show="message">
@@ -8,6 +9,12 @@
   </div>
 
   <div class="alert alert-danger" role="alert" ng-show="error">
-    <i class="fa fa-info-circle"></i> {{error.message}}
+    <i class="fa fa-exclamation-triangle"></i> {{error.message}}
+  </div>
+
+  <div ng-show="loading" class="progress progress-striped active">
+    <div class="progress-bar progress-bar-loading">
+      Chargement
+    </div>
   </div>
 </div>
