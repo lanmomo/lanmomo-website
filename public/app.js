@@ -1,54 +1,54 @@
 'use strict';
-var TICKET_TYPES = {PC: 0, CONSOLE: 1};
 
+var TICKET_TYPES = {PC: 0, CONSOLE: 1};
 var TICKET_TYPES_STR = {0: 'BYOC', 1: 'Console'};
 
 var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment', 'ngCookies', 'ja.qr'])
   .directive('passwordCheck', [function () {
-        return {
-          restrict: 'A',
-          scope: true,
-          require: 'ngModel',
-          link: function (scope, elem , attributes, control) {
-            var checker = function () {
-              var password1 = scope.$eval(attributes.ngModel);
-              var password2 = scope.$eval(attributes.passwordCheck);
-              return password1 == password2;
-            };
-            scope.$watch(checker, function (n) {
-              control.$setValidity('unique', n);
-            });
-          }
-        }
+    return {
+      restrict: 'A',
+      scope: true,
+      require: 'ngModel',
+      link: function (scope, elem , attributes, control) {
+        var checker = function () {
+          var password1 = scope.$eval(attributes.ngModel);
+          var password2 = scope.$eval(attributes.passwordCheck);
+          return password1 == password2;
+        };
+        scope.$watch(checker, function (n) {
+          control.$setValidity('unique', n);
+        });
       }
-    ]).factory('Auth', function($rootScope, $http) {
-      return {
-        login : function() {
-          $rootScope.loggedIn = true;
-          $rootScope.$broadcast('login');
-        },
-        isLoggedIn : function() {
-          return $rootScope.loggedIn;
-        },
-        logout : function() {
-          $rootScope.loggedIn = false;
-          $rootScope.$broadcast('login');
-        },
-        refresh: function() {
-          $http.get('/api/login')
-            .success(function(data) {
-              if (data.logged_in) {
-                Auth.login();
-              } else {
-                $rootScope.loggedIn = false;
-              }
-            })
-            .error(function(err, status) {
+    }
+  }])
+  .factory('Auth', function($rootScope, $http) {
+    return {
+      login : function() {
+        $rootScope.loggedIn = true;
+        $rootScope.$broadcast('login');
+      },
+      isLoggedIn : function() {
+        return $rootScope.loggedIn;
+      },
+      logout : function() {
+        $rootScope.loggedIn = false;
+        $rootScope.$broadcast('login');
+      },
+      refresh: function() {
+        $http.get('/api/login')
+          .success(function(data) {
+            if (data.logged_in) {
+              Auth.login();
+            } else {
               $rootScope.loggedIn = false;
-            });
-        }
+            }
+          })
+          .error(function(err, status) {
+            $rootScope.loggedIn = false;
+          });
       }
-    })
+    }
+  })
   .factory('Timer', function($rootScope, $interval) {
     return {
       intervalPromise: null,
@@ -361,6 +361,7 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
 
     var data = {};
     data.discount_momo = $scope.discountMomo;
+    // TODO: Send $scope.participateGG too!
 
     $http.post('/api/tickets/pay', data)
       .success(function(data) {
@@ -471,65 +472,63 @@ app.controller('ProfileController', function ($scope, $http) {
       $scope.alerts.push({msg: err.error, type: 'danger'});
     });
 
-    $scope.submitUserMods = function () {
-      $http.put('/api/users', $scope.formUser)
-        .success(function(data) {
-          $scope.userData = data.user;
-          $scope.resetMods();
-          $scope.alerts.push({msg: 'Vos informations ont été mises à jour.', type: 'success'});
-        })
-        .error(function(err, status) {
-          $scope.alerts.push({msg: err.error, type: 'danger'});
-        });
-    }
-
-    $scope.resetMods = function () {
-      $scope.edit = false;
-      $scope.formUser = angular.copy($scope.userData);
-      $scope.state.emailAvailable = true;
-      $scope.state.emailChanged = true;
+  $scope.submitUserMods = function () {
+    $http.put('/api/users', $scope.formUser)
+      .success(function(data) {
+        $scope.userData = data.user;
+        $scope.resetMods();
+        $scope.alerts.push({msg: 'Vos informations ont été mises à jour.', type: 'success'});
+      })
+      .error(function(err, status) {
+        $scope.alerts.push({msg: err.error, type: 'danger'});
+      });
+  };
+  $scope.resetMods = function () {
+    $scope.edit = false;
+    $scope.formUser = angular.copy($scope.userData);
+    $scope.state.emailAvailable = true;
+    $scope.state.emailChanged = true;
+    $scope.state.usernameAvailable = true;
+    $scope.state.usernameChanged = true;
+  };
+  $scope.isUsernameAvailable = function(user) {
+    if (user.username == $scope.userData.username){
       $scope.state.usernameAvailable = true;
       $scope.state.usernameChanged = true;
+      return;
     }
-
-    $scope.isUsernameAvailable = function(user) {
-      if (user.username == $scope.userData.username){
-        $scope.state.usernameAvailable = true;
+    $http.post('/api/users/has/username', {username: user.username})
+      .success(function(data) {
+        $scope.state.usernameAvailable = !data.exists;
         $scope.state.usernameChanged = true;
-        return;
-      }
-      $http.post('/api/users/has/username', {username: user.username})
-        .success(function(data) {
-          $scope.state.usernameAvailable = !data.exists;
-          $scope.state.usernameChanged = true;
-        })
-        .error(function(data) {
-          $scope.state.usernameAvailable = false;
-          $scope.state.usernameChanged = true;
-        });
-    };
-    $scope.resetUsernameChanged = function() {
-      $scope.state.usernameChanged = false;
-    };
-    $scope.isEmailAvailable = function(user) {
-      if (user.email == $scope.userData.email){
-        $scope.state.emailAvailable = true;
+      })
+      .error(function(data) {
+        $scope.state.usernameAvailable = false;
+        $scope.state.usernameChanged = true;
+      });
+  };
+  $scope.resetUsernameChanged = function() {
+    $scope.state.usernameChanged = false;
+  };
+  $scope.isEmailAvailable = function(user) {
+    if (user.email == $scope.userData.email){
+      $scope.state.emailAvailable = true;
+      $scope.state.emailChanged = true;
+      return;
+    }
+    $http.post('/api/users/has/email', {email: user.email})
+      .success(function(data) {
+        $scope.state.emailAvailable = !data.exists;
         $scope.state.emailChanged = true;
-        return;
-      }
-      $http.post('/api/users/has/email', {email: user.email})
-        .success(function(data) {
-          $scope.state.emailAvailable = !data.exists;
-          $scope.state.emailChanged = true;
-        })
-        .error(function(data) {
-          $scope.state.emailAvailable = false;
-          $scope.state.emailChanged = true;
-        });
-    };
-    $scope.resetEmailChanged = function() {
-      $scope.state.emailChanged = false;
-    };
+      })
+      .error(function(data) {
+        $scope.state.emailAvailable = false;
+        $scope.state.emailChanged = true;
+      });
+  };
+  $scope.resetEmailChanged = function() {
+    $scope.state.emailChanged = false;
+  };
 });
 
 app.controller('QRController', function ($scope, $http, $routeParams) {
@@ -549,7 +548,7 @@ app.controller('QRController', function ($scope, $http, $routeParams) {
 });
 
 
-app.controller('SignupController', function($scope, $http) {
+app.controller('SignupController', function($scope, $http, $modal) {
   $scope.state = {
     submitted: false,
     loading: false,
@@ -604,6 +603,27 @@ app.controller('SignupController', function($scope, $http) {
   };
   $scope.resetEmailChanged = function() {
     $scope.state.emailChanged = false;
+  };
+  $scope.modal = function() {
+    var modalInstance = $modal.open({
+      controller: 'SignupModalController',
+      templateUrl: 'partials/signup-modal.html',
+      size: 'lg'
+    });
+    modalInstance.result.then(function(checked) {
+      $scope.checked = checked;
+    });
+  };
+
+});
+
+app.controller('SignupModalController', function($scope, $modalInstance) {
+  $scope.ok = function () {
+    $modalInstance.close(true);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.close(false);
   };
 });
 

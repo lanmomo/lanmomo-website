@@ -1,4 +1,13 @@
 <div class="container">
+  <div class="checkout-breadcrumb-container">
+      <div class="checkout-breadcrumb">
+        <span class="success">Billet</span>
+        <span class="success">Siège</span>
+        <span class="success">Sommaire</span>
+        <span class="success">Payement</span>
+        <span ng-class="{ 'active': loading, 'success': !loading }">Confirmation</span>
+      </div>
+  </div>
   <div class="page-header">
     <h1 ng-show="loading">Réception de votre paiement...</h1>
     <h1 ng-show="!loading">Confirmation de votre achat</h1>

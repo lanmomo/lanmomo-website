@@ -10,7 +10,7 @@
       Chargement
     </div>
   </div>
-  <form class="form-horizontal" name="form" ng-submit="submitForm(form.$valid)" ng-hide="state.success" novalidate>
+  <form class="form-horizontal" name="form" ng-submit="submitForm(form.$valid)" ng-hide="state.loading || state.success" novalidate>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.username.$invalid && form.username.$dirty) || (!state.usernameAvailable && state.usernameChanged), 'has-success' : form.username.$valid && state.usernameChanged && state.usernameAvailable }">
       <label for="username" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Saisissez un pseudonyme ou gamertag qui vous représente">Pseudonyme <i class="fa fa-info-circle"></i></label>
@@ -87,7 +87,7 @@
         <div class="checkbox">
           <label>
             <input type="checkbox" name="checked" ng-model="checked" ng-init="checked = false">
-            J'ai lu et j'accepte <a target="_blank" href="/terms">les conditions générales</a> du LAN Montmorency.
+            J'ai lu et j'accepte <a ng-click="modal()">les conditions générales</a> du LAN Montmorency.
           </label>
         </div>
       </div>
