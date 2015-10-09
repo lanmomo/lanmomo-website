@@ -550,7 +550,7 @@ app.controller('QRController', function ($scope, $http, $routeParams) {
 });
 
 
-app.controller('SignupController', function($scope, $http) {
+app.controller('SignupController', function($scope, $http, $modal) {
   $scope.state = {
     submitted: false,
     loading: false,
@@ -605,6 +605,27 @@ app.controller('SignupController', function($scope, $http) {
   };
   $scope.resetEmailChanged = function() {
     $scope.state.emailChanged = false;
+  };
+  $scope.modal = function() {
+    var modalInstance = $modal.open({
+      controller: 'SignupModalController',
+      templateUrl: 'partials/signup-modal.html',
+      size: 'lg'
+    });
+    modalInstance.result.then(function(checked) {
+      $scope.checked = checked;
+    });
+  };
+
+});
+
+app.controller('SignupModalController', function($scope, $modalInstance) {
+  $scope.ok = function () {
+    $modalInstance.close(true);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.close(false);
   };
 });
 
