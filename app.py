@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 import uuid
+import logging
 
 from flask import Flask, send_from_directory, jsonify, request, session
+from logging import Formatter
+from logging.handlers import TimedRotatingFileHandler
 
 from paypalrestsdk import Payment as PaypalPayment
 
 from sqlalchemy import or_, not_
 from sqlalchemy.orm import contains_eager
-from database import db_session, init_db, init_engine
 
 import mail
 import utils
 
+from database import db_session, init_db, init_engine
 from models import Ticket, User, Payment, Team
 from paypal import Paypal
 
@@ -34,6 +37,10 @@ MSG_SUCCESS_PAY = """\
 Félicitations, votre billet est maintenant payé !"""
 
 app = Flask(__name__)
+
+
+def get_logger():
+    return app.logger
 
 
 def validate_signup_body(req):
@@ -213,8 +220,7 @@ def change_seat():
             db_session.commit()
             res = jsonify({'ticket': ticket.as_pub_dict()}), 200
     except Exception as e:
-        # TODO log
-        print(e)
+        app.logger.error('Erreur lors du changement de siège: "%s"' % str(e))
         res = jsonify({'error': 'Erreur inconnue.'}), 500
     finally:
         db_session.execute('UNLOCK TABLES;')
@@ -278,7 +284,11 @@ def book_ticket():
         return jsonify({'ticket': ticket.as_pub_dict()}), 201
 
     # Conflict while booking ticket
-    # TODO log
+    mess = 'Conflit lors de la réservation de billet: "%s"' % str(r[1])
+    if len(r) == 3:
+        mess = '%s Exception: %s' % (mess, r[2])
+    app.logger.error(mess)
+
     return jsonify({'error': str(r[1])}), 409
 
 
@@ -322,8 +332,8 @@ def pay_ticket():
 
         return jsonify({'redirect_url': paypal_payment['redirect_url']}), 201
     except Exception as e:
-        # TODO log error
-        print(str(e))
+        app.logger.error(
+            'Erreur lors de la création de paiment: "%s"' % str(e))
         return jsonify({
             'error': 'Une erreur est survenue lors de la création de' +
             ' paiement'}), 500
@@ -365,14 +375,16 @@ def err_execute_and_complete_payment(paypal_payment_id, paypal_payer_id):
     # Validate payment is created
     paypal_payment = PaypalPayment.find(paypal_payment_id)
     if paypal_payment.state.lower() != 'created':
-        # TODO log status
-        print(paypal_payment)
+        app.logger.critical(
+            'Possible tentative de fraude: "%s"' % str(paypal_payment))
         return jsonify({'message': ERR_CREATE_PAYPAL}), 402
 
     # Execute the payment
     if (not paypal_payment.execute({"payer_id": paypal_payer_id}) or
             paypal_payment.state.lower() != 'approved'):
         # Could not execute or execute did not approve transaction
+        app.logger.critical(
+            'Possible tentative de fraude: "%s"' % str(paypal_payment))
         return jsonify({'message': ERR_INVALID_PAYPAL}), 402
 
     return complete_purchase(ticket)
@@ -400,8 +412,8 @@ def execute_payment():
             db_session.execute('UNLOCK TABLES;')
         except:
             pass
-        # TODO logging and error redirect
-        print(e)
+        app.logger.error(
+            'Exception lors de l\'exécution de paiment: "%s"' % str(e))
         return jsonify({'error': 'Une erreur inconnue est survenue.'}), 500
 
 
@@ -462,7 +474,10 @@ def complete_purchase(ticket):
         db_session.execute('UNLOCK TABLES;')
         # TODO send email with payment confirmation
     except Exception as e:
-        print(str(e))
+        app.logger.error(
+            'Erreur lors de la fermeture de la commande pour ' +
+            'le billet "%s"!: "%s"'
+            % (ticket, str(e)))
         return jsonify({'message': ERR_COMPLETION}), 409
 
     return None
@@ -576,8 +591,7 @@ def signup():
     user = User.query.filter(User.email == req['email']).one()
 
     fullname = '%s %s' % (req['firstname'], req['lastname'])
-    conf_url = 'https://lanmomo.org/verify/%s' % \
-        user.confirmation_token
+    conf_url = 'https://lanmomo.org/verify/%s' % user.confirmation_token
 
     message = ("""\
 Bonjour %s, <br><br>
@@ -677,6 +691,20 @@ def login_in_please(message='Vous devez vous connecter.'):
 def setup(conf_path):
     global app, paypal_api
     app.config.from_pyfile(conf_path)
+
+    log_path = app.config['LOG_PATH']
+    handler = TimedRotatingFileHandler(
+        log_path, utc=True, when='D', backupCount=365 * 2)
+
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(Formatter(
+        '%(asctime)s %(levelname)s: %(message)s '
+        '[in %(pathname)s:%(lineno)d]'
+    ))
+    app.logger.addHandler(handler)
+
+    app.logger.info('Starting lanmomo app')
+
     init_engine(app.config['DATABASE_URI'])
     init_db()
 
@@ -687,7 +715,6 @@ def setup(conf_path):
         mode=app.config['PAYPAL_API_MODE'],
         return_url=app.config['PAYPAL_RETURN_URL'],
         cancel_url=app.config['PAYPAL_CANCEL_URL'])
-
     return app
 
 if __name__ == '__main__':

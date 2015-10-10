@@ -2,6 +2,8 @@ import threading
 import time
 import requests
 
+import app
+
 
 def _def_timeoutfn(x):
     if x <= 3:
@@ -29,7 +31,9 @@ def _send_mailgun_api(to_email, to_name, subject, message, sender, api_key,
                 return
             raise Exception(request.text)
         except Exception as e:
-            print(e)
+            app.get_logger().error(
+                'Exception lors de l\'envoie de courriel à "%s": "%s"'
+                % (to_email, str(e)))
             # Erreur de connexion ou d'envoie de courriel
             #
             # Le temps à sleep restant est calculé avec:
@@ -40,7 +44,9 @@ def _send_mailgun_api(to_email, to_name, subject, message, sender, api_key,
 
         count += 1
     # Si le code se rend ici, c'est que tous les essais ont échoués.
-    # TODO log here
+    app.get_logger().critical(
+        'Échec lors de l\'envoie de courriel à "%s": "%s"'
+        % (to_email, str(e)))
     return
 
 
