@@ -87,16 +87,6 @@ def func():
     session.modified = True
 
 
-@app.route('/api/games', methods=['GET'])
-def get_games():
-    return jsonify(games), 200
-
-
-@app.route('/api/tournaments', methods=['GET'])
-def get_tournaments():
-    return jsonify(tournaments), 200
-
-
 @app.route('/api/teams', methods=['GET'])
 def get_all_teams():
     pub_teams = []
@@ -706,10 +696,6 @@ def setup(conf_path):
         return_url=app.config['PAYPAL_RETURN_URL'],
         cancel_url=app.config['PAYPAL_CANCEL_URL'])
 
-    with open('config/games.json') as data_file:
-        games = json.load(data_file)
-    with open('config/tournaments.json') as data_file:
-        tournaments = json.load(data_file)
     return app
 
 if __name__ == '__main__':
