@@ -277,7 +277,8 @@ tickets = Table('tickets', metadata,
                 # private fields
                 Column('qr_token', String(32), nullable=False),
                 Column('created_at', DateTime, default=utils.now_utc()),
-                Column('modified_at', DateTime, onupdate=utils.now_utc())
+                Column('modified_at', DateTime, onupdate=utils.now_utc()),
+                Column('participate_gg', Boolean, default=False)
                 )
 
 payments = Table('payments', metadata,

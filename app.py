@@ -278,6 +278,7 @@ def book_ticket():
         return jsonify({'ticket': ticket.as_pub_dict()}), 201
 
     # Conflict while booking ticket
+    # TODO log
     return jsonify({'error': str(r[1])}), 409
 
 
@@ -288,10 +289,11 @@ def pay_ticket():
     user_id = session['user_id']
 
     req = request.get_json()
-    if req.get('discount_momo', False):
-        discount = app.config['DISCOUNT_MOMO']
-    else:
-        discount = 0
+    if 'discountMomo' not in req or 'participateGG' not in req:
+        return bad_request()
+
+    discount = app.config['DISCOUNT_MOMO'] if req['discountMomo'] else 0
+    participate_gg = req['participateGG']
 
     try:
         ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
@@ -301,6 +303,9 @@ def pay_ticket():
         # Update ticket with discount and total
         ticket.discount_amount = discount
         ticket.total = ticket.price - discount
+
+        # Set user's choice to participate in GG's prize pool
+        ticket.participate_gg = participate_gg
 
         db_session.add(ticket)
         db_session.commit()

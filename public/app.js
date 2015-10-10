@@ -359,9 +359,10 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
   $scope.payNow = function() {
     $scope.loading = true;
 
-    var data = {};
-    data.discount_momo = $scope.discountMomo;
-    // TODO: Send $scope.participateGG too!
+    var data = {
+      discountMomo: $scope.discountMomo,
+      participateGG: $scope.participateGG
+    };
 
     $http.post('/api/tickets/pay', data)
       .success(function(data) {
