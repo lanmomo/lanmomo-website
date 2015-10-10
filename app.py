@@ -4,6 +4,7 @@ import mail
 import uuid
 import logging
 
+from datetime import datetime
 from flask import Flask, send_from_directory, jsonify, request, session
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
@@ -13,20 +14,13 @@ from paypalrestsdk import Payment as PaypalPayment
 from sqlalchemy import or_, not_
 from sqlalchemy.orm import contains_eager
 
-from datetime import datetime
-
-from database import db_session, init_db, init_engine
-
-from flask import Flask, send_from_directory, jsonify, request, session
-
 from database import db_session, init_db, init_engine
 from models import Ticket, User, Payment, Team
 
 from paypal import Paypal
 from paypalrestsdk import Payment as PaypalPayment
 
-from sqlalchemy import or_, not_
-from sqlalchemy.orm import contains_eager
+
 
 
 ERR_INVALID_PAYPAL = """\
