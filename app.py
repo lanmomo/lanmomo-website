@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
-import os
-import sys
-import json
-import re
 import hashlib
 import uuid
 
 from datetime import datetime
 
-from flask import Flask, send_from_directory, jsonify, request, session, redirect
+from flask import Flask, send_from_directory, jsonify, request, session
 
 from sqlalchemy import or_, not_
 from sqlalchemy.orm import contains_eager
 
 from database import db_session, init_db, init_engine
 
-from models import Ticket, User, Payment, Team, TeamUser
+from models import Ticket, User, Payment, Team
 
 import mail
 from paypal import Paypal
@@ -178,12 +174,12 @@ def ticket_from_seat(seat_num):
 
 @app.route('/api/tickets/type/<type_id>', methods=['GET'])
 def get_tickets_by_type(type_id):
-    pub_tickets = []
     tickets = Ticket.query \
         .join(Ticket.owner) \
         .options(contains_eager(Ticket.owner)) \
         .filter(Ticket.type_id == type_id) \
-        .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())).all()
+        .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+        .all()
 
     pub = map(lambda ticket: ticket.as_pub_dict(), tickets)
     return jsonify({'tickets': list(pub)}), 200
@@ -245,8 +241,8 @@ def change_seat_for_user(user_id, seat_num):
             .one()
     except:
         return jsonify({
-            'error':
-                'Aucun billet valide, billet expiré ou billet déjà payé.'}), 409
+            'error': 'Aucun billet valide, billet expiré ou billet déjà payé.'}
+            ), 409
 
     wanted_seat_count = Ticket.query \
         .filter(Ticket.seat_num == seat_num) \
@@ -683,7 +679,7 @@ def login_in_please(message='Vous devez vous connecter.'):
 
 
 def setup(conf_path):
-    global app, games, tournaments, paypal_api
+    global app, paypal_api
     app.config.from_pyfile(conf_path)
     init_engine(app.config['DATABASE_URI'])
     init_db()

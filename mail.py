@@ -53,5 +53,5 @@ def send_email(to_email, to_name, subject, message, sender, api_key, domain,
                 en fonction du numéro de l'essai donné.
     """
     threading.Thread(target=_send_mailgun_api, args=(
-        to_email, to_name, subject, message, sender, api_key, domain, timeoutfn,
-        times)).start()
+        to_email, to_name, subject, message, sender, api_key, domain,
+        timeoutfn, times)).start()

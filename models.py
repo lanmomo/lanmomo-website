@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, \
-    ForeignKey, DateTime, Float, text, or_
+    ForeignKey, DateTime, Float, or_
 from sqlalchemy.orm import mapper, relationship
 
 from database import metadata, db_session
@@ -70,11 +70,12 @@ class Ticket():
         return '<Ticket %r>' % (self.id)
 
     def as_pub_dict(self):
+        formatted_date = self.reserved_until.strftime('%Y-%m-%dT%H:%M:%S')
         pub_dict = {
             'type_id': self.type_id,
             'owner_id': self.owner_id,
             'paid': self.paid,
-            'reserved_until': self.reserved_until.strftime('%Y-%m-%dT%H:%M:%S'),
+            'reserved_until': formatted_date,
             'price': self.price,
             'discount_amount': self.discount_amount,
             'total': self.total
