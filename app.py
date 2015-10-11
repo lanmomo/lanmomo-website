@@ -76,6 +76,11 @@ def captain_has_team(game, captain_id):
         .filter(Team.captain_id == captain_id).count() > 0
 
 
+def user_has_paid_ticket(user_id):
+    return Ticket.query.filter(Ticket.owner_id == user_id) \
+        .filter(Ticket.paid == 1).count() > 0
+
+
 def send_email(to_email, to_name, subject, message):
     mail.send_email(to_email, to_name, subject, message,
                     app.config['MAILGUN_USER'], app.config['MAILGUN_KEY'],
@@ -118,7 +123,8 @@ def add_team():
 
     team = Team(req['name'], req['game'], user_id)
     if team_exists(team.game, team.name) or \
-            captain_has_team(team.game, team.captain_id):
+            captain_has_team(team.game, team.captain_id) or \
+            not user_has_paid_ticket(user_id):
         return jsonify({'message': "Vous avez déja une équipe pour ce jeu " +
                         "ou le nom d'équipe est deja utilisé"}), 400
 
@@ -512,9 +518,11 @@ def get_profile():
 
     user_id = session['user_id']
     user = User.query.filter(User.id == user_id).first()
+    has_ticket = user_has_paid_ticket(user_id)
 
     if user:
-        return jsonify({'user': user.as_private_dict()}), 200
+        return jsonify({'user': user.as_private_dict(),
+                        'has_ticket': has_ticket}), 200
     return jsonify({'error': 'Non authorisé'}), 403
 
 

@@ -13,12 +13,21 @@
     </div>
   </div>
 
+  <div ng-show="!hasTicket && loggedIn">
+    <div class="well">
+      <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Attention!</strong> Vous devez avoir un billet pour vous inscrire à un tournois.</p>
+      <div class="btn-group" role="group">
+        <a href="/tickets" class="btn btn-default btn-sm"><i class="fa fa fa-ticket"></i> Acheter un billet </a>
+      </div>
+    </div>
+  </div>
+
   <div class="alert alert-danger alert-dismissible fade-in" role="alert" ng-show="error">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
     <i class="fa fa-info-circle"></i> status: {{error.status}} | {{error.message}}
   </div>
 
-  <button data-toggle="modal" data-target="#myModal" ng-show="loggedIn" type="submit" class="btn btn-success">Créer une équipe</button>
+  <button data-toggle="modal" data-target="#myModal" ng-show="loggedIn && hasTicket" type="submit" class="btn btn-success">Créer une équipe</button>
   <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments">
     <div class="panel-heading">
       <div class="panel-title row tournaments-text">
