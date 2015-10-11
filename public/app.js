@@ -171,7 +171,14 @@ app.controller('TournamentsController', function($scope, $http, $location) {
         $http.get('/api/profile')
         .success(function(data) {
           $scope.user = data.user;
-          $scope.hasTicket = data.has_ticket;
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.error, status: status};
+        });
+
+        $http.get('/api/users/ticket')
+        .success(function (data) {
+          $scope.ticket = data.ticket;
         })
         .error(function(err, status) {
           $scope.error = {message: err.error, status: status};

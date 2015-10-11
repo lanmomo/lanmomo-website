@@ -521,11 +521,9 @@ def get_profile():
 
     user_id = session['user_id']
     user = User.query.filter(User.id == user_id).first()
-    has_ticket = user_has_paid_ticket(user_id)
 
     if user:
-        return jsonify({'user': user.as_private_dict(),
-                        'has_ticket': has_ticket}), 200
+        return jsonify({'user': user.as_private_dict()}), 200
     return jsonify({'error': 'Non authorisé'}), 403
 
 

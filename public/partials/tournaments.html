@@ -13,7 +13,7 @@
     </div>
   </div>
 
-  <div ng-show="!hasTicket && loggedIn">
+  <div ng-show="!ticket.paid && loggedIn">
     <div class="well">
       <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Attention!</strong> Vous devez avoir un billet pour vous inscrire à un tournois.</p>
       <div class="btn-group" role="group">
@@ -27,7 +27,7 @@
     <i class="fa fa-info-circle"></i> status: {{error.status}} | {{error.message}}
   </div>
 
-  <button data-toggle="modal" data-target="#myModal" ng-show="loggedIn && hasTicket" type="submit" class="btn btn-success">Créer une équipe</button>
+  <button data-toggle="modal" data-target="#myModal" ng-show="loggedIn && ticket.paid" type="submit" class="btn btn-success">Créer une équipe</button>
   <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments">
     <div class="panel-heading">
       <div class="panel-title row tournaments-text">
