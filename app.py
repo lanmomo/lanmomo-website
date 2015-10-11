@@ -8,7 +8,8 @@ import uuid
 
 from datetime import datetime
 
-from flask import Flask, send_from_directory, jsonify, request, session, redirect
+from flask import Flask, send_from_directory, jsonify, \
+                  request, session, redirect
 
 from sqlalchemy import or_, not_
 from sqlalchemy.orm import contains_eager
@@ -199,7 +200,8 @@ def get_tickets_by_type(type_id):
         .join(Ticket.owner) \
         .options(contains_eager(Ticket.owner)) \
         .filter(Ticket.type_id == type_id) \
-        .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())).all()
+        .filter(or_(Ticket.paid,
+                Ticket.reserved_until >= datetime.now())).all()
 
     pub = map(lambda ticket: ticket.as_pub_dict(), tickets)
     return jsonify({'tickets': list(pub)}), 200
@@ -262,7 +264,8 @@ def change_seat_for_user(user_id, seat_num):
     except:
         return jsonify({
             'error':
-                'Aucun billet valide, billet expiré ou billet déjà payé.'}), 409
+                'Aucun billet valide, billet expiré ou billet déjà payé.'}),\
+                    409
 
     wanted_seat_count = Ticket.query \
         .filter(Ticket.seat_num == seat_num) \
@@ -302,7 +305,7 @@ def book_ticket():
 
     if r[0]:
         ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
-            .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+            .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now()))\
             .one()
         return jsonify({'ticket': ticket.as_pub_dict()}), 201
 
@@ -441,7 +444,7 @@ def get_ticket_from_payment(payment):
     try:
         return Ticket.query.filter(
             Payment.ticket_id == payment.ticket_id) \
-            .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+            .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now()))\
             .one()
     except:
         return None
