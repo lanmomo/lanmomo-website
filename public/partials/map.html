@@ -10,12 +10,12 @@
   </div>
   <div class="page-header">
     <div class="row header-with-timer">
-      <div class="col-xs-9">
+      <div class="col-xs-8">
         <h1>Plan</h1>
       </div>
-      <div class="col-xs-3 text-right">
+      <div class="col-xs-4 text-right">
         <span class="btn timer" ng-show="timerTime" ng-class="{ 'btn-warning': !timerTimeDanger, 'btn-danger': timerTimeDanger }" tooltip-placement="bottom" tooltip="Temps restant pour compléter votre transaction">
-            <i class="fa fa-clock-o"></i> <span class="time-container">{{ timerTime }}</span>
+            <i class="fa fa-clock-o"></i><span> <span class="hidden-xs">Temps restant:</span> </span><span class="time-container">{{ timerTime }}</span>
         </span>
       </div>
     </div>
