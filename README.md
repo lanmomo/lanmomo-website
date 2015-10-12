@@ -17,6 +17,7 @@ Please read the license provided in LICENSE before modifying this software.
  * `Python 3`
  * `npm`
  * `bower`
+ * `sudo apt-get install libjpeg-dev`
 
 #### Installing bower
  * Using npm : `npm install -g bower`

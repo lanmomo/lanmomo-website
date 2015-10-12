@@ -3,8 +3,10 @@ import hashlib
 import mail
 import uuid
 import logging
+import os
 
 from datetime import datetime
+
 from flask import Flask, send_from_directory, jsonify, request, session
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
@@ -14,13 +16,17 @@ from paypalrestsdk import Payment as PaypalPayment
 from sqlalchemy import or_, not_
 from sqlalchemy.orm import contains_eager
 
+from reportlab.pdfgen import canvas
+from reportlab.graphics.shapes import Drawing
+from reportlab.graphics.barcode.qr import QrCodeWidget
+from reportlab.graphics import renderPDF
+from reportlab.lib.units import cm
+
 from database import db_session, init_db, init_engine
 from models import Ticket, User, Payment, Team
 
 from paypal import Paypal
 from paypalrestsdk import Payment as PaypalPayment
-
-
 
 
 ERR_INVALID_PAYPAL = """\
@@ -41,6 +47,32 @@ MSG_SUCCESS_PAY = """\
 Félicitations, votre billet est maintenant payé !"""
 
 app = Flask(__name__)
+
+
+def create_pdf_with_qr(qr_string, filename):
+    if not isdir(dirname(filename)):
+        os.mkdirs(dirname(filename))
+
+    p = canvas.Canvas(filename)
+    p.translate(cm * 5, cm * 10)
+    qrw = QrCodeWidget(qr_string)
+    b = qrw.getBounds()
+
+    w = b[2] - b[0]
+    h = b[3] - b[1]
+
+    d = Drawing(240, 240, transform=[240 / w, 0, 0, 240 / h, 0, 0])
+    d.add(qrw)
+
+    line1 = """\
+Veuillez présenter ce code QR à l'acceuil lors de votre arrivée au LAN."""
+    line2 = "Il est recommandé d'enregistrer ce PDF sur un appareil mobile," + \
+        " mais il est aussi possible de l'imprimer."
+    p.drawCentredString(5 * cm, 15 * cm, line1)
+    p.drawCentredString(5 * cm, 16 * cm, line2)
+
+    renderPDF.draw(d, p, 1, 1)
+    p.save()
 
 
 def get_logger():
@@ -81,10 +113,10 @@ def captain_has_team(game, captain_id):
         .filter(Team.captain_id == captain_id).count() > 0
 
 
-def send_email(to_email, to_name, subject, message):
+def send_email(to_email, to_name, subject, message, attachements=None):
     mail.send_email(to_email, to_name, subject, message,
                     app.config['MAILGUN_USER'], app.config['MAILGUN_KEY'],
-                    app.config['MAILGUN_DOMAIN'])
+                    app.config['MAILGUN_DOMAIN'], attachements)
 
 
 @app.before_request
@@ -483,7 +515,21 @@ def complete_purchase(ticket):
         db_session.commit()
 
         db_session.execute('UNLOCK TABLES;')
-        # TODO send email with payment confirmation
+
+        # Temp file for the PDF
+        ticket_pdf_filename = '/tmp/lanmomo_pdf/%s/billet.pdf' % ticket.qr_token
+        # Create PDF with the QR code linking to online verification
+        create_pdf_with_qr('https://lanmomo.org/qr/%s' % ticket.qr_token,
+                           ticket_pdf_filename)
+
+        # Find ticket owner to send email to
+        user = User.query.filter(User.id == ticket.user_id).one()
+        fullname = '%s %s' % (user.firstname, user.lastname)
+        subject = 'Confirmation de votre achat de billet du LAN Montmorency'
+        attachements = [ticket_pdf_filename]
+
+        # Send email with payment confirmation
+        send_email(user.email, fullname, subject, message, attachements)
     except Exception as e:
         app.logger.error(
             'Erreur lors de la fermeture de la commande pour ' +
