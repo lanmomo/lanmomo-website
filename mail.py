@@ -17,7 +17,7 @@ def _prepapre_attachments(attachement_files):
 
     if attachement_files:
         for file in attachement_files:
-            attachements.append(("attachment", open(file)))
+            attachements.append(("attachment", open(file, 'rb')))
 
     return attachements
 

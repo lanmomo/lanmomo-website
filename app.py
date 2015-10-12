@@ -5,6 +5,7 @@ import uuid
 import logging
 import os
 
+from os.path import isdir, dirname
 from datetime import datetime
 
 from flask import Flask, send_from_directory, jsonify, request, session
@@ -51,7 +52,7 @@ app = Flask(__name__)
 
 def create_pdf_with_qr(qr_string, filename):
     if not isdir(dirname(filename)):
-        os.mkdirs(dirname(filename))
+        os.makedirs(dirname(filename))
 
     p = canvas.Canvas(filename)
     p.translate(cm * 5, cm * 10)
@@ -116,7 +117,7 @@ def captain_has_team(game, captain_id):
 def send_email(to_email, to_name, subject, message, attachements=None):
     mail.send_email(to_email, to_name, subject, message,
                     app.config['MAILGUN_USER'], app.config['MAILGUN_KEY'],
-                    app.config['MAILGUN_DOMAIN'], attachements)
+                    app.config['MAILGUN_DOMAIN'], attachements=attachements)
 
 
 @app.before_request
@@ -523,10 +524,11 @@ def complete_purchase(ticket):
                            ticket_pdf_filename)
 
         # Find ticket owner to send email to
-        user = User.query.filter(User.id == ticket.user_id).one()
+        user = User.query.filter(User.id == ticket.owner_id).one()
         fullname = '%s %s' % (user.firstname, user.lastname)
         subject = 'Confirmation de votre achat de billet du LAN Montmorency'
         attachements = [ticket_pdf_filename]
+        message = 'va voir tes pièces jointes le gros'  # TODO
 
         # Send email with payment confirmation
         send_email(user.email, fullname, subject, message, attachements)
