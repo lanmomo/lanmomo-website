@@ -217,6 +217,13 @@ footer a {
 .qrcode .media-body p:last-child {
   margin-bottom: 0;
 }
+.panel table > tbody > tr:first-child > th,
+.panel table > tbody > tr:first-child > td {
+  border-top: none;
+}
+table.table-no-margin {
+  margin-bottom: 0;
+}
 /* END PROFILE */
 
 /* BEGIN TIMER */
