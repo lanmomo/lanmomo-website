@@ -28,7 +28,7 @@
   </div>
 
   <button data-toggle="modal" data-target="#myModal" ng-show="loggedIn && ticket.paid" type="submit" class="btn btn-success">Créer une équipe</button>
-  <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments">
+  <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments" ng-if="tournament.team_size > 1">
     <div class="panel-heading">
       <div class="panel-title row tournaments-text">
         <strong>{{tournament.title}}</strong>
@@ -56,6 +56,34 @@
       </table>
     </div>
   </div>
+
+  <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments" ng-if="tournament.team_size == 1">
+    <div class="panel-heading">
+      <div class="panel-title row tournaments-text">
+        <strong>{{tournament.title}}</strong>
+        <button ng-click="joinTourney(tournament.game)" ng-show="loggedIn && ticket.paid" type="submit" class="btn btn-success pull-right">Rejoindre</button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Joueur</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="(key, team) in teams" ng-if="team.game==tournament.game">
+            <td>{{team.captain_name}}</td>
+            <td>
+              <button ng-click="deleteTeam(team.id, key)" ng-hide="user.username != team.captain_name" class="btn btn-danger pull-right">supprimer</i></button>
+              <!-- <button ng-show="user.username != team.captain_id" type="submit" class="btn btn-success pull-right">JOIN</i></button> -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
 </div>
 
 <div id="myModal" class="modal fade" role="dialog">
@@ -70,7 +98,7 @@
         <table>
           <tr>
             <th><strong>Jeu: </strong></th>
-              <td><select ng-model="teamGame" class="input-sm"><option ng-repeat="(key, tournament) in tournaments" value="{{tournament.game}}">{{tournament.title}}</option></select></td>
+              <td><select ng-model="teamGame" class="input-sm"><option ng-repeat="(key, tournament) in tournaments" value="{{tournament.game}}" ng-if="tournament.team_size > 1">{{tournament.title}}</option></select></td>
           </tr>
           <tr>
             <th><strong>Nom de l'équipe: </strong></th>
