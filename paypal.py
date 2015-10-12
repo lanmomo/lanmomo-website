@@ -22,7 +22,8 @@ class Paypal():
         price_str = ("%.2f" % ticket.total)
 
         if ticket.seat_num:
-            item_name = "Billet LAN Montmorency 2015 BYOC {}".format(ticket.seat_num)
+            item_name = "Billet LAN Montmorency 2015 BYOC {}" \
+                .format(ticket.seat_num)
         else:
             item_name = "Billet LAN Montmorency 2015 Console"
 
@@ -39,6 +40,7 @@ class Paypal():
                 "item_list": {
                     "items": [{
                         "name": item_name,
+                        "sku": "SKU2015{}".format(ticket.id),
                         "price": price_str,
                         "currency": "CAD",
                         "quantity": 1
@@ -48,7 +50,7 @@ class Paypal():
                     "total": price_str,
                     "currency": "CAD"
                 },
-                "description": ("Billet LAN Montmorency %d" % ticket.id)
+                "description": "Achat de votre billet LAN Montmorency 2015"
             }]
         })
 
