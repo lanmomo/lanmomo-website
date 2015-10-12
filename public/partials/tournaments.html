@@ -39,17 +39,26 @@
         <thead>
           <tr>
             <th>Nom de l'équipe</th>
-            <th>Capitaine</th>
+            <th>Joueurs</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="(key, team) in teams" ng-if="team.game==tournament.game">
+          <tr ng-repeat="(key, team) in teams" ng-if="team.game == tournament.game">
             <th>{{team.name}}</th>
-            <td>{{team.captain_name}}</td>
+            <td>
+              {{team.captain_name}} <br />
+              <div ng-show="user.username == team.captain_name" ng-repeat="(key, team_user) in team_users" ng-if="team_user.team_id == team.id">
+                {{team_user.username}}
+                <button class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+              </div>
+              <div ng-show="user.username != team.captain_name" ng-repeat="(key, team_user) in team_users" ng-if="team_user.team_id == team.id">
+                {{team_user.username}}
+              </div>
+            </td>
             <td>
               <button ng-click="deleteTeam(team.id, key)" ng-hide="user.username != team.captain_name" class="btn btn-danger pull-right">supprimer</i></button>
-              <!-- <button ng-show="user.username != team.captain_id" type="submit" class="btn btn-success pull-right">JOIN</i></button> -->
+              <button ng-show="user.username != team.captain_name && ticket.paid" type="submit" class="btn btn-success pull-right">Rejoindre</i></button>
             </td>
           </tr>
         </tbody>

@@ -208,11 +208,6 @@ class TeamUser():
     def __repr__(self):
             return '<Team-User %r - %r>' % (self.team_id, self.user_id)
 
-    def get_team_name(self):
-        team = User.query.filter(Team.id == self.team_id).first()
-        if team:
-            return team.name
-
     def get_user_name(self):
         user = User.query.filter(User.id == self.user_id).first()
         if user:
@@ -220,8 +215,8 @@ class TeamUser():
 
     def as_pub_dict(self):
             pub_dict = {
-                'username': self.get_user_name,
-                'team_name': self.get_team_name,
+                'username': self.get_user_name(),
+                'team_id': self.team_id,
                 'accepted': self.accepted
                 }
             return pub_dict

@@ -167,6 +167,14 @@ app.controller('TournamentsController', function($scope, $http, $location) {
           $scope.error = {message: err.error, status: status};
         });
 
+        $http.get('/api/team_users')
+        .success(function (data) {
+          $scope.team_users = data.team_users;
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.error, status: status};
+        });
+
       if ($scope.loggedIn) {
         $http.get('/api/profile')
         .success(function(data) {

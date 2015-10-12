@@ -103,6 +103,16 @@ def get_tournaments():
     return jsonify(tournaments), 200
 
 
+@app.route('/api/team_users', methods=['GET'])
+def get_team_user():
+    pub_team_users = []
+    team_users = TeamUser.query.all()
+
+    for team_user in team_users:
+        pub_team_users.append(team_user.as_pub_dict())
+    return jsonify({'team_users': pub_team_users}), 200
+
+
 @app.route('/api/teams', methods=['GET'])
 def get_all_teams():
     pub_teams = []
