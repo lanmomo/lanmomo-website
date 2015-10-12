@@ -151,9 +151,9 @@ class Ticket():
         except Exception as e:
             db_session.rollback()
             db_session.execute('UNLOCK TABLES;')
-            print(str(e))
             return False, '''\
-Une erreur inconnue être survenue lors de la réservation de votre bilet.'''
+Une erreur inconnue être survenue lors de la réservation de votre bilet.''',
+            str(e)
 
 
 class Payment():
