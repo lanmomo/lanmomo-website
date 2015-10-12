@@ -140,7 +140,7 @@ app.controller('NavbarController', function($scope, $location, Auth) {
 });
 
 app.controller('GamesController', function($scope, $http) {
-  $http.get('/api/games')
+  $http.get('/games.json')
     .success(function(games) {
       $scope.games = games;
     })
@@ -151,7 +151,7 @@ app.controller('GamesController', function($scope, $http) {
 
 app.controller('TournamentsController', function($scope, $http, $location) {
   function refreshData() {
-    $http.get('/api/tournaments')
+    $http.get('/tournaments.json')
       .success(function(data) {
         $scope.tournaments = data.tournaments;
       })
@@ -359,9 +359,10 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
   $scope.payNow = function() {
     $scope.loading = true;
 
-    var data = {};
-    data.discount_momo = $scope.discountMomo;
-    // TODO: Send $scope.participateGG too!
+    var data = {
+      discountMomo: $scope.discountMomo,
+      participateGG: $scope.participateGG
+    };
 
     $http.post('/api/tickets/pay', data)
       .success(function(data) {

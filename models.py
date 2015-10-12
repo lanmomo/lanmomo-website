@@ -1,10 +1,12 @@
 import uuid
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from sqlalchemy import Table, Column, Integer, String, Binary, Boolean, \
-    ForeignKey, DateTime, Float, text, or_
+    ForeignKey, DateTime, Float, or_
 from sqlalchemy.orm import mapper, relationship
+
+import utils
 
 from database import metadata, db_session
 
@@ -21,7 +23,7 @@ class User():
         self.phone = phone
         self.password = password
         self.salt = salt
-        self.created_date = datetime.now
+        self.created_date = utils.now_utc()
         self.confirmed = False
         self.confirmation_token = uuid.uuid4().hex
 
@@ -74,7 +76,7 @@ class Ticket():
             'type_id': self.type_id,
             'owner_id': self.owner_id,
             'paid': self.paid,
-            'reserved_until': self.reserved_until.strftime('%Y-%m-%dT%H:%M:%S'),
+            'reserved_until': self.reserved_until,
             'price': self.price,
             'discount_amount': self.discount_amount,
             'total': self.total
@@ -98,7 +100,7 @@ class Ticket():
             user_ticket_count = Ticket.query \
                 .filter(Ticket.owner_id == user_id) \
                 .filter(or_(
-                    Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+                    Ticket.paid, Ticket.reserved_until >= utils.now_utc())) \
                 .count()
 
             # Check if user can order a ticket
@@ -112,7 +114,7 @@ class Ticket():
             ticket_type_count = Ticket.query \
                 .filter(Ticket.type_id == ticket_type) \
                 .filter(or_(
-                    Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+                    Ticket.paid, Ticket.reserved_until >= utils.now_utc())) \
                 .count()
 
             # Check if more tickets is allowed for this type
@@ -127,7 +129,7 @@ class Ticket():
                 wanted_seat_count = Ticket.query \
                     .filter(Ticket.seat_num == seat_num) \
                     .filter(or_(
-                        Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+                        Ticket.paid, Ticket.reserved_until >= utils.now_utc())) \
                     .count()
                 if wanted_seat_count > 0:
                     db_session.rollback()
@@ -136,7 +138,7 @@ class Ticket():
                         'Ce siège est déjà occupé ou réservé !'
 
             # Book ticket for 10 minutes
-            reserved_until = datetime.now() + timedelta(minutes=10)
+            reserved_until = utils.now_utc() + timedelta(minutes=10)
 
             # Insert ticket
             ticket = Ticket(ticket_type, user_id, price,
@@ -173,7 +175,7 @@ class Team():
             self.name = name
             self.game = game
             self.captain_id = captain_id
-            self.created_date = datetime.now
+            self.created_date = utils.now_utc()
 
     def __repr__(self):
             return '<Team %r>' % (self.name)
@@ -231,8 +233,8 @@ teams = Table('teams', metadata,
               Column('name', String(255), nullable=False),
               Column('game', String(255), nullable=False),
               Column('captain_id', Integer, ForeignKey('users.id')),
-              Column('created_at', DateTime, default=datetime.now),
-              Column('modified_at', DateTime, onupdate=datetime.now)
+              Column('created_at', DateTime, default=utils.now_utc()),
+              Column('modified_at', DateTime, onupdate=utils.now_utc())
               )
 
 users = Table('users', metadata,
@@ -242,9 +244,9 @@ users = Table('users', metadata,
               Column('lastname', String(255), nullable=False),
               Column('email', String(255), nullable=False),
               Column('phone', String(255), nullable=False),
-              Column('created_at', DateTime, default=datetime.now),
+              Column('created_at', DateTime, default=utils.now_utc()),
               # private fields
-              Column('modified_at', DateTime, onupdate=datetime.now),
+              Column('modified_at', DateTime, onupdate=utils.now_utc()),
               Column('password', Binary(64), nullable=False),
               Column('salt', String(32), nullable=False),
               Column('confirmed', Boolean, default=False),
@@ -274,8 +276,9 @@ tickets = Table('tickets', metadata,
                 Column('reserved_until', DateTime, nullable=False),
                 # private fields
                 Column('qr_token', String(32), nullable=False),
-                Column('created_at', DateTime, default=datetime.now),
-                Column('modified_at', DateTime, onupdate=datetime.now)
+                Column('created_at', DateTime, default=utils.now_utc()),
+                Column('modified_at', DateTime, onupdate=utils.now_utc()),
+                Column('participate_gg', Boolean, default=False)
                 )
 
 payments = Table('payments', metadata,
@@ -284,8 +287,8 @@ payments = Table('payments', metadata,
                  Column('paypal_payer_id', String(255)),  # nullable
                  Column('paypal_payment_id', String(255), nullable=False),
                  Column('amount', Float, nullable=False),
-                 Column('created_at', DateTime, default=datetime.now),
-                 Column('modified_at', DateTime, onupdate=datetime.now)
+                 Column('created_at', DateTime, default=utils.now_utc()),
+                 Column('modified_at', DateTime, onupdate=utils.now_utc())
                  )
 
 mapper(User, users)

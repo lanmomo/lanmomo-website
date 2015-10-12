@@ -8,7 +8,8 @@ class Paypal():
         self.return_url = None
         self.cancel_url = None
 
-    def configure(self, client_id, client_secret, mode, return_url, cancel_url):
+    def configure(self, client_id, client_secret, mode,
+                  return_url, cancel_url):
         paypalrestsdk. \
             configure({
                       "mode": mode,
