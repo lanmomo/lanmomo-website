@@ -123,7 +123,6 @@ footer a {
     font-size: 50px;
   }
 }
-
 @media (min-width: 992px) {
   .featurette-heading {
     margin-top: 120px;
@@ -273,7 +272,6 @@ table.table-no-margin {
   filter: none;
   position: relative;
 }
-
 .checkout-breadcrumb a:first-child,
 .checkout-breadcrumb span:first-child {
   padding-left: 40px; /* since the first link does not have a triangle before it we can reduce the left padding to make it look consistent with other links */
@@ -468,7 +466,6 @@ table.table-no-margin {
   text-align: center;
   text-transform: uppercase;
   background-color: #2e3338;
-
 }
 .seat-map-section .scene div,
 .seat-map-section .console div {
@@ -478,7 +475,6 @@ table.table-no-margin {
   transform: translateX(-50%) translateY(-50%) rotate(-90deg);
   -moz-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
   -webkit-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
-
 }
 .seat-map-section .seat {
   float: left;
