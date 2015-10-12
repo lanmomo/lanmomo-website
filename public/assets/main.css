@@ -198,6 +198,27 @@ footer a {
 }
 /* END LOGIN */
 
+/* BEGIN PROFILE */
+.qrcode .media-left {
+  padding-right: 19px;
+}
+.qrcode .media-left div {
+  padding: 25px;
+  background-color: #ffffff;
+}
+@media (max-width: 768px) {
+  .qrcode .media-left {
+    display: block;
+    text-align: center;
+    padding-right: 0;
+    padding-bottom: 19px;
+  }
+}
+.qrcode .media-body p:last-child {
+  margin-bottom: 0;
+}
+/* END PROFILE */
+
 /* BEGIN TIMER */
 .header-with-timer {
   margin-bottom: 10px;
