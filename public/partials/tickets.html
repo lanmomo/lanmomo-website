@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="checkout-breadcrumb-container" ng-show="loggedIn">
+  <div class="checkout-breadcrumb-container" ng-show="canBuy">
       <div class="checkout-breadcrumb">
         <a href="/tickets" class="active">Billet</a>
         <span>Siège</span>
@@ -35,7 +35,7 @@
     <i class="fa fa-exclamation-triangle"></i> {{ error.message }}
   </div>
 
-  <div class="alert alert-info" ng-show="loggedIn">
+  <div class="alert alert-info" ng-show="canBuy">
     <p><i class="fa fa-exclamation-circle"></i> Lorsque vous cliquez sur acheter, votre billet sera réservé pour une période de 10 minutes. Vous avez donc 10 minutes pour compléter votre transaction avant que votre billets soit de nouveau disponible aux autres joueurs. Un minuteur visible en haut à droite de l'écran affichera le temps restant.</p>
   </div>
 
@@ -55,11 +55,12 @@
             <div class="ticket-price">
               20,00$
             </div>
-            <div ng-show="loggedIn">
-              <button ng-disabled="submitted" ng-click="buy(0)" class="btn btn-success">Acheter <i class="fa fa-chevron-right"></i></button>
+            <div ng-show="ticketCount.pc.soldout">
+              <span class="label label-danger">Épuisé</span>
             </div>
-            <div ng-show="!loggedIn">
-              <span class="label label-success">Disponible</span>
+            <div ng-hide="ticketCount.pc.soldout">
+              <button ng-show="canBuy" ng-disabled="submitted" ng-click="buy(0)" class="btn btn-success">Acheter <i class="fa fa-chevron-right"></i></button>
+              <span ng-hide="canBuy" class="label label-success">Disponible</span>
             </div>
           </div>
         </div>
@@ -98,9 +99,9 @@
             <div ng-show="ticketCount.console.soldout">
               <span class="label label-danger">Épuisé</span>
             </div>
-            <div ng-show="!ticketCount.console.soldout">
-              <button ng-show="loggedIn" ng-disabled="submitted" ng-click="buy(1)" class="btn btn-success">Acheter <i class="fa fa-chevron-right"></i></button>
-              <span ng-show="!loggedIn" class="label label-success">Disponible</span>
+            <div ng-hide="ticketCount.console.soldout">
+              <button ng-show="canBuy" ng-disabled="submitted" ng-click="buy(1)" class="btn btn-success">Acheter <i class="fa fa-chevron-right"></i></button>
+              <span ng-hide="canBuy" class="label label-success">Disponible</span>
             </div>
           </div>
         </div>

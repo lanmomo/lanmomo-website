@@ -240,6 +240,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
 });
 
 app.controller('TicketsController', function($scope, $http, $location, Timer) {
+  $scope.canBuy = false;
   $scope.max = {
     pc: 96,
     console: 32
@@ -255,6 +256,7 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
         if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
           Timer.bootstrap($scope, data.ticket.reserved_until);
         }
+        $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
       })
       .error(function (err, status) {
         $scope.error = {message: err.error, status: status};
@@ -629,6 +631,7 @@ app.controller('SignupModalController', function($scope, $modalInstance) {
 });
 
 app.controller('MapController', function($scope, $http, $interval, $location, Timer) {
+  $scope.canBuy = false;
   $scope.selectedSeat = null;
   $scope.userPaidSeatID = 0;
   var seatStatus = {};
@@ -672,6 +675,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
         if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
           Timer.bootstrap($scope, data.ticket.reserved_until);
         }
+        $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
       })
       .error(function (err, status) {
         $scope.error = {message: err.message, status: status};
