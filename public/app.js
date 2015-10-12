@@ -634,6 +634,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
   $scope.canBuy = false;
   $scope.selectedSeat = null;
   $scope.userPaidSeatID = 0;
+  $scope.userTicketSeatID = 0;
   var seatStatus = {};
   var seatOwners = {};
   var seatUntils = {};
@@ -656,6 +657,9 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
   $scope.isTaken = function(seat) {
     return seatStatus[seat] == 't';
   };
+  $scope.isAlreadyReserved = function(seat) {
+    return $scope.userTicketSeatID == seat;
+  };
   $scope.getOwner = function(seat) {
     return seatOwners[seat];
   };
@@ -672,6 +676,10 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
         if (data.ticket && data.ticket.paid) {
           $scope.userPaidSeatID = data.ticket.seat_num;
         }
+        if (data.ticket && !data.ticket.paid) {
+          $scope.selectSeat(data.ticket.seat_num);
+          $scope.userTicketSeatID = data.ticket.seat_num;
+        }
         if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
           Timer.bootstrap($scope, data.ticket.reserved_until);
         }
@@ -687,7 +695,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
     $scope.selectedSeat = true;
     $scope.selectedSeatID = seat;
 
-    if (!$scope.isAvail(seat)) {
+    if (!$scope.isAvail(seat) && !$scope.isAlreadyReserved(seat)) {
       $scope.selectSeatIsFree = false;
       $scope.selectedSeatTicketPaid = $scope.isTaken(seat);
       $scope.selectedSeatUser = $scope.getOwner(seat);
@@ -708,29 +716,33 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
     ticket.type = TICKET_TYPES.PC;
     ticket.seat = seat;
 
-    $http.get('/api/users/ticket')
-      .success(function(data) {
-        if (data.ticket) {
-          $http.put('/api/tickets/seat', ticket)
-            .success(function(data) {
-              $location.path('/pay');
-            })
-            .error(function(err, status) {
-              $scope.error = {message: err.message, status: status};
-            });
-        } else {
-          $http.post('/api/tickets', ticket)
-            .success(function(data) {
-              $location.path('/pay');
-            })
-            .error(function(err, status) {
-              $scope.error = {message: err.message, status: status};
-            });
-        }
-      })
-      .error(function(err, status) {
-        $scope.error = {message: err.message, status: status};
-      });
+    if ($scope.isAlreadyReserved(seat)) {
+      $location.path('/pay');
+    } else {
+      $http.get('/api/users/ticket')
+        .success(function(data) {
+          if (data.ticket) {
+            $http.put('/api/tickets/seat', ticket)
+              .success(function(data) {
+                $location.path('/pay');
+              })
+              .error(function(err, status) {
+                $scope.error = {message: err.message, status: status};
+              });
+          } else {
+            $http.post('/api/tickets', ticket)
+              .success(function(data) {
+                $location.path('/pay');
+              })
+              .error(function(err, status) {
+                $scope.error = {message: err.message, status: status};
+              });
+          }
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+    }
   };
 
   $scope.refresh = function() {
