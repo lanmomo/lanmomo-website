@@ -145,7 +145,7 @@ app.controller('GamesController', function($scope, $http) {
       $scope.games = games;
     })
     .error(function(err, status) {
-      $scope.error = {message: err, status: status};
+      $scope.error = {message: err.message, status: status};
     });
 });
 
@@ -156,7 +156,7 @@ app.controller('TournamentsController', function($scope, $http, $location) {
         $scope.tournaments = data.tournaments;
       })
       .error(function(err, status) {
-        $scope.error = {message: err, status: status};
+        $scope.error = {message: err.message, status: status};
       });
 
       $http.get('/api/teams')
@@ -164,7 +164,7 @@ app.controller('TournamentsController', function($scope, $http, $location) {
           $scope.teams = data.teams;
         })
         .error(function(err, status) {
-          $scope.error = {message: err.error, status: status};
+          $scope.error = {message: err.message, status: status};
         });
 
       if ($scope.loggedIn) {
@@ -173,7 +173,7 @@ app.controller('TournamentsController', function($scope, $http, $location) {
           $scope.user = data.user;
         })
         .error(function(err, status) {
-          $scope.error = {message: err.error, status: status};
+          $scope.error = {message: err.message, status: status};
         });
       }
   }
@@ -199,7 +199,7 @@ app.controller('TournamentsController', function($scope, $http, $location) {
           $scope.teams.splice(index, 1);
         })
         .error(function(err, status) {
-          $scope.error = {message: err.error, status: status};
+          $scope.error = {message: err.message, status: status};
         });
     }
   };
@@ -218,7 +218,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
         $scope.state.loading = false;
       })
       .error(function(err, status) {
-        $scope.error = {message: err, status: status};
+        $scope.error = {message: err.message, status: status};
         $scope.state.loading = false;
       });
   };
@@ -259,7 +259,7 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
         $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
       })
       .error(function (err, status) {
-        $scope.error = {message: err.error, status: status};
+        $scope.error = {message: err.message, status: status};
       });
   }
 
@@ -293,7 +293,7 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
       $scope.ticketCount.console.soldout = !($scope.ticketCount.console.avail > 0);
     })
     .error(function(err, status) {
-      $scope.error = {message: err.error, status: status};
+      $scope.error = {message: err.message, status: status};
     });
 
   $scope.buy = function(ticketType) {
@@ -307,7 +307,7 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
           $location.path('/pay');
         })
         .error(function(err, status) {
-          $scope.error = {message: err.error, status: status};
+          $scope.error = {message: err.message, status: status};
         });
     } else if (ticketType === TICKET_TYPES.PC) {
       $location.path('/map');
@@ -333,7 +333,7 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
       }
     })
     .error(function(err, status) {
-      $scope.error = {message: err, status: status};
+      $scope.error = {message: err.message, status: status};
     });
 
   $scope.getSeat = function() {
@@ -372,7 +372,7 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
       })
       .error(function(err, status) {
         $scope.loading = false;
-        $scope.error = {message: err.error, status: status};
+        $scope.error = {message: err.message, status: status};
       });
   }
 });
@@ -387,11 +387,11 @@ app.controller('VerifyController', function($scope, $http, $routeParams) {
       } else if (data.first === false) {
         $scope.message = 'Votre compte a déjà été créé ! Vous pouvez vous connecter.';
       } else {
-        $scope.error = 'Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !'
+        $scope.error = {message: 'Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !'}
       }
     })
     .error(function(data) {
-      $scope.error = 'Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !'
+      $scope.error = {message: 'Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !'}
     });
 });
 
@@ -407,7 +407,7 @@ app.controller('LoginController', function ($scope, $http, $location, $rootScope
         $location.path('/profile');
       })
       .error(function(err, status) {
-        $scope.error = {message: err.error, status: status};
+        $scope.error = {message: err.message, status: status};
       });
   };
 });
@@ -419,7 +419,7 @@ app.controller('LogoutController', function ($scope, $http, $location, Auth) {
       $location.path('/');
     })
     .error(function(err, status) {
-      $scope.error = {message: err.error, status: status};
+      $scope.error = {message: err.message, status: status};
     });
 });
 
@@ -438,7 +438,7 @@ app.controller('ExecuteController', function ($scope, $http, $location, $routePa
     })
     .error(function(err, status) {
       $scope.loading = false;
-      $scope.error = {message: err.error, status: status};
+      $scope.error = {message: err.message, status: status};
     });
 });
 
@@ -462,7 +462,7 @@ app.controller('ProfileController', function ($scope, $http) {
       $scope.resetMods();
     })
     .error(function(err, status) {
-      $scope.error = {message: err.error, status: status};
+      $scope.error = {message: err.message, status: status};
     });
   $http.get('/api/users/ticket')
     .success(function(data) {
@@ -472,7 +472,7 @@ app.controller('ProfileController', function ($scope, $http) {
       }
     })
     .error(function(err, status) {
-      $scope.alerts.push({msg: err.error, type: 'danger'});
+      $scope.alerts.push({msg: err.message, type: 'danger'});
     });
 
   $scope.submitUserMods = function () {
@@ -483,7 +483,7 @@ app.controller('ProfileController', function ($scope, $http) {
         $scope.alerts.push({msg: 'Vos informations ont été mises à jour.', type: 'success'});
       })
       .error(function(err, status) {
-        $scope.alerts.push({msg: err.error, type: 'danger'});
+        $scope.alerts.push({msg: err.message, type: 'danger'});
       });
   };
   $scope.resetMods = function () {
@@ -546,7 +546,7 @@ app.controller('QRController', function ($scope, $http, $routeParams) {
       }
     })
     .error(function(err, status) {
-      $scope.error = {message: err.error, status: status};
+      $scope.error = {message: err.message, status: status};
     });
 });
 
@@ -716,7 +716,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
               $location.path('/pay');
             })
             .error(function(err, status) {
-              $scope.error = {message: err.error, status: status};
+              $scope.error = {message: err.message, status: status};
             });
         } else {
           $http.post('/api/tickets', ticket)
@@ -724,12 +724,12 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
               $location.path('/pay');
             })
             .error(function(err, status) {
-              $scope.error = {message: err.error, status: status};
+              $scope.error = {message: err.message, status: status};
             });
         }
       })
       .error(function(err, status) {
-        $scope.error = {message: err.error, status: status};
+        $scope.error = {message: err.message, status: status};
       });
   };
 
@@ -755,7 +755,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
         }
       })
       .error(function(err, status) {
-        $scope.error = {message: err.error, status: status};
+        $scope.error = {message: err.message, status: status};
       });
   };
 
