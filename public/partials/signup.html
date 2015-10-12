@@ -3,13 +3,14 @@
     <h1>Création de votre compte</h1>
   </div>
 
-  <div ng-show="state.success" class="alert alert-warning" role="alert"><i class="fa fa-exclamation-circle"></i> {{message}}</div>
-  <div ng-show="state.error" class="alert alert-danger" role="alert"><i class="fa fa-exclamation-triangle"></i> {{message}}</div>
+  <div ng-show="state.success" class="alert alert-warning" role="alert"><i class="fa fa-exclamation-circle"></i> {{ message }}</div>
+  <div ng-show="state.error" class="alert alert-danger" role="alert"><i class="fa fa-exclamation-triangle"></i> {{ message }}</div>
   <div ng-show="state.loading" class="progress progress-striped active">
     <div class="progress-bar progress-bar-loading">
       Chargement
     </div>
   </div>
+
   <form class="form-horizontal" name="form" ng-submit="submitForm(form.$valid)" ng-hide="state.loading || state.success" novalidate>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.username.$invalid && form.username.$dirty) || (!state.usernameAvailable && state.usernameChanged), 'has-success' : form.username.$valid && state.usernameChanged && state.usernameAvailable }">
@@ -50,7 +51,7 @@
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="email" class="control-label" ng-show="form.email.$invalid">Vous devez saisir une adresse courriel valide.</label>
-        <label for="email" class="control-label" ng-show="!state.emailAvailable && state.emailChanged">Cette adresse courriel est déjà utilisée.</label>
+        <label for="email" class="control-label" ng-show="form.email.$valid && !state.emailAvailable && state.emailChanged">Cette adresse courriel est déjà utilisée.</label>
       </div>
     </div>
 
@@ -73,6 +74,7 @@
         <label for="password" class="control-label">Vous devez un mot de passe d'au moins 8 caractères.</label>
       </div>
     </div>
+
     <div class="form-group has-feedback" ng-class="{ 'has-error' : form.conf.$invalid && form.conf.$dirty && !form.conf.$error.passwordCheck, 'has-success' : form.conf.$valid }">
       <label for="conf" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Confirmez votre mot de passe">Confirmation <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
@@ -82,6 +84,7 @@
         <label for="conf" class="control-label">Vous devez un mot de passe identique au précédant.</label>
       </div>
     </div>
+
     <div class="form-group">
       <div class="col-sm-offset-4 col-md-offset-3 col-lg-offset-2 col-sm-8 col-md-9 col-lg-10">
         <div class="checkbox">
