@@ -21,6 +21,11 @@ class Paypal():
     def create(self, ticket):
         price_str = ("%.2f" % ticket.total)
 
+        if ticket.seat_num:
+            item_name = "Billet LAN Montmorency 2015 BYOC {}".format(ticket.seat_num)
+        else:
+            item_name = "Billet LAN Montmorency 2015 Console"
+
         payment = Payment({
             "intent": "sale",
             "payer": {
@@ -33,8 +38,7 @@ class Paypal():
             "transactions": [{
                 "item_list": {
                     "items": [{
-                        "name": "Billet LAN Montmorency",
-                        "sku": str(ticket.id),
+                        "name": item_name,
                         "price": price_str,
                         "currency": "CAD",
                         "quantity": 1

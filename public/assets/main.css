@@ -198,6 +198,34 @@ footer a {
 }
 /* END LOGIN */
 
+/* BEGIN PROFILE */
+.qrcode .media-left {
+  padding-right: 19px;
+}
+.qrcode .media-left div {
+  padding: 25px;
+  background-color: #ffffff;
+}
+@media (max-width: 768px) {
+  .qrcode .media-left {
+    display: block;
+    text-align: center;
+    padding-right: 0;
+    padding-bottom: 19px;
+  }
+}
+.qrcode .media-body p:last-child {
+  margin-bottom: 0;
+}
+.panel table > tbody > tr:first-child > th,
+.panel table > tbody > tr:first-child > td {
+  border-top: none;
+}
+table.table-no-margin {
+  margin-bottom: 0;
+}
+/* END PROFILE */
+
 /* BEGIN TIMER */
 .header-with-timer {
   margin-bottom: 10px;
@@ -245,6 +273,7 @@ footer a {
   filter: none;
   position: relative;
 }
+
 .checkout-breadcrumb a:first-child,
 .checkout-breadcrumb span:first-child {
   padding-left: 40px; /* since the first link does not have a triangle before it we can reduce the left padding to make it look consistent with other links */
@@ -258,6 +287,21 @@ footer a {
 .checkout-breadcrumb span:last-child {
   padding-right: 20px;
   border-radius: 0 5px 5px 0; /* this was to prevent glitches on hover */
+}
+@media (max-width: 768px) {
+  .checkout-breadcrumb a,
+  .checkout-breadcrumb span {
+    font-size: 0;
+    padding-left: 50px;
+  }
+  .checkout-breadcrumb a:first-child,
+  .checkout-breadcrumb span:first-child {
+    padding-left: 35px;
+  }
+  .checkout-breadcrumb a:last-child,
+  .checkout-breadcrumb span:last-child {
+    padding-right: 15px;
+  }
 }
 .checkout-breadcrumb a.success,
 .checkout-breadcrumb span.success {
@@ -350,6 +394,7 @@ footer a {
   width: 18px;
   height: 18px;
   line-height: 18px;
+  font-size: 12px;
   margin: 7px 0;
   position: absolute;
   top: 0;
@@ -362,6 +407,11 @@ footer a {
 /* BEGIN TICKETS */
 .tickets .panel .media .media-left {
   padding-right: 20px;
+}
+@media (max-width: 768px) {
+  .tickets .panel .media .media-left {
+    display: none;
+  }
 }
 .tickets .panel .media .media-left img {
   /*width: 90px;*/

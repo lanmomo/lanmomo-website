@@ -12,21 +12,38 @@ def _def_timeoutfn(x):
         return 15 * 60
 
 
+def _prepapre_attachments(attachement_files):
+    attachements = []
+
+    if attachement_files:
+        for file in attachement_files:
+            attachements.append(("attachment", open(file, 'rb')))
+
+    return attachements
+
+
 def _send_mailgun_api(to_email, to_name, subject, message, sender, api_key,
-                      domain, timeoutfn, times):
+                      domain, timeoutfn, times, attachements):
     count = 1
     while count <= times:
         timeout = timeoutfn(count)
         begin_ts = time.time()
         try:
             request_url = 'https://api.mailgun.net/v3/%s/messages' % domain
+            attachements_mailgun = _prepapre_attachments(attachements)
 
-            request = requests.post(request_url, auth=('api', api_key), data={
-                'from': 'LAN Montmorency <%s>' % sender,
-                'to': '%s <%s>' % (to_name, to_email),
-                'subject': subject,
-                'text': message
-            })
+            request = requests.post(
+                request_url,
+                auth=('api', api_key),
+                data={
+                    'from': 'LAN Montmorency <%s>' % sender,
+                    'to': '%s <%s>' % (to_name, to_email),
+                    'subject': subject,
+                    'text': message,
+                },
+                files=attachements_mailgun
+            )
+
             if request.status_code == 200:
                 return
             raise Exception(request.text)
@@ -51,7 +68,7 @@ def _send_mailgun_api(to_email, to_name, subject, message, sender, api_key,
 
 
 def send_email(to_email, to_name, subject, message, sender, api_key, domain,
-               timeoutfn=_def_timeoutfn, times=13):
+               timeoutfn=_def_timeoutfn, times=13, attachements=None):
     """
     Envoyer un courriel en background avec les informations données.
     `times` est le nombres de fois à essayer d'envoyer le courriel.
@@ -60,4 +77,4 @@ def send_email(to_email, to_name, subject, message, sender, api_key, domain,
     """
     threading.Thread(target=_send_mailgun_api, args=(
         to_email, to_name, subject, message, sender, api_key, domain,
-        timeoutfn, times)).start()
+        timeoutfn, times, attachements)).start()

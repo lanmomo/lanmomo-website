@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
+import hashlib
+import mail
 import uuid
 import logging
+import os
+
+from os.path import isdir, dirname
+from datetime import datetime
 
 from flask import Flask, send_from_directory, jsonify, request, session
 from logging import Formatter
@@ -11,12 +17,17 @@ from paypalrestsdk import Payment as PaypalPayment
 from sqlalchemy import or_, not_
 from sqlalchemy.orm import contains_eager
 
-import mail
-import utils
+from reportlab.pdfgen import canvas
+from reportlab.graphics.shapes import Drawing
+from reportlab.graphics.barcode.qr import QrCodeWidget
+from reportlab.graphics import renderPDF
+from reportlab.lib.units import cm
 
 from database import db_session, init_db, init_engine
 from models import Ticket, User, Payment, Team
+
 from paypal import Paypal
+from paypalrestsdk import Payment as PaypalPayment
 
 
 ERR_INVALID_PAYPAL = """\
@@ -39,6 +50,32 @@ Félicitations, votre billet est maintenant payé !"""
 app = Flask(__name__)
 
 
+def create_pdf_with_qr(qr_string, filename):
+    if not isdir(dirname(filename)):
+        os.makedirs(dirname(filename))
+
+    p = canvas.Canvas(filename)
+    p.translate(cm * 5, cm * 10)
+    qrw = QrCodeWidget(qr_string)
+    b = qrw.getBounds()
+
+    w = b[2] - b[0]
+    h = b[3] - b[1]
+
+    d = Drawing(240, 240, transform=[240 / w, 0, 0, 240 / h, 0, 0])
+    d.add(qrw)
+
+    line1 = """\
+Veuillez présenter ce code QR à l'acceuil lors de votre arrivée au LAN."""
+    line2 = "Il est recommandé d'enregistrer ce PDF sur un appareil mobile," + \
+        " mais il est aussi possible de l'imprimer."
+    p.drawCentredString(5 * cm, 15 * cm, line1)
+    p.drawCentredString(5 * cm, 16 * cm, line2)
+
+    renderPDF.draw(d, p, 1, 1)
+    p.save()
+
+
 def get_logger():
     return app.logger
 
@@ -50,6 +87,13 @@ def validate_signup_body(req):
         if n not in req.keys():
             return False
     return True
+
+
+def get_hash(password, salt):
+    m = hashlib.sha512()
+    m.update(salt.encode('utf8'))
+    m.update(password.encode('utf8'))
+    return m.digest()
 
 
 def email_exists(email):
@@ -70,10 +114,10 @@ def captain_has_team(game, captain_id):
         .filter(Team.captain_id == captain_id).count() > 0
 
 
-def send_email(to_email, to_name, subject, message):
+def send_email(to_email, to_name, subject, message, attachements=None):
     mail.send_email(to_email, to_name, subject, message,
                     app.config['MAILGUN_USER'], app.config['MAILGUN_KEY'],
-                    app.config['MAILGUN_DOMAIN'])
+                    app.config['MAILGUN_DOMAIN'], attachements=attachements)
 
 
 @app.before_request
@@ -144,7 +188,7 @@ def get_ticket_from_seat_num(seat_num):
     ticket = Ticket.query \
         .filter(Ticket.seat_num == seat_num) \
         .filter(or_(Ticket.paid,
-                    Ticket.reserved_until >= utils.now_utc())).first()
+                    Ticket.reserved_until >= datetime.now())).first()
     return ticket
 
 
@@ -176,7 +220,7 @@ def get_tickets_by_type(type_id):
         .join(Ticket.owner) \
         .options(contains_eager(Ticket.owner)) \
         .filter(Ticket.type_id == type_id) \
-        .filter(or_(Ticket.paid, Ticket.reserved_until >= utils.now_utc())) \
+        .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
         .all()
 
     pub = map(lambda ticket: ticket.as_pub_dict(), tickets)
@@ -188,7 +232,7 @@ def get_all_tickets():
     tickets = Ticket.query.filter(
         or_(
             Ticket.paid,
-            Ticket.reserved_until >= utils.now_utc())).all()
+            Ticket.reserved_until >= datetime.now())).all()
 
     pub = map(lambda ticket: ticket.as_pub_dict(), tickets)
     return jsonify({'tickets': list(pub)}), 200
@@ -214,7 +258,7 @@ def change_seat():
             res = err
         else:
             ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
-                .filter(Ticket.reserved_until >= utils.now_utc()) \
+                .filter(Ticket.reserved_until >= datetime.now()) \
                 .one()
 
             db_session.commit()
@@ -233,7 +277,7 @@ def change_seat_for_user(user_id, seat_num):
     """
     try:
         current_ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
-            .filter(Ticket.reserved_until >= utils.now_utc()) \
+            .filter(Ticket.reserved_until >= datetime.now()) \
             .filter(not_(Ticket.paid)) \
             .one()
     except:
@@ -244,7 +288,7 @@ def change_seat_for_user(user_id, seat_num):
     wanted_seat_count = Ticket.query \
         .filter(Ticket.seat_num == seat_num) \
         .filter(or_(
-            Ticket.paid, Ticket.reserved_until >= utils.now_utc())) \
+            Ticket.paid, Ticket.reserved_until >= datetime.now())) \
         .count()
     if wanted_seat_count > 0:
         return jsonify({'error': 'Ce siège est déjà occupé.'}), 409
@@ -279,7 +323,7 @@ def book_ticket():
 
     if r[0]:
         ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
-            .filter(or_(Ticket.paid, Ticket.reserved_until >= utils.now_utc())) \
+            .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
             .one()
         return jsonify({'ticket': ticket.as_pub_dict()}), 201
 
@@ -307,7 +351,7 @@ def pay_ticket():
 
     try:
         ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
-            .filter(Ticket.reserved_until >= utils.now_utc()) \
+            .filter(Ticket.reserved_until >= datetime.now()) \
             .one()
 
         # Update ticket with discount and total
@@ -429,7 +473,7 @@ def get_ticket_from_payment(payment):
     try:
         return Ticket.query.filter(
             Payment.ticket_id == payment.ticket_id) \
-            .filter(or_(Ticket.paid, Ticket.reserved_until >= utils.now_utc())) \
+            .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
             .one()
     except:
         return None
@@ -441,7 +485,7 @@ def prepare_payment_execution(payment, payer_id, ticket):
     db_session.add(payment)
 
     # Reserve seat for 30 more seconds if necessary
-    # time_after_tran = utils.now_utc() + timedelta(seconds=30)
+    # time_after_tran = datetime.now() + timedelta(seconds=30)
     # if ticket.reserved_until <= time_after_tran:
     # TODO set new reservation
     #    pass
@@ -457,7 +501,7 @@ def get_err_from_ticket(ticket):
         return jsonify({'error': 'Votre billet a déjà été payé !'}), 409
 
     # Check if reservation is expired
-    if ticket.reserved_until < utils.now_utc():
+    if ticket.reserved_until < datetime.now():
         return jsonify({'error': ERR_EXPIRED}), 410
 
     return None
@@ -472,7 +516,22 @@ def complete_purchase(ticket):
         db_session.commit()
 
         db_session.execute('UNLOCK TABLES;')
-        # TODO send email with payment confirmation
+
+        # Temp file for the PDF
+        ticket_pdf_filename = '/tmp/lanmomo_pdf/%s/billet.pdf' % ticket.qr_token
+        # Create PDF with the QR code linking to online verification
+        create_pdf_with_qr('https://lanmomo.org/qr/%s' % ticket.qr_token,
+                           ticket_pdf_filename)
+
+        # Find ticket owner to send email to
+        user = User.query.filter(User.id == ticket.owner_id).one()
+        fullname = '%s %s' % (user.firstname, user.lastname)
+        subject = 'Confirmation de votre achat de billet du LAN Montmorency'
+        attachements = [ticket_pdf_filename]
+        message = 'va voir tes pièces jointes le gros'  # TODO
+
+        # Send email with payment confirmation
+        send_email(user.email, fullname, subject, message, attachements)
     except Exception as e:
         app.logger.error(
             'Erreur lors de la fermeture de la commande pour ' +
@@ -493,7 +552,7 @@ def get_ticket_from_user(user_id):
         owner = True
 
     ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
-        .filter(or_(Ticket.paid, Ticket.reserved_until >= utils.now_utc())) \
+        .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
         .first()
     if not ticket:
         return jsonify({}), 200
@@ -545,7 +604,7 @@ def login():
 Veuillez valider votre courriel !
  Contactez info@lanmomo.org si le courriel n'a pas été reçu."""}), 400
 
-    if utils.get_hash(password, user.salt) == user.password:
+    if get_hash(password, user.salt) == user.password:
         session['user_id'] = user.id
         return jsonify({'success': True})
 
@@ -580,7 +639,7 @@ def signup():
         return bad_request('Courriel ou utilisateur déjà pris !')
 
     salt = uuid.uuid4().hex
-    hashpass = utils.get_hash(req['password'], salt)
+    hashpass = get_hash(req['password'], salt)
 
     user = User(username=req['username'], firstname=req['firstname'],
                 lastname=req['lastname'], email=req['email'],
@@ -633,9 +692,9 @@ def mod_user():
             setattr(user, mod_key, req[mod_key])
 
     if 'password' in req and 'oldPassword' in req:
-        if utils.get_hash(req['oldPassword'], user.salt) != user.password:
+        if get_hash(req['oldPassword'], user.salt) != user.password:
             return jsonify({'error': 'Mauvais mot de passe actuel.'}), 400
-        user.password = utils.get_hash(req['password'], user.salt)
+        user.password = get_hash(req['password'], user.salt)
         has_update = True
 
     if has_update:

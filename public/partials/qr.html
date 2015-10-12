@@ -1,32 +1,71 @@
 <div class="container">
   <div class="page-header">
-    <h1>Informations sur le billet</h1>
+    <h1>Validation d'un billet</h1>
   </div>
 
   <div class="alert alert-success" role="alert" ng-show="message">
-    <i class="fa fa-info-circle"></i> {{message}}
+    <i class="fa fa-info-circle"></i> {{ message }}
   </div>
 
   <div class="alert alert-danger" role="alert" ng-show="error">
-    <i class="fa fa-info-circle"></i> {{error.message}}
+    <i class="fa fa-exclamation-triangle"></i> {{ error.message }}
   </div>
 
-  <div>
-    <div ng-hide="ticket.paid" class="alert alert-danger" role="alert" ng-show="error">
-      <i class="fa fa-info-circle"></i> Attention, ce billet n'est pas payé
+  <div class="alert alert-danger" role="alert" ng-hide="ticket.paid">
+    <i class="fa fa-exclamation-triangle"></i>
+    <strong>Attention !</strong> Ce billet n'est pas payé !
+  </div>
+  <div class="alert alert-warning" role="alert" ng-show="ticket.discount_amount > 0">
+    <i class="fa fa-exclamation-triangle"></i>
+    <strong>Attention !</strong> Vous devez valider la carte étudiante du Collège Montmorency du joueur. Si le joueur ne possède pas sa carte ou si elle n'est pas valide, il doit payer un supplément de {{ticket.discount_amount}},00$
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Informations sur le billet</h3>
+        </div>
+        <div class="panel-body">
+          <table class="table table-no-margin">
+            <tr>
+              <th>Prix du billet</th>
+              <td>{{ ticket.total }},00$</td>
+            </tr>
+            <tr>
+              <th>Type du billet</th>
+              <td>{{ ticketTypes[ticket.type_id] }}</td>
+            </tr>
+            <tr ng-if="ticket.seat_num">
+              <th>Siège</th>
+              <td>{{ ticket.seat_num }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
     </div>
-    <div ng-show="ticket.discount_amount > 0" class="alert alert-warning" role="alert" ng-show="error">
-      <i class="fa fa-info-circle"></i> Attention, ce billet nécessite la carte étudiante de Montmorency !
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Informations sur le détenteur du billet</h3>
+        </div>
+        <div class="panel-body">
+          <table class="table table-no-margin">
+            <tr>
+              <th>Nom</th>
+              <td>{{ owner.firstname }} {{ owner.lastname }}</td>
+            </tr>
+            <tr>
+              <th>Pseudonyme</th>
+              <td>{{ owner.username }}</td>
+            </tr>
+            <tr>
+              <th>Courriel</th>
+              <td>{{ owner.email }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
     </div>
-    <div ng-show="ticket.discount_amount > 0" class="alert alert-warning" role="alert" ng-show="error">
-      <i class="fa fa-info-circle"></i> Si le joueur n'a pas sa carte, il doit payer un supplément de {{ticket.discount_amount}} $
-    </div>
-    <p class="text-info">Prix du billet: {{ticket.total}} $</p>
-    <p class="text-info">Type du billet: {{ticketTypes[ticket.type_id]}}</p>
-    <p ng-if="ticket.seat_num" class="text-info">Siège BYOC: {{ticket.seat_num}}</p>
-    <h3>Informations du détenteur de billet</h3>
-    <p class="text-info">Nom: {{owner.firstname}} {{owner.lastname}}</p>
-    <p class="text-info">Pseudonyme: {{owner.username}}</p>
-    <p class="text-info">Courriel: {{owner.email}}</p>
   </div>
 </div>
