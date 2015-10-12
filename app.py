@@ -82,6 +82,17 @@ def user_has_paid_ticket(user_id):
         .filter(Ticket.paid == 1).count() > 0
 
 
+def user_in_team(game, user_id):
+    teams = Team.query.filter(Team.game == game)
+
+    for team in teams:
+        if team.captain_id == user_id or \
+            TeamUser.query.filter(TeamUser.team_id == team.id) \
+            .filter(TeamUser.user_id == user_id).count() > 0:
+            return True
+    return False
+
+
 def send_email(to_email, to_name, subject, message):
     mail.send_email(to_email, to_name, subject, message,
                     app.config['MAILGUN_USER'], app.config['MAILGUN_KEY'],
@@ -111,6 +122,43 @@ def get_team_user():
     for team_user in team_users:
         pub_team_users.append(team_user.as_pub_dict())
     return jsonify({'team_users': pub_team_users}), 200
+
+
+@app.route('/api/team_users', methods=['POST'])
+def join_team():
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    req = request.get_json()
+    team_user = TeamUser(req['team_id'], user_id)
+    if user_in_team(req['game'], user_id):
+        return jsonify({'message': "Vous êtes déja dans une équipe "}), 400
+
+    db_session.add(team_user)
+    db_session.commit()
+    return jsonify({'message': 'Team Created'}), 200
+
+
+@app.route('/api/team_users/<id>', methods=['DELETE'])
+def delete_team_user(id):
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    team_user = TeamUser.query.filter(TeamUser.id == id).first()
+    team = Team.query.filter(Team.id == team_user.team_id).first()
+    if not team_user:
+        return jsonify({'message': 'no user found'}), 500
+
+    if team.captain_id != user_id:
+        return jsonify({'message':
+                        "Vous n'êtes pas le capitaine de cette équipe"}), 401
+    else:
+        db_session.delete(team_user)
+        db_session.commit()
+        return jsonify({'message': "cette personne à été " +
+                        "exclus de l'équipe"}), 200
 
 
 @app.route('/api/teams', methods=['GET'])
