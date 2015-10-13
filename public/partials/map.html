@@ -10,12 +10,12 @@
   </div>
   <div class="page-header">
     <div class="row header-with-timer">
-      <div class="col-xs-9">
+      <div class="col-xs-8">
         <h1>Plan</h1>
       </div>
-      <div class="col-xs-3 text-right">
+      <div class="col-xs-4 text-right">
         <span class="btn timer" ng-show="timerTime" ng-class="{ 'btn-warning': !timerTimeDanger, 'btn-danger': timerTimeDanger }" tooltip-placement="bottom" tooltip="Temps restant pour compléter votre transaction">
-            <i class="fa fa-clock-o"></i> <span class="time-container">{{ timerTime }}</span>
+            <i class="fa fa-clock-o"></i><span> <span class="hidden-xs">Temps restant:</span> </span><span class="time-container">{{ timerTime }}</span>
         </span>
       </div>
     </div>
@@ -33,10 +33,6 @@
 
   <div class="alert alert-danger" role="alert" ng-show="error">
     <i class="fa fa-exclamation-triangle"></i> {{ error.message }}
-  </div>
-
-  <div class="alert alert-info" ng-show="canBuy">
-    <p><i class="fa fa-exclamation-circle"></i> Vous devez maintenant choisir le siège que vous souhaitez occuper pendant le LAN. Pour se faire, cliquez sur le siège que vous désirez puis sur le bouton réserver au bas de l'écran.</p>
   </div>
 
   <div class="seat-map clearfix">
@@ -104,5 +100,13 @@
         <p>Ce siège a été vendu à vous, <strong>{{ selectedSeatUser }}</strong>.</p>
       </div>
     </div>
+  </div>
+
+  <div class="well">
+    Légende
+    <span class="label label-success">Disponible</span>
+    <span class="label label-warning">Réservée</span>
+    <span class="label label-danger">Vendue</span>
+    <span class="label label-info" ng-show="loggedIn">Vous</span>
   </div>
 </div>
