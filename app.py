@@ -127,7 +127,7 @@ def captain_has_team(game, captain_id):
 
 def user_has_paid_ticket(user_id):
     return Ticket.query.filter(Ticket.owner_id == user_id) \
-        .filter(Ticket.paid == 1).count() > 0
+        .filter(Ticket.paid).count() > 0
 
 
 def user_in_team(game, user_id):
@@ -150,16 +150,6 @@ def send_email(to_email, to_name, subject, message, attachements=None):
 @app.before_request
 def func():
     session.modified = True
-
-
-@app.route('/api/games', methods=['GET'])
-def get_games():
-    return jsonify(games), 200
-
-
-@app.route('/api/tournaments', methods=['GET'])
-def get_tournaments():
-    return jsonify(tournaments), 200
 
 
 @app.route('/api/team_users', methods=['GET'])
@@ -185,7 +175,7 @@ def join_team():
 
     db_session.add(team_user)
     db_session.commit()
-    return jsonify({'message': 'Team Created'}), 200
+    return jsonify({'message': 'Équipe Crée'}), 200
 
 
 @app.route('/api/team_users/<id>', methods=['DELETE'])
@@ -197,7 +187,7 @@ def delete_team_user(id):
     team_user = TeamUser.query.filter(TeamUser.id == id).first()
     team = Team.query.filter(Team.id == team_user.team_id).first()
     if not team_user:
-        return jsonify({'message': 'no user found'}), 500
+        return jsonify({'message': 'Aucune Utilisateur Trouvé'}), 500
 
     if team.captain_id != user_id:
         return jsonify({'message':
@@ -237,7 +227,7 @@ def add_team():
 
     db_session.add(team)
     db_session.commit()
-    return jsonify({'message': 'Team Created'}), 200
+    return jsonify({'message': 'Équipe Créé'}), 200
 
 
 @app.route('/api/teams/<id>', methods=['DELETE'])
@@ -256,7 +246,7 @@ def delete_team(id):
     else:
         db_session.delete(team)
         db_session.commit()
-        return jsonify({'message': 'Team Deleted!'}), 200
+        return jsonify({'message': 'Équipe Supprimé!'}), 200
 
 
 @app.route('/api/servers', methods=['GET'])

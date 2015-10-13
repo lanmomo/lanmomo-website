@@ -168,7 +168,7 @@ app.controller('TournamentsController', function($scope, $http, $location) {
           $scope.team_users = data.team_users;
         })
         .error(function(err, status) {
-          $scope.error = {message: err.error, status: status};
+          $scope.error = {message: err.message, status: status};
         });
 
       if ($scope.loggedIn) {
@@ -185,7 +185,7 @@ app.controller('TournamentsController', function($scope, $http, $location) {
           $scope.ticket = data.ticket;
         })
         .error(function(err, status) {
-          $scope.error = {message: err.error, status: status};
+          $scope.error = {message: err.message, status: status};
         });
       }
   }
@@ -223,7 +223,7 @@ app.controller('TournamentsController', function($scope, $http, $location) {
           $scope.team_users.splice(index, 1);
         })
         .error(function(err, status) {
-          $scope.error = {message: err.error, status: status};
+          $scope.error = {message: err.message, status: status};
         });
     }
   };
