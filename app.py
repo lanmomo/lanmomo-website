@@ -308,6 +308,26 @@ def change_seat_for_user(user_id, seat_num):
     db_session.add(current_ticket)
 
 
+@app.route('/api/users/ticket', methods=['DELETE'])
+def cancel_booking():
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
+        .filter(Ticket.reserved_until >= datetime.now()) \
+        .first()
+    if not ticket:
+        return jsonify({'message': 'Votre billet est déjà expiré'}), 200
+    ticket.reserved_until = datetime.fromtimestamp(0)
+
+    db_session.add(ticket)
+    db_session.commit()
+
+    return jsonify({'message': 'Votre réservation de billet a été annulée'}), \
+        200
+
+
 @app.route('/api/tickets', methods=['POST'])
 def book_ticket():
     if 'user_id' not in session:
