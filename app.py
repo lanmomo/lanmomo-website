@@ -176,12 +176,12 @@ def delete_team(id):
 
 @app.route('/api/servers', methods=['GET'])
 def get_servers():
-    return jsonify({'error': 'Not implemented'}), 500
+    return jsonify({'message': 'Not implemented'}), 500
 
 
 @app.route('/api/servers', methods=['POST'])
 def update_server():
-    return jsonify({'error': 'Not implemented'}), 500
+    return jsonify({'message': 'Not implemented'}), 500
 
 
 def get_ticket_from_seat_num(seat_num):
@@ -265,7 +265,7 @@ def change_seat():
             res = jsonify({'ticket': ticket.as_pub_dict()}), 200
     except Exception as e:
         app.logger.error('Erreur lors du changement de siège: "%s"' % str(e))
-        res = jsonify({'error': 'Erreur inconnue.'}), 500
+        res = jsonify({'message': 'Erreur inconnue.'}), 500
     finally:
         db_session.execute('UNLOCK TABLES;')
 
@@ -282,8 +282,8 @@ def change_seat_for_user(user_id, seat_num):
             .one()
     except:
         return jsonify({
-            'error': 'Aucun billet valide, billet expiré ou billet déjà payé.'}
-            ), 409
+            'message': 'Aucun billet valide, billet expiré ou billet déjà payé.'
+            }), 409
 
     wanted_seat_count = Ticket.query \
         .filter(Ticket.seat_num == seat_num) \
@@ -291,7 +291,7 @@ def change_seat_for_user(user_id, seat_num):
             Ticket.paid, Ticket.reserved_until >= datetime.now())) \
         .count()
     if wanted_seat_count > 0:
-        return jsonify({'error': 'Ce siège est déjà occupé.'}), 409
+        return jsonify({'message': 'Ce siège est déjà occupé.'}), 409
 
     current_ticket.seat_num = seat_num
     db_session.add(current_ticket)
@@ -333,7 +333,7 @@ def book_ticket():
         mess = '%s Exception: %s' % (mess, r[2])
     app.logger.error(mess)
 
-    return jsonify({'error': str(r[1])}), 409
+    return jsonify({'message': str(r[1])}), 409
 
 
 @app.route('/api/tickets/pay', methods=['POST'])
@@ -379,7 +379,7 @@ def pay_ticket():
         app.logger.error(
             'Erreur lors de la création de paiment: "%s"' % str(e))
         return jsonify({
-            'error': 'Une erreur est survenue lors de la création de' +
+            'message': 'Une erreur est survenue lors de la création de' +
             ' paiement'}), 500
 
 
@@ -458,7 +458,7 @@ def execute_payment():
             pass
         app.logger.error(
             'Exception lors de l\'exécution de paiment: "%s"' % str(e))
-        return jsonify({'error': 'Une erreur inconnue est survenue.'}), 500
+        return jsonify({'message': 'Une erreur inconnue est survenue.'}), 500
 
 
 def get_og_payment(paypal_payment_id):
@@ -494,15 +494,15 @@ def prepare_payment_execution(payment, payer_id, ticket):
 def get_err_from_ticket(ticket):
     """Check if the payment is related to a valid reservation"""
     if not ticket:
-        return jsonify({'error': 'aucun billet'}), 409
+        return jsonify({'message': 'aucun billet'}), 409
 
     # Check if ticket is already paid
     if ticket.paid:
-        return jsonify({'error': 'Votre billet a déjà été payé !'}), 409
+        return jsonify({'message': 'Votre billet a déjà été payé !'}), 409
 
     # Check if reservation is expired
     if ticket.reserved_until < datetime.now():
-        return jsonify({'error': ERR_EXPIRED}), 410
+        return jsonify({'message': ERR_EXPIRED}), 410
 
     return None
 
@@ -571,7 +571,7 @@ def get_profile():
 
     if user:
         return jsonify({'user': user.as_private_dict()}), 200
-    return jsonify({'error': 'Non authorisé'}), 403
+    return jsonify({'message': 'Non authorisé'}), 403
 
 
 @app.route('/api/logout', methods=['GET'])
@@ -597,10 +597,10 @@ def login():
     user = User.query.filter(User.email == email).first()
 
     if not user:
-        return jsonify({'error': 'Les informations ne concordent pas !'}), 401
+        return jsonify({'message': 'Les informations ne concordent pas !'}), 401
 
     if not user.confirmed and not app.config['DEBUG']:
-        return jsonify({'error': """\
+        return jsonify({'message': """\
 Veuillez valider votre courriel !
  Contactez info@lanmomo.org si le courriel n'a pas été reçu."""}), 400
 
@@ -608,7 +608,7 @@ Veuillez valider votre courriel !
         session['user_id'] = user.id
         return jsonify({'success': True})
 
-    return jsonify({'error': 'Les informations ne concordent pas !'}), 401
+    return jsonify({'message': 'Les informations ne concordent pas !'}), 401
 
 
 @app.route('/api/users/has/username', methods=['POST'])
@@ -693,7 +693,7 @@ def mod_user():
 
     if 'password' in req and 'oldPassword' in req:
         if get_hash(req['oldPassword'], user.salt) != user.password:
-            return jsonify({'error': 'Mauvais mot de passe actuel.'}), 400
+            return jsonify({'message': 'Mauvais mot de passe actuel.'}), 400
         user.password = get_hash(req['password'], user.salt)
         has_update = True
 
@@ -702,7 +702,7 @@ def mod_user():
         db_session.commit()
         return jsonify({'user': user.as_private_dict()}), 200
 
-    return jsonify({'error': 'Aucune information différente.'}), 400
+    return jsonify({'message': 'Aucune information différente.'}), 400
 
 
 @app.route('/api/verify/<token>', methods=['GET'])
