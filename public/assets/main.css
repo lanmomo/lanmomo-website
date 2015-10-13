@@ -544,7 +544,7 @@ table.table-no-margin {
 }
 .seat-map-section .seat.selected {
   color: #fff;
-  background-color: #62c462 !important;
+  background-color: #62c462;
 }
 .seat-map-section .seat.selected:hover {
   background-color: #4fbd4f;
