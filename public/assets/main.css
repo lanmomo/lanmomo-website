@@ -72,6 +72,9 @@ body.staging .body {
 /* END STAGING */
 
 /* BEGIN NAVBAR */
+.navbar-fixed-top {
+  border-width: 1px 0 1px; /* override bootswatch override of bootstrap  */
+}
 @media (min-width: 768px) {
   .navbar-right {
     margin: 0; /* fix alignment inside container */
