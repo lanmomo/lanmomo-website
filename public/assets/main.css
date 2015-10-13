@@ -72,6 +72,9 @@ body.staging .body {
 /* END STAGING */
 
 /* BEGIN NAVBAR */
+.navbar-fixed-top {
+  border-width: 1px 0 1px; /* override bootswatch override of bootstrap  */
+}
 @media (min-width: 768px) {
   .navbar-right {
     margin: 0; /* fix alignment inside container */
@@ -544,7 +547,7 @@ table.table-no-margin {
 }
 .seat-map-section .seat.selected {
   color: #fff;
-  background-color: #62c462 !important;
+  background-color: #62c462;
 }
 .seat-map-section .seat.selected:hover {
   background-color: #4fbd4f;

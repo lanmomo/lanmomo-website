@@ -513,9 +513,9 @@ def get_og_payment(paypal_payment_id):
 
 def get_ticket_from_payment(payment):
     try:
+        # Further filtering is handled by get_err_from_ticket()
         return Ticket.query.filter(
-            Payment.ticket_id == payment.ticket_id) \
-            .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+            Ticket.id == payment.ticket_id) \
             .one()
     except:
         return None

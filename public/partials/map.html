@@ -46,7 +46,7 @@
         <div class="clearfix">
           <div ng-repeat="(col, _) in times(24) track by $index" ng-init="seat = row * 24 + col + 1;"
                ng-attr-id="{{ seat }}" ng-click="selectSeat(seat)"
-               ng-class="{bottom: row==1 || row==3, right: col==23, selected: selectedSeatID == seat, taken: isTaken(seat), reserved: isReserved(seat), user: userPaidSeatID == seat}"
+               ng-class="{bottom: row==1 || row==3, right: col==23, selected: isSelected(seat), taken: isTaken(seat), reserved: isReserved(seat), user: isUser(seat)}"
                class="seat" tooltip-placement="bottom" tooltip="{{ getOwner(seat) }}">
             {{ seat }}
           </div>
@@ -105,8 +105,8 @@
   <div class="well">
     Légende
     <span class="label label-success">Disponible</span>
-    <span class="label label-warning">Réservée</span>
-    <span class="label label-danger">Vendue</span>
+    <span class="label label-warning">Réservé</span>
+    <span class="label label-danger">Vendu</span>
     <span class="label label-info" ng-show="loggedIn">Vous</span>
   </div>
 </div>

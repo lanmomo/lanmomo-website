@@ -631,6 +631,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
   $scope.selectedSeat = null;
   $scope.userPaidSeatID = 0;
   $scope.userTicketSeatID = 0;
+  $scope.userTicketOwner = null;
   var seatStatus = {};
   var seatOwners = {};
   var seatUntils = {};
@@ -647,6 +648,9 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
   $scope.isAvail = function(seat) {
     return !seatStatus.hasOwnProperty(seat);
   };
+  $scope.isSelected = function(seat) {
+    return $scope.selectedSeatID == seat
+  };
   $scope.isReserved = function(seat) {
     return seatStatus[seat] == 'r';
   };
@@ -654,7 +658,10 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
     return seatStatus[seat] == 't';
   };
   $scope.isAlreadyReserved = function(seat) {
-    return $scope.userTicketSeatID == seat;
+    return $scope.userTicketSeatID == seat && $scope.getOwner(seat) == $scope.userTicketOwner;
+  };
+  $scope.isUser = function(seat) {
+    return $scope.userPaidSeatID == seat || $scope.isAlreadyReserved(seat);
   };
   $scope.getOwner = function(seat) {
     return seatOwners[seat];
@@ -675,6 +682,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
         if (data.ticket && !data.ticket.paid) {
           $scope.selectSeat(data.ticket.seat_num);
           $scope.userTicketSeatID = data.ticket.seat_num;
+          $scope.userTicketOwner = data.ticket.owner_username;
         }
         if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
           Timer.bootstrap($scope, data.ticket.reserved_until);

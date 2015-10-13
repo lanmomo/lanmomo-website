@@ -19,13 +19,28 @@ class Paypal():
         self.cancel_url = cancel_url
 
     def create(self, ticket):
-        price_str = ("%.2f" % ticket.total)
-
         if ticket.seat_num:
             item_name = "Billet LAN Montmorency 2015 BYOC {}" \
                 .format(ticket.seat_num)
         else:
             item_name = "Billet LAN Montmorency 2015 Console"
+
+        items = [{
+            "name": item_name,
+            "sku": "SKU2015REF{}".format(ticket.id),
+            "price": "{:.2f}".format(ticket.price),
+            "currency": "CAD",
+            "quantity": 1
+        }]
+
+        if ticket.discount_amount > 0:
+            items.append({
+                "name": "Rabais pour étudiant du Collège Montmorency",
+                "sku": "SKU2015RABAISMOMO",
+                "price": "-{:.2f}".format(ticket.discount_amount),
+                "currency": "CAD",
+                "quantity": 1
+            })
 
         payment = Payment({
             "intent": "sale",
@@ -38,16 +53,10 @@ class Paypal():
             },
             "transactions": [{
                 "item_list": {
-                    "items": [{
-                        "name": item_name,
-                        "sku": "SKU2015{}".format(ticket.id),
-                        "price": price_str,
-                        "currency": "CAD",
-                        "quantity": 1
-                    }]
+                    "items": items
                 },
                 "amount": {
-                    "total": price_str,
+                    "total": "{:.2f}".format(ticket.total),
                     "currency": "CAD"
                 },
                 "description": "Achat de votre billet LAN Montmorency 2015"
@@ -67,4 +76,4 @@ class Paypal():
             return temp_payment
         else:
             raise Exception("Erreur lors de la création du paiment: {}"
-                            % payment.error)
+                            .format(payment.error))
