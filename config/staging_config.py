@@ -15,7 +15,6 @@ PAYPAL_RETURN_URL = 'http://patate.lanmomo.org/pay/execute'
 # TODO check cancel url
 PAYPAL_CANCEL_URL = 'http://patate.lanmomo.org/pay/cancel'
 
-
 # Lanmomo
 TYPE_IDS = {'pc': 0, 'console': 1}
 TICKETS_MAX = {TYPE_IDS['pc']: 12, TYPE_IDS['console']: 3}

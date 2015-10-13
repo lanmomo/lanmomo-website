@@ -22,13 +22,11 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
     }
   }])
   .factory('Auth', function($rootScope, $http) {
-    var login = function() {
-      $rootScope.loggedIn = true;
-      $rootScope.$broadcast('login');
-    };
-
     return {
-      login : login,
+      login : function() {
+        $rootScope.loggedIn = true;
+        $rootScope.$broadcast('login');
+      },
       isLoggedIn : function() {
         return $rootScope.loggedIn;
       },
@@ -37,11 +35,12 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
         $rootScope.$broadcast('login');
       },
       refresh: function() {
+        var _this = this;
         $http.get('/api/login')
           .success(function(data, status, headers) {
             $rootScope.commit = headers().commit;
             if (data.logged_in) {
-              login();
+              _this.login();
             } else {
               $rootScope.loggedIn = false;
             }
@@ -49,10 +48,7 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
           .error(function(err, status) {
             $rootScope.loggedIn = false;
           });
-      },
-      getCommit : function() {
-        return $rootScope.commit;
-      },
+      }
     }
   })
   .factory('Timer', function($rootScope, $interval) {
@@ -147,12 +143,6 @@ app.controller('GamesController', function($scope, $http) {
     .error(function(err, status) {
       $scope.error = {message: err.message, status: status};
     });
-});
-
-app.controller('StagingController', function($scope, Auth) {
-  $scope.$on('login', function() {
-    $scope.commit = Auth.getCommit();
-  });
 });
 
 app.controller('TournamentsController', function($scope, $http, $location) {

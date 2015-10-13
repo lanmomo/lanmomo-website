@@ -41,6 +41,36 @@ footer a {
 }
 /* END FOOTER */
 
+/* BEGIN STAGING */
+.staging-alert {
+  display: none; /* safeguard */
+  position: fixed;
+  right: 0;
+  left: 0;
+  top: 0;
+  z-index: 1030;
+  height: 40px;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 10px;
+  text-align: center;
+  background-color: #ee5f5b;
+  color: #ffffff;
+}
+.staging-alert a {
+  text-decoration: underline;
+}
+body.staging .staging-alert {
+  display: block;
+}
+body.staging .navbar-fixed-top {
+  top: 40px
+}
+body.staging .body {
+  padding-top: 110px; /* staging height + navbar height + padding */
+}
+/* END STAGING */
+
 /* BEGIN NAVBAR */
 @media (min-width: 768px) {
   .navbar-right {
