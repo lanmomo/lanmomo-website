@@ -4,13 +4,17 @@ import mail
 import uuid
 import logging
 import os
+import json
 
 from os.path import isdir, dirname
 from datetime import datetime
 
-from flask import Flask, send_from_directory, jsonify, request, session
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
+
+# 3rd parties
+from flask import Flask, send_from_directory, jsonify, request, session, \
+    Response
 
 from paypalrestsdk import Payment as PaypalPayment
 
@@ -23,11 +27,11 @@ from reportlab.graphics.barcode.qr import QrCodeWidget
 from reportlab.graphics import renderPDF
 from reportlab.lib.units import cm
 
+# Lanmomo's imports
 from database import db_session, init_db, init_engine
 from models import Ticket, User, Payment, Team
 
 from paypal import Paypal
-from paypalrestsdk import Payment as PaypalPayment
 
 
 ERR_INVALID_PAYPAL = """\
@@ -48,6 +52,13 @@ MSG_SUCCESS_PAY = """\
 Félicitations, votre billet est maintenant payé !"""
 
 app = Flask(__name__)
+
+
+def set_app_commit():
+    import subprocess
+    commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
+    if len(commit) <= 41:
+        app.config['CURRENT_COMMIT'] = commit[:-1].decode('utf8')
 
 
 def create_pdf_with_qr(qr_string, filename):
@@ -613,7 +624,12 @@ def logout():
 
 @app.route('/api/login', methods=['GET'])
 def is_logged_in():
-    return jsonify({'logged_in': 'user_id' in session}), 200
+    res = Response(
+        json.dumps({'logged_in': 'user_id' in session}),
+        mimetype='application/json', status=200)
+    if 'STAGING' in app.config:
+        res.headers['commit'] = app.config['CURRENT_COMMIT']
+    return res
 
 
 @app.route('/api/login', methods=['POST'])
@@ -805,6 +821,10 @@ def setup(conf_path):
         mode=app.config['PAYPAL_API_MODE'],
         return_url=app.config['PAYPAL_RETURN_URL'],
         cancel_url=app.config['PAYPAL_CANCEL_URL'])
+
+    if 'STAGING' in app.config:
+        app.config['CURRENT_COMMIT'] = '!!Staging is broken!!'
+        set_app_commit()
     return app
 
 if __name__ == '__main__':

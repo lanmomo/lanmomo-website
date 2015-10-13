@@ -35,10 +35,12 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
         $rootScope.$broadcast('login');
       },
       refresh: function() {
+        var _this = this;
         $http.get('/api/login')
-          .success(function(data) {
+          .success(function(data, status, headers) {
+            $rootScope.commit = headers().commit;
             if (data.logged_in) {
-              Auth.login();
+              _this.login();
             } else {
               $rootScope.loggedIn = false;
             }
@@ -109,14 +111,8 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
   });
 
 app.run(function($rootScope, $http, Auth) {
-  // runs on first page load or refresh
-  $http.get('/api/login')
-    .success(function(data) {
-      $rootScope.loggedIn = data.logged_in;
-    })
-    .error(function(err, status) {
-      $rootScope.loggedIn = false;
-    });
+  // runs on first page load and refresh
+  Auth.refresh();
 });
 
 app.controller('NavbarController', function($scope, $location, Auth) {

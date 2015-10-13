@@ -15,9 +15,15 @@
 
     <base href="/">
   </head>
-  <body ng-app="App">
+  <body ng-app="App" ng-class="{ staging: commit }">
     <div class="wrapper">
       <header>
+        <div class="staging-alert">
+          <button type="button" class="close" ng-click="commit = false" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <i class="fa fa-exclamation-triangle"></i> <strong>ATTENTION !</strong> Vous êtes sur la version bêta (<strong>{{ commit }}</strong>).
+          <a href="https://lanmomo.org">Retourner sur lanmomo.org</a>
+        </div>
+
         <nav class="navbar navbar-default navbar-fixed-top">
           <div class="container">
             <div class="navbar-header">
