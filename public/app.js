@@ -285,6 +285,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
 
 app.controller('TicketsController', function($scope, $http, $location, Timer) {
   $scope.canBuy = false;
+  $scope.submitted = false;
   $scope.max = {
     pc: 96,
     console: 32
@@ -340,12 +341,43 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
       $scope.error = {message: err.message, status: status};
     });
 
-  $scope.buy = function(ticketType) {
-    var ticket = {};
+  $scope.buy = function(type) {
     $scope.submitted = true;
-    ticket.type = ticketType;
 
-    if (ticketType === TICKET_TYPES.CONSOLE) {
+    $http.get('/api/users/ticket')
+      .success(function(data) {
+        if (data.ticket) {
+          if (data.ticket.type_id !== type) {
+            $http.delete('/api/users/ticket')
+              .success(function(data) {
+                $scope.buyPart2(type);
+              })
+              .error(function(err, status) {
+                $scope.error = {message: err.message, status: status};
+              });
+          } else {
+            if (type === TICKET_TYPES.CONSOLE) {
+              $location.path('/pay');
+            } else if (type === TICKET_TYPES.PC) {
+              $location.path('/map');
+            } else {
+              console.log('wrong type id');
+            }
+          }
+        } else {
+          $scope.buyPart2(type);
+        }
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.message, status: status};
+      });
+  };
+
+  $scope.buyPart2 = function(type) {
+    var ticket = {};
+    ticket.type = type;
+
+    if (type === TICKET_TYPES.CONSOLE) {
       $http.post('/api/tickets', ticket)
         .success(function(data) {
           $location.path('/pay');
@@ -353,7 +385,7 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
         .error(function(err, status) {
           $scope.error = {message: err.message, status: status};
         });
-    } else if (ticketType === TICKET_TYPES.PC) {
+    } else if (type === TICKET_TYPES.PC) {
       $location.path('/map');
     } else {
       console.log('wrong type id');
