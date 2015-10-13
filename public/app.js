@@ -22,11 +22,13 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
     }
   }])
   .factory('Auth', function($rootScope, $http) {
+    var login = function() {
+      $rootScope.loggedIn = true;
+      $rootScope.$broadcast('login');
+    };
+
     return {
-      login : function() {
-        $rootScope.loggedIn = true;
-        $rootScope.$broadcast('login');
-      },
+      login : login,
       isLoggedIn : function() {
         return $rootScope.loggedIn;
       },
@@ -36,9 +38,10 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
       },
       refresh: function() {
         $http.get('/api/login')
-          .success(function(data) {
+          .success(function(data, status, headers) {
+            $rootScope.commit = headers().commit;
             if (data.logged_in) {
-              Auth.login();
+              login();
             } else {
               $rootScope.loggedIn = false;
             }
@@ -46,7 +49,11 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
           .error(function(err, status) {
             $rootScope.loggedIn = false;
           });
-      }
+      },
+      getCommit : function() {
+        console.log($rootScope);
+        return $rootScope.commit;
+      },
     }
   })
   .factory('Timer', function($rootScope, $interval) {
@@ -109,14 +116,8 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
   });
 
 app.run(function($rootScope, $http, Auth) {
-  // runs on first page load or refresh
-  $http.get('/api/login')
-    .success(function(data) {
-      $rootScope.loggedIn = data.logged_in;
-    })
-    .error(function(err, status) {
-      $rootScope.loggedIn = false;
-    });
+  // runs on first page load and refresh
+  Auth.refresh();
 });
 
 app.controller('NavbarController', function($scope, $location, Auth) {
@@ -147,6 +148,12 @@ app.controller('GamesController', function($scope, $http) {
     .error(function(err, status) {
       $scope.error = {message: err.message, status: status};
     });
+});
+
+app.controller('StagingController', function($scope, Auth) {
+  $scope.$on('login', function() {
+    $scope.commit = Auth.getCommit();
+  });
 });
 
 app.controller('TournamentsController', function($scope, $http, $location) {
