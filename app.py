@@ -249,6 +249,17 @@ def change_seat():
         return bad_request()
     seat_num = req['seat']
 
+    ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
+        .filter(Ticket.reserved_until >= datetime.now()).first()
+
+    if not ticket:
+        return jsonify({'message':
+                       "Votre billet n'existe pas ou est expiré."}), 400
+
+    if ticket.type_id != app.config['TYPE_IDS']['pc']:
+        return jsonify({'message': "Votre billet n'est pas de type PC. " +
+                       "Veuillez recommencer avec un billet PC."}), 400
+
     res = None
     try:
         db_session.execute('LOCK TABLES tickets WRITE, users READ;')
