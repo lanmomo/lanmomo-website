@@ -794,9 +794,15 @@ def login_in_please(message='Vous devez vous connecter.'):
     return jsonify({'message': message}), 401
 
 
-def setup(conf_path):
+def setup(env):
     global app, paypal_api
-    app.config.from_pyfile(conf_path)
+
+    pub_conf_path = 'config/%s_config.py' % env
+    private_conf_path = 'config/secret.%s_config.py' % env
+
+    app.config.from_pyfile(pub_conf_path)
+    # Only ignore missing config if env is 'default'
+    app.config.from_pyfile(private_conf_path, silent=(env == 'default'))
 
     log_path = app.config['LOG_PATH']
     handler = TimedRotatingFileHandler(
@@ -828,4 +834,4 @@ def setup(conf_path):
     return app
 
 if __name__ == '__main__':
-    setup('config/default_config.py').run(debug=True)
+    setup('default').run(debug=True)

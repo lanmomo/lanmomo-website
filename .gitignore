@@ -55,7 +55,7 @@ desktop.ini
 deploy/dev
 app.dev.wsgi
 
-config/prod_config.py
+config/secret.*
 
 # Node modules
 node_modules
