@@ -1,4 +1,4 @@
-DEBUG = True
+DEBUG = False
 DATABASE_URI = 'mysql+mysqlconnector://lanmomo@localhost/lanmomo'
 SECRET_KEY = 'secret'
 
@@ -20,5 +20,5 @@ TYPE_IDS = {'pc': 0, 'console': 1}
 TICKETS_MAX = {TYPE_IDS['pc']: 12, TYPE_IDS['console']: 3}
 PRICING = {TYPE_IDS['pc']: 20, TYPE_IDS['console']: 10}
 DISCOUNT_MOMO = 5
-LOG_PATH = 'lanmomo.log'
+LOG_PATH = '/var/log/lanmomo/lanmomo.log'
 STAGING = True

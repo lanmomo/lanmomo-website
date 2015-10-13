@@ -8,8 +8,8 @@ MAILGUN_DOMAIN = 'lanmomo.org'
 MAILGUN_KEY = 'secret'
 
 # Paypal
-PAYPAL_API_ID = ''
-PAYPAL_API_SECRET = ''
+PAYPAL_API_ID = 'secret'
+PAYPAL_API_SECRET = 'secret'
 PAYPAL_API_MODE = 'live'
 PAYPAL_RETURN_URL = 'https://lanmomo.org/pay/execute'
 # TODO check cancel url
