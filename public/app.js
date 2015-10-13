@@ -51,7 +51,6 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
           });
       },
       getCommit : function() {
-        console.log($rootScope);
         return $rootScope.commit;
       },
     }
