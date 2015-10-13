@@ -249,6 +249,17 @@ def change_seat():
         return bad_request()
     seat_num = req['seat']
 
+    ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
+        .filter(Ticket.reserved_until >= datetime.now()).first()
+
+    if not ticket:
+        return jsonify({'message':
+                       "Votre billet n'existe pas ou est expiré."}), 400
+
+    if ticket.type_id != app.config['TYPE_IDS']['pc']:
+        return jsonify({'message': "Votre billet n'est pas de type PC. " +
+                       "Veuillez recommencer avec un billet PC."}), 400
+
     res = None
     try:
         db_session.execute('LOCK TABLES tickets WRITE, users READ;')
@@ -295,6 +306,26 @@ def change_seat_for_user(user_id, seat_num):
 
     current_ticket.seat_num = seat_num
     db_session.add(current_ticket)
+
+
+@app.route('/api/users/ticket', methods=['DELETE'])
+def cancel_booking():
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
+        .filter(Ticket.reserved_until >= datetime.now()) \
+        .first()
+    if not ticket:
+        return jsonify({'message': 'Votre billet est déjà expiré'}), 200
+    ticket.reserved_until = datetime.fromtimestamp(0)
+
+    db_session.add(ticket)
+    db_session.commit()
+
+    return jsonify({'message': 'Votre réservation de billet a été annulée'}), \
+        200
 
 
 @app.route('/api/tickets', methods=['POST'])
