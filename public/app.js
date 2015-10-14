@@ -136,7 +136,7 @@ app.controller('NavbarController', function($scope, $location, Auth) {
 });
 
 app.controller('GamesController', function($scope, $http) {
-  $http.get('/games.json')
+  $http.get('/assets/games.json')
     .success(function(games) {
       $scope.games = games;
     })
@@ -147,7 +147,7 @@ app.controller('GamesController', function($scope, $http) {
 
 app.controller('TournamentsController', function($scope, $http, $location) {
   function refreshData() {
-    $http.get('/tournaments.json')
+    $http.get('/assets/tournaments.json')
       .success(function(data) {
         $scope.tournaments = data.tournaments;
       })
