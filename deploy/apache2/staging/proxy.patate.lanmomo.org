@@ -1,0 +1,9 @@
+<VirtualHost *:80>
+    ServerName patate.lanmomo.org
+    ServerAlias staging.lanmomo.org
+    HostNameLookups off
+    ProxyPass / http://localhost:8081/
+    ProxyPassReverse / http://localhost:8081/
+    ProxyPreserveHost on
+    UseCanonicalName off
+</VirtualHost>

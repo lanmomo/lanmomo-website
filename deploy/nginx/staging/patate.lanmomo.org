@@ -2,7 +2,7 @@ server {
     root /opt/lanmomo-website/static/;
     index index.html;
 
-    server_name lanmomo.org www.lanmomo.org;
+    server_name patate.lanmomo.org staging.lanmomo.org;
 
     rewrite ^/(about|contact|execute|faq|games|home|login|map|pay|profile|qr|servers|signup|signup-modal|terms|terms-partial|tickets|tournaments|users|verify) / last;
 
