@@ -86,13 +86,12 @@
             <td>{{team.captain_name}}</td>
             <td>
               <button ng-click="deleteTeam(team.id, key)" ng-hide="user.username != team.captain_name" class="btn btn-danger pull-right">supprimer</i></button>
-              <!-- <button ng-show="user.username != team.captain_id" type="submit" class="btn btn-success pull-right">JOIN</i></button> -->
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
+  </div>
 </div>
 
 <div id="myModal" class="modal fade" role="dialog">

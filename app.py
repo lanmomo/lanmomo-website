@@ -190,13 +190,14 @@ def delete_team_user(id):
         return jsonify({'message': 'Aucune Utilisateur Trouvé'}), 500
 
     if team.captain_id != user_id:
-        return jsonify({'message':
-                        "Vous n'êtes pas le capitaine de cette équipe"}), 401
-    else:
-        db_session.delete(team_user)
-        db_session.commit()
-        return jsonify({'message': "cette personne à été " +
-                        "exclus de l'équipe"}), 200
+        if (user_id != id):
+            return jsonify({'message':
+                            "Vous n'êtes pas le capitaine " +
+                            "de cette équipe"}), 401
+    db_session.delete(team_user)
+    db_session.commit()
+    return jsonify({'message': "cette personne à été " +
+                    "exclus de l'équipe"}), 200
 
 
 @app.route('/api/teams', methods=['GET'])
