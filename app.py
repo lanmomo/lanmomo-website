@@ -29,7 +29,7 @@ from reportlab.lib.units import cm
 
 # Lanmomo's imports
 from database import db_session, init_db, init_engine
-from models import Ticket, User, Payment, Team
+from models import Ticket, User, Payment, Team, TeamUser
 
 from paypal import Paypal
 
