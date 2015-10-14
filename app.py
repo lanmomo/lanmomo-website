@@ -78,7 +78,7 @@ def create_pdf_with_qr(qr_string, filename):
 
     line1 = """\
 Veuillez présenter ce code QR à l'acceuil lors de votre arrivée au LAN."""
-    line2 = "Il est recommandé d'enregistrer ce PDF sur un appareil mobile," + \
+    line2 = "Il est recommandé d'enregistrer ce PDF sur un appareil mobile," +\
         " mais il est aussi possible de l'imprimer."
     p.drawCentredString(5 * cm, 15 * cm, line1)
     p.drawCentredString(5 * cm, 16 * cm, line2)
@@ -136,7 +136,7 @@ def user_in_team(game, user_id):
     for team in teams:
         if team.captain_id == user_id or \
             TeamUser.query.filter(TeamUser.team_id == team.id) \
-            .filter(TeamUser.user_id == user_id).count() > 0:
+                .filter(TeamUser.user_id == user_id).count() > 0:
             return True
     return False
 
@@ -369,8 +369,8 @@ def change_seat_for_user(user_id, seat_num):
             .one()
     except:
         return jsonify({
-            'message': 'Aucun billet valide, billet expiré ou billet déjà payé.'
-            }), 409
+            'message': 'Aucun billet valide,' +
+            'billet expiré ou billet déjà payé.'}), 409
 
     wanted_seat_count = Ticket.query \
         .filter(Ticket.seat_num == seat_num) \
@@ -625,7 +625,8 @@ def complete_purchase(ticket):
         db_session.execute('UNLOCK TABLES;')
 
         # Temp file for the PDF
-        ticket_pdf_filename = '/tmp/lanmomo_pdf/%s/billet.pdf' % ticket.qr_token
+        ticket_pdf_filename = '/tmp/lanmomo_pdf/%s/billet.pdf' \
+            % ticket.qr_token
         # Create PDF with the QR code linking to online verification
         create_pdf_with_qr('https://lanmomo.org/qr/%s' % ticket.qr_token,
                            ticket_pdf_filename)
@@ -709,7 +710,8 @@ def login():
     user = User.query.filter(User.email == email).first()
 
     if not user:
-        return jsonify({'message': 'Les informations ne concordent pas !'}), 401
+        return jsonify({'message': 'Les informations ne concordent pas !'}),\
+                        401
 
     if not user.confirmed and not app.config['DEBUG']:
         return jsonify({'message': """\
