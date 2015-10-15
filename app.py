@@ -499,7 +499,7 @@ def pay_ticket():
             ' paiement'}), 500
 
 
-@app.route('/api/qr', methods=['GET'])
+@app.route('/api/qr.pdf', methods=['GET'])
 def download_ticket_pdf():
     if 'user_id' not in session:
         return bad_request()
