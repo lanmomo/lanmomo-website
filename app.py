@@ -6,7 +6,7 @@ import logging
 import os
 import json
 
-from os.path import isdir, dirname
+from os.path import isdir, isfile, dirname
 from datetime import datetime
 
 from logging import Formatter
@@ -14,7 +14,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 # 3rd parties
 from flask import Flask, send_from_directory, jsonify, request, session, \
-    Response
+    Response, send_file
 
 from paypalrestsdk import Payment as PaypalPayment
 
@@ -61,9 +61,18 @@ def set_app_commit():
         app.config['CURRENT_COMMIT'] = commit[:-1].decode('utf8')
 
 
-def create_pdf_with_qr(qr_string, filename):
+def get_qr_filename_for_ticket(ticket):
+    return 'cache/%s/billet.pdf' % ticket.qr_token
+
+
+def create_pdf_from_ticket(ticket, filename):
+    if isfile(filename):
+        return
+
     if not isdir(dirname(filename)):
         os.makedirs(dirname(filename))
+
+    qr_string = 'https://lanmomo.org/qr/%s' % ticket.qr_token
 
     p = canvas.Canvas(filename)
     p.translate(cm * 5.2, cm * 12)
@@ -490,6 +499,23 @@ def pay_ticket():
             ' paiement'}), 500
 
 
+@app.route('/api/qr', methods=['GET'])
+def download_ticket_pdf():
+    if 'user_id' not in session:
+        return bad_request()
+    user_id = session['user_id']
+
+    ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
+        .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+        .first()
+
+    pdf_filename = get_qr_filename_for_ticket(ticket)
+    create_pdf_from_ticket(ticket, pdf_filename)
+
+    return send_file(pdf_filename, mimetype='application/pdf',
+                     as_attachment=False)
+
+
 @app.route('/api/qr/<qr_token>', methods=['GET'])
 def find_ticket_by_qr_token(qr_token):
     try:
@@ -625,17 +651,15 @@ def complete_purchase(ticket):
         db_session.execute('UNLOCK TABLES;')
 
         # Temp file for the PDF
-        ticket_pdf_filename = '/tmp/lanmomo_pdf/%s/billet.pdf' \
-            % ticket.qr_token
+        pdf_filename = get_qr_filename_for_ticket(ticket)
         # Create PDF with the QR code linking to online verification
-        create_pdf_with_qr('https://lanmomo.org/qr/%s' % ticket.qr_token,
-                           ticket_pdf_filename)
+        create_pdf_from_ticket(ticket, pdf_filename)
 
         # Find ticket owner to send email to
         user = User.query.filter(User.id == ticket.owner_id).one()
         fullname = '%s %s' % (user.firstname, user.lastname)
         subject = 'Confirmation de votre achat de billet du LAN Montmorency'
-        attachements = [ticket_pdf_filename]
+        attachements = [pdf_filename]
         message = 'va voir tes pièces jointes le gros'  # TODO
 
         # Send email with payment confirmation
