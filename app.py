@@ -221,6 +221,7 @@ def add_team():
     team = Team(req['name'], req['game'], user_id)
     if team_exists(team.game, team.name) or \
             captain_has_team(team.game, team.captain_id) or \
+            user_in_team(team.game, user_id) or \
             not user_has_paid_ticket(user_id):
         return jsonify({'message': "Vous avez déja une équipe pour ce jeu " +
                         "ou le nom d'équipe est deja utilisé"}), 400
