@@ -506,8 +506,11 @@ def download_ticket_pdf():
     user_id = session['user_id']
 
     ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
-        .filter(or_(Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+        .filter(Ticket.paid) \
         .first()
+
+    if not ticket:
+        return bad_request('Pas de billet')
 
     pdf_filename = get_qr_filename_for_ticket(ticket)
     create_pdf_from_ticket(ticket, pdf_filename)
