@@ -66,7 +66,7 @@ def create_pdf_with_qr(qr_string, filename):
         os.makedirs(dirname(filename))
 
     p = canvas.Canvas(filename)
-    p.translate(cm * 5, cm * 10)
+    p.translate(cm * 5.2, cm * 12)
     qrw = QrCodeWidget(qr_string)
     b = qrw.getBounds()
 
@@ -83,7 +83,7 @@ Veuillez présenter ce code QR à l'acceuil lors de votre arrivée au LAN."""
     p.drawCentredString(5 * cm, 15 * cm, line1)
     p.drawCentredString(5 * cm, 16 * cm, line2)
 
-    renderPDF.draw(d, p, 1, 1)
+    renderPDF.draw(d, p, 40, 180)
     p.save()
 
 
