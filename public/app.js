@@ -163,10 +163,26 @@ app.controller('TournamentsController', function($scope, $http, $location) {
           $scope.error = {message: err.message, status: status};
         });
 
+        $http.get('/api/team_users')
+        .success(function(data) {
+          $scope.team_users = data.team_users;
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+
       if ($scope.loggedIn) {
         $http.get('/api/profile')
         .success(function(data) {
           $scope.user = data.user;
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+
+        $http.get('/api/users/ticket')
+        .success(function (data) {
+          $scope.ticket = data.ticket;
         })
         .error(function(err, status) {
           $scope.error = {message: err.message, status: status};
@@ -198,6 +214,38 @@ app.controller('TournamentsController', function($scope, $http, $location) {
           $scope.error = {message: err.message, status: status};
         });
     }
+  };
+
+  $scope.deleteTeamUser = function(id, index) {
+    if (confirm('Êtes vous certain de vouloir supprimer cette personne ?')) {
+      $http.delete('/api/team_users/' + id)
+        .success(function(data) {
+          $scope.team_users.splice(index, 1);
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+    }
+  };
+
+  $scope.joinTourney = function(game) {
+    name = Math.random().toString(36).replace(/[^a-zA-Z0-9]+/g, '')
+            .substr(0, 26);
+    $scope.createTeam(name, game);
+  };
+
+  $scope.joinTeam = function(id, _game) {
+    var data = {
+      team_id: id,
+      game: _game
+    };
+    $http.post('/api/team_users', data)
+      .success(function(data) {
+        refreshData();
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.message, status: status};
+      });
   };
 
   refreshData();

@@ -128,7 +128,7 @@ class Ticket():
                 wanted_seat_count = Ticket.query \
                     .filter(Ticket.seat_num == seat_num) \
                     .filter(or_(
-                        Ticket.paid, Ticket.reserved_until >= datetime.now())) \
+                        Ticket.paid, Ticket.reserved_until >= datetime.now()))\
                     .count()
                 if wanted_seat_count > 0:
                     db_session.rollback()
@@ -209,10 +209,9 @@ class TeamUser():
     def __repr__(self):
             return '<Team-User %r - %r>' % (self.team_id, self.user_id)
 
-    def get_team_name(self):
-        team = User.query.filter(Team.id == self.team_id).first()
-        if team:
-            return team.name
+    def get_team_user_id(self):
+        return TeamUser.query.filter(TeamUser.team_id == self.team_id) \
+            .filter(TeamUser.user_id == self.user_id).first().id
 
     def get_user_name(self):
         user = User.query.filter(User.id == self.user_id).first()
@@ -221,8 +220,9 @@ class TeamUser():
 
     def as_pub_dict(self):
             pub_dict = {
-                'username': self.get_user_name,
-                'team_name': self.get_team_name,
+                'id': self.get_team_user_id(),
+                'username': self.get_user_name(),
+                'team_id': self.team_id,
                 'accepted': self.accepted
                 }
             return pub_dict
