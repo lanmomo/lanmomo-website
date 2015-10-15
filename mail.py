@@ -40,6 +40,7 @@ def _send_mailgun_api(to_email, to_name, subject, message, sender, api_key,
                     'to': '%s <%s>' % (to_name, to_email),
                     'subject': subject,
                     'text': message,
+                    'html': message,
                 },
                 files=attachements_mailgun
             )
