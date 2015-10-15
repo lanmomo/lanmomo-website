@@ -283,7 +283,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
   });
 });
 
-app.controller('TicketsController', function($scope, $http, $location, Timer) {
+app.controller('TicketsController', function($scope, $http, $location, Auth, Timer) {
   $scope.canBuy = false;
   $scope.submitted = false;
   $scope.max = {
@@ -295,18 +295,25 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
     'paid': {0: 0, 1: 0}
   };
 
-  if ($scope.loggedIn) {
-    $http.get('/api/users/ticket')
-      .success(function (data) {
-        if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
-          Timer.bootstrap($scope, data.ticket.reserved_until);
-        }
-        $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
-      })
-      .error(function (err, status) {
-        $scope.error = {message: err.message, status: status};
-      });
-  }
+  $scope.init = function() {
+    if (Auth.isLoggedIn()) {
+      $http.get('/api/users/ticket')
+        .success(function (data) {
+          if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
+            Timer.bootstrap($scope, data.ticket.reserved_until);
+          }
+          $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
+        })
+        .error(function (err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+    }
+  };
+
+  $scope.init();
+  $scope.$on('login', function() {
+    $scope.init();
+  });
 
   $http.get('/api/tickets')
     .success(function(data) {
@@ -706,7 +713,7 @@ app.controller('SignupModalController', function($scope, $modalInstance) {
   };
 });
 
-app.controller('MapController', function($scope, $http, $interval, $location, Timer) {
+app.controller('MapController', function($scope, $http, $interval, $location, Auth, Timer) {
   $scope.canBuy = false;
   $scope.submitted = false;
   $scope.selectedSeat = null;
@@ -755,29 +762,36 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
     return new Array(x);
   };
 
-  if ($scope.loggedIn) {
-    $http.get('/api/users/ticket')
-      .success(function (data) {
-        if (data.ticket && data.ticket.type_id !== TICKET_TYPES.PC) {
-          $location.path('/pay');
-        }
-        if (data.ticket && data.ticket.paid) {
-          $scope.userPaidSeatID = data.ticket.seat_num;
-        }
-        if (data.ticket && !data.ticket.paid) {
-          $scope.selectSeat(data.ticket.seat_num);
-          $scope.userTicketSeatID = data.ticket.seat_num;
-          $scope.userTicketOwner = data.ticket.owner_username;
-        }
-        if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
-          Timer.bootstrap($scope, data.ticket.reserved_until);
-        }
-        $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
-      })
-      .error(function (err, status) {
-        $scope.error = {message: err.message, status: status};
-      });
-  }
+  $scope.init = function() {
+    if (Auth.isLoggedIn()) {
+      $http.get('/api/users/ticket')
+        .success(function (data) {
+          if (data.ticket && data.ticket.type_id !== TICKET_TYPES.PC) {
+            $location.path('/pay');
+          }
+          if (data.ticket && data.ticket.paid) {
+            $scope.userPaidSeatID = data.ticket.seat_num;
+          }
+          if (data.ticket && !data.ticket.paid) {
+            $scope.selectSeat(data.ticket.seat_num);
+            $scope.userTicketSeatID = data.ticket.seat_num;
+            $scope.userTicketOwner = data.ticket.owner_username;
+          }
+          if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
+            Timer.bootstrap($scope, data.ticket.reserved_until);
+          }
+          $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
+        })
+        .error(function (err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+    }
+  };
+
+  $scope.init();
+  $scope.$on('login', function() {
+    $scope.init();
+  });
 
   $scope.selectSeat = function(seat) {
     $scope.resetSelectedSeat();
