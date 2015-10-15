@@ -283,8 +283,9 @@ app.controller('ServersController', function($scope, $http, $interval) {
   });
 });
 
-app.controller('TicketsController', function($scope, $http, $location, Timer) {
+app.controller('TicketsController', function($scope, $http, $location, Auth, Timer) {
   $scope.canBuy = false;
+  $scope.submitted = false;
   $scope.max = {
     pc: 96,
     console: 32
@@ -294,18 +295,25 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
     'paid': {0: 0, 1: 0}
   };
 
-  if ($scope.loggedIn) {
-    $http.get('/api/users/ticket')
-      .success(function (data) {
-        if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
-          Timer.bootstrap($scope, data.ticket.reserved_until);
-        }
-        $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
-      })
-      .error(function (err, status) {
-        $scope.error = {message: err.message, status: status};
-      });
-  }
+  $scope.init = function() {
+    if (Auth.isLoggedIn()) {
+      $http.get('/api/users/ticket')
+        .success(function (data) {
+          if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
+            Timer.bootstrap($scope, data.ticket.reserved_until);
+          }
+          $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
+        })
+        .error(function (err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+    }
+  };
+
+  $scope.init();
+  $scope.$on('login', function() {
+    $scope.init();
+  });
 
   $http.get('/api/tickets')
     .success(function(data) {
@@ -340,12 +348,43 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
       $scope.error = {message: err.message, status: status};
     });
 
-  $scope.buy = function(ticketType) {
-    var ticket = {};
+  $scope.buy = function(type) {
     $scope.submitted = true;
-    ticket.type = ticketType;
 
-    if (ticketType === TICKET_TYPES.CONSOLE) {
+    $http.get('/api/users/ticket')
+      .success(function(data) {
+        if (data.ticket) {
+          if (data.ticket.type_id !== type) {
+            $http.delete('/api/users/ticket')
+              .success(function(data) {
+                $scope.buyPart2(type);
+              })
+              .error(function(err, status) {
+                $scope.error = {message: err.message, status: status};
+              });
+          } else {
+            if (type === TICKET_TYPES.CONSOLE) {
+              $location.path('/pay');
+            } else if (type === TICKET_TYPES.PC) {
+              $location.path('/map');
+            } else {
+              console.log('wrong type id');
+            }
+          }
+        } else {
+          $scope.buyPart2(type);
+        }
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.message, status: status};
+      });
+  };
+
+  $scope.buyPart2 = function(type) {
+    var ticket = {};
+    ticket.type = type;
+
+    if (type === TICKET_TYPES.CONSOLE) {
       $http.post('/api/tickets', ticket)
         .success(function(data) {
           $location.path('/pay');
@@ -353,7 +392,7 @@ app.controller('TicketsController', function($scope, $http, $location, Timer) {
         .error(function(err, status) {
           $scope.error = {message: err.message, status: status};
         });
-    } else if (ticketType === TICKET_TYPES.PC) {
+    } else if (type === TICKET_TYPES.PC) {
       $location.path('/map');
     } else {
       console.log('wrong type id');
@@ -674,8 +713,9 @@ app.controller('SignupModalController', function($scope, $modalInstance) {
   };
 });
 
-app.controller('MapController', function($scope, $http, $interval, $location, Timer) {
+app.controller('MapController', function($scope, $http, $interval, $location, Auth, Timer) {
   $scope.canBuy = false;
+  $scope.submitted = false;
   $scope.selectedSeat = null;
   $scope.userPaidSeatID = 0;
   $scope.userTicketSeatID = 0;
@@ -685,6 +725,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
   var seatUntils = {};
 
   $scope.resetSelectedSeat = function() {
+    $scope.submitted = false;
     $scope.selectedSeat = false;
     delete $scope.selectedSeatID;
     delete $scope.selectSeatIsFree;
@@ -721,26 +762,36 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
     return new Array(x);
   };
 
-  if ($scope.loggedIn) {
-    $http.get('/api/users/ticket')
-      .success(function (data) {
-        if (data.ticket && data.ticket.paid) {
-          $scope.userPaidSeatID = data.ticket.seat_num;
-        }
-        if (data.ticket && !data.ticket.paid) {
-          $scope.selectSeat(data.ticket.seat_num);
-          $scope.userTicketSeatID = data.ticket.seat_num;
-          $scope.userTicketOwner = data.ticket.owner_username;
-        }
-        if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
-          Timer.bootstrap($scope, data.ticket.reserved_until);
-        }
-        $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
-      })
-      .error(function (err, status) {
-        $scope.error = {message: err.message, status: status};
-      });
-  }
+  $scope.init = function() {
+    if (Auth.isLoggedIn()) {
+      $http.get('/api/users/ticket')
+        .success(function (data) {
+          if (data.ticket && data.ticket.type_id !== TICKET_TYPES.PC) {
+            $location.path('/pay');
+          }
+          if (data.ticket && data.ticket.paid) {
+            $scope.userPaidSeatID = data.ticket.seat_num;
+          }
+          if (data.ticket && !data.ticket.paid) {
+            $scope.selectSeat(data.ticket.seat_num);
+            $scope.userTicketSeatID = data.ticket.seat_num;
+            $scope.userTicketOwner = data.ticket.owner_username;
+          }
+          if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
+            Timer.bootstrap($scope, data.ticket.reserved_until);
+          }
+          $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
+        })
+        .error(function (err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+    }
+  };
+
+  $scope.init();
+  $scope.$on('login', function() {
+    $scope.init();
+  });
 
   $scope.selectSeat = function(seat) {
     $scope.resetSelectedSeat();
@@ -768,12 +819,12 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
     ticket.type = TICKET_TYPES.PC;
     ticket.seat = seat;
 
-    if ($scope.isAlreadyReserved(seat)) {
-      $location.path('/pay');
-    } else {
-      $http.get('/api/users/ticket')
-        .success(function(data) {
-          if (data.ticket) {
+    $http.get('/api/users/ticket')
+      .success(function(data) {
+        if (data.ticket) {
+          if (data.ticket.seat_num == seat && $scope.userTicketSeatID == seat) {
+            $location.path('/pay');
+          } else {
             $http.put('/api/tickets/seat', ticket)
               .success(function(data) {
                 $location.path('/pay');
@@ -781,20 +832,20 @@ app.controller('MapController', function($scope, $http, $interval, $location, Ti
               .error(function(err, status) {
                 $scope.error = {message: err.message, status: status};
               });
-          } else {
-            $http.post('/api/tickets', ticket)
-              .success(function(data) {
-                $location.path('/pay');
-              })
-              .error(function(err, status) {
-                $scope.error = {message: err.message, status: status};
-              });
           }
-        })
-        .error(function(err, status) {
-          $scope.error = {message: err.message, status: status};
-        });
-    }
+        } else {
+          $http.post('/api/tickets', ticket)
+            .success(function(data) {
+              $location.path('/pay');
+            })
+            .error(function(err, status) {
+              $scope.error = {message: err.message, status: status};
+            });
+        }
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.message, status: status};
+      });
   };
 
   $scope.refresh = function() {

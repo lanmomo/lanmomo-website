@@ -84,7 +84,7 @@
       </div>
       <div class="media-body preview-text" ng-show="selectSeatIsFree">
         <h3 class="media-heading text-success">Disponible</h3>
-        <p ng-show="canBuy"><button class="btn btn-success" ng-click="buy(selectedSeatID)">Réserver ce siège <i class="fa fa-chevron-right"></i></button></p>
+        <p ng-show="canBuy"><button class="btn btn-success" ng-disabled="submitted" ng-click="buy(selectedSeatID)">Réserver ce siège <i class="fa fa-chevron-right"></i></button></p>
         <p ng-hide="canBuy">Ce siège est disponible.</p>
       </div>
       <div class="media-body preview-text" ng-show="!selectSeatIsFree && !selectedSeatTicketPaid && !selectedSeatIsUserPaidSeat">
