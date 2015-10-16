@@ -36,6 +36,7 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
       },
       refresh: function() {
         var _this = this;
+
         $http.get('/api/login')
           .success(function(data, status, headers) {
             $rootScope.commit = headers().commit;
@@ -45,7 +46,7 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
               $rootScope.loggedIn = false;
             }
           })
-          .error(function(err, status) {
+          .error(function() {
             $rootScope.loggedIn = false;
           });
       }
@@ -120,7 +121,7 @@ app.controller('NavbarController', function($scope, $location, Auth) {
     return $location.path() === url;
   };
 
-  $scope.refresh = function () {
+  $scope.refresh = function() {
     $scope.loggedIn = Auth.isLoggedIn();
   };
 
@@ -145,8 +146,8 @@ app.controller('GamesController', function($scope, $http) {
     });
 });
 
-app.controller('TournamentsController', function($scope, $http, $location) {
-  function refreshData() {
+app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
+  $scope.init = function() {
     $http.get('/assets/tournaments.json')
       .success(function(data) {
         $scope.tournaments = data.tournaments;
@@ -155,49 +156,63 @@ app.controller('TournamentsController', function($scope, $http, $location) {
         $scope.error = {message: err.message, status: status};
       });
 
-      $http.get('/api/teams')
-        .success(function(data) {
-          $scope.teams = data.teams;
-        })
-        .error(function(err, status) {
-          $scope.error = {message: err.message, status: status};
-        });
-
-        $http.get('/api/team_users')
-        .success(function(data) {
-          $scope.team_users = data.team_users;
-        })
-        .error(function(err, status) {
-          $scope.error = {message: err.message, status: status};
-        });
-
-      if ($scope.loggedIn) {
-        $http.get('/api/profile')
-        .success(function(data) {
-          $scope.user = data.user;
-        })
-        .error(function(err, status) {
-          $scope.error = {message: err.message, status: status};
-        });
-
-        $http.get('/api/users/ticket')
+    if (Auth.isLoggedIn()) {
+      $http.get('/api/users/ticket')
         .success(function (data) {
           $scope.ticket = data.ticket;
         })
         .error(function(err, status) {
           $scope.error = {message: err.message, status: status};
         });
-      }
-  }
+    }
+  };
 
-  $scope.createTeam = function(_name, _game) {
-    var data = {
-      game: _game,
-      name: _name
-    };
-    $http.post('/api/teams',data)
+  $scope.refresh = function() {
+    $http.get('/api/teams')
       .success(function(data) {
-        refreshData();
+        $scope.teams = data.teams;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.message, status: status};
+      });
+
+    $http.get('/api/team_users')
+      .success(function(data) {
+        $scope.team_users = data.team_users;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.message, status: status};
+      });
+  };
+
+  $scope.init();
+  $scope.refresh();
+  $scope.$on('login', function() {
+    $scope.init();
+  });
+
+  $scope.hasTicket = function() {
+    return $scope.loggedIn && $scope.ticket && $scope.ticket.paid;
+  };
+  $scope.isSingle = function(tournament) {
+    return tournament.team_size == 1;
+  };
+  $scope.isTeam = function(tournament) {
+    return tournament.team_size != 1;
+  };
+  $scope.isCaptain = function(team) {
+    return $scope.ticket && $scope.ticket.owner_username == team.captain_name;
+  };
+
+  $scope.createTeam = function(name, game) {
+    var data = {
+      game: game,
+      name: name
+    };
+
+    $http.post('/api/teams',data)
+      .success(function() {
+        $scope.refresh();
       })
       .error(function(err, status) {
         $scope.error = {message: err.message, status: status};
@@ -207,7 +222,7 @@ app.controller('TournamentsController', function($scope, $http, $location) {
   $scope.deleteTeam = function(id, index) {
     if (confirm('Êtes vous certain de vouloir supprimer cette équipe ?')) {
       $http.delete('/api/teams/' + id)
-        .success(function(data) {
+        .success(function() {
           $scope.teams.splice(index, 1);
         })
         .error(function(err, status) {
@@ -217,9 +232,9 @@ app.controller('TournamentsController', function($scope, $http, $location) {
   };
 
   $scope.deleteTeamUser = function(id, index) {
-    if (confirm('Êtes vous certain de vouloir supprimer cette personne ?')) {
+    if (confirm('Êtes vous certain de vouloir retirer cette personne ?')) {
       $http.delete('/api/team_users/' + id)
-        .success(function(data) {
+        .success(function() {
           $scope.team_users.splice(index, 1);
         })
         .error(function(err, status) {
@@ -229,32 +244,52 @@ app.controller('TournamentsController', function($scope, $http, $location) {
   };
 
   $scope.joinTourney = function(game) {
-    name = Math.random().toString(36).replace(/[^a-zA-Z0-9]+/g, '')
-            .substr(0, 26);
+    var name = Math.random().toString(36).replace(/[^a-zA-Z0-9]+/g, '').substr(0, 26);
     $scope.createTeam(name, game);
   };
 
-  $scope.joinTeam = function(id, _game) {
+  $scope.joinTeam = function(id, game) {
     var data = {
       team_id: id,
-      game: _game
+      game: game
     };
+
     $http.post('/api/team_users', data)
-      .success(function(data) {
-        refreshData();
+      .success(function() {
+        $scope.refresh();
       })
       .error(function(err, status) {
         $scope.error = {message: err.message, status: status};
       });
   };
 
-  refreshData();
+  $scope.modal = function(game) {
+    var modalInstance = $modal.open({
+      controller: 'TournamentsModalController',
+      templateUrl: 'partials/tournaments-modal.html'
+    });
+    modalInstance.result.then(function(name) {
+      if (name) {
+        $scope.createTeam(name, game);
+      }
+    });
+  };
+});
+
+app.controller('TournamentsModalController', function($scope, $modalInstance) {
+  $scope.ok = function() {
+    $modalInstance.close($scope.name);
+  };
+  $scope.cancel = function() {
+    $modalInstance.close();
+  };
 });
 
 app.controller('ServersController', function($scope, $http, $interval) {
   $scope.state = {
     loading: true
   };
+
   $scope.refresh = function() {
     $http.get('/api/servers')
       .success(function(servers) {
@@ -266,6 +301,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
         $scope.state.loading = false;
       });
   };
+
   $scope.isEmpty = function(obj) {
     for (var key in obj) {
       if (obj.hasOwnProperty(key)) {
@@ -274,6 +310,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
     }
     return true;
   };
+
   $scope.refresh();
   $scope.intervalPromise = $interval(function() {
     $scope.refresh();
@@ -356,7 +393,7 @@ app.controller('TicketsController', function($scope, $http, $location, Auth, Tim
         if (data.ticket) {
           if (data.ticket.type_id !== type) {
             $http.delete('/api/users/ticket')
-              .success(function(data) {
+              .success(function() {
                 $scope.buyPart2(type);
               })
               .error(function(err, status) {
@@ -386,7 +423,7 @@ app.controller('TicketsController', function($scope, $http, $location, Auth, Tim
 
     if (type === TICKET_TYPES.CONSOLE) {
       $http.post('/api/tickets', ticket)
-        .success(function(data) {
+        .success(function() {
           $location.path('/pay');
         })
         .error(function(err, status) {
@@ -464,7 +501,7 @@ app.controller('VerifyController', function($scope, $http, $routeParams) {
   var token = $routeParams.token;
 
   $http.get('/api/verify/' + token)
-    .success(function(data, status) {
+    .success(function(data) {
       if (data.first) {
         $scope.message = 'Votre compte a bien été créé ! Vous pouvez maintenant vous connecter.';
       } else if (data.first === false) {
@@ -473,7 +510,7 @@ app.controller('VerifyController', function($scope, $http, $routeParams) {
         $scope.error = {message: 'Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !'}
       }
     })
-    .error(function(data) {
+    .error(function() {
       $scope.error = {message: 'Une erreur est survenue lors de la confirmation de votre compte. Veuillez contacter info@lanmomo.org !'}
     });
 });
@@ -485,7 +522,7 @@ app.controller('LoginController', function ($scope, $http, $location, $rootScope
         password: $scope.user.password
     };
     $http.post('/api/login', data)
-      .success(function(data) {
+      .success(function() {
         Auth.login();
         $location.path('/profile');
       })
@@ -497,7 +534,7 @@ app.controller('LoginController', function ($scope, $http, $location, $rootScope
 
 app.controller('LogoutController', function ($scope, $http, $location, Auth) {
   $http.get('/api/logout')
-    .success(function(data) {
+    .success(function() {
       Auth.logout();
       $location.path('/');
     })
@@ -535,7 +572,7 @@ app.controller('ProfileController', function ($scope, $http) {
     usernameChanged: false,
     emailChanged: false,
     usernameAvailable: false,
-    emailAvailable: false,
+    emailAvailable: false
   };
 
   $http.get('/api/profile')
@@ -554,7 +591,7 @@ app.controller('ProfileController', function ($scope, $http) {
         $scope.qrCodeString = 'https://lanmomo.org/qr/' + data.ticket.qr_token;
       }
     })
-    .error(function(err, status) {
+    .error(function(err) {
       $scope.alerts.push({msg: err.message, type: 'danger'});
     });
 
@@ -565,7 +602,7 @@ app.controller('ProfileController', function ($scope, $http) {
         $scope.resetMods();
         $scope.alerts.push({msg: 'Vos informations ont été mises à jour.', type: 'success'});
       })
-      .error(function(err, status) {
+      .error(function(err) {
         $scope.alerts.push({msg: err.message, type: 'danger'});
       });
   };
@@ -588,7 +625,7 @@ app.controller('ProfileController', function ($scope, $http) {
         $scope.state.usernameAvailable = !data.exists;
         $scope.state.usernameChanged = true;
       })
-      .error(function(data) {
+      .error(function() {
         $scope.state.usernameAvailable = false;
         $scope.state.usernameChanged = true;
       });
@@ -607,7 +644,7 @@ app.controller('ProfileController', function ($scope, $http) {
         $scope.state.emailAvailable = !data.exists;
         $scope.state.emailChanged = true;
       })
-      .error(function(data) {
+      .error(function() {
         $scope.state.emailAvailable = false;
         $scope.state.emailChanged = true;
       });
@@ -633,7 +670,6 @@ app.controller('QRController', function ($scope, $http, $routeParams) {
     });
 });
 
-
 app.controller('SignupController', function($scope, $http, $modal) {
   $scope.state = {
     submitted: false,
@@ -643,18 +679,18 @@ app.controller('SignupController', function($scope, $http, $modal) {
     usernameChanged: false,
     emailChanged: false,
     usernameAvailable: false,
-    emailAvailable: false,
+    emailAvailable: false
   };
   $scope.signup = function(data) {
     $scope.state.loading = true;
     $scope.state.submitted = true;
     $http.post('/api/users', data)
-      .success(function(res, status) {
+      .success(function(res) {
         $scope.message = res.message;
         $scope.state.loading = false;
         $scope.state.success = true;
       })
-      .error(function(data) {
+      .error(function() {
         $scope.message = 'Malheureusement, une erreur est survenue lors de votre inscription !' +
           ' Veuillez réessayer plus tard et contacter info@lanmomo.org si le problème persiste.';
         $scope.state.loading = false;
@@ -667,7 +703,7 @@ app.controller('SignupController', function($scope, $http, $modal) {
         $scope.state.usernameAvailable = !data.exists;
         $scope.state.usernameChanged = true;
       })
-      .error(function(data) {
+      .error(function() {
         $scope.state.usernameAvailable = false;
         $scope.state.usernameChanged = true;
       });
@@ -700,15 +736,13 @@ app.controller('SignupController', function($scope, $http, $modal) {
       $scope.checked = checked;
     });
   };
-
 });
 
 app.controller('SignupModalController', function($scope, $modalInstance) {
-  $scope.ok = function () {
+  $scope.ok = function() {
     $modalInstance.close(true);
   };
-
-  $scope.cancel = function () {
+  $scope.cancel = function() {
     $modalInstance.close(false);
   };
 });
@@ -826,7 +860,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
             $location.path('/pay');
           } else {
             $http.put('/api/tickets/seat', ticket)
-              .success(function(data) {
+              .success(function() {
                 $location.path('/pay');
               })
               .error(function(err, status) {
@@ -835,7 +869,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
           }
         } else {
           $http.post('/api/tickets', ticket)
-            .success(function(data) {
+            .success(function() {
               $location.path('/pay');
             })
             .error(function(err, status) {

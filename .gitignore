@@ -63,6 +63,9 @@ node_modules
 # Cache busting output folder
 static
 
+# Cache directory for tickets
+cache
+
 app.dev.mysql.py
 
 # tmp directory for minification
