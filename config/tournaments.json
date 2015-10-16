@@ -2,7 +2,7 @@
   "tournaments": [
     {
       "game": "LoL",
-      "title": "league of Legends",
+      "title": "League of Legends",
       "team_size": 5
     },
     {
@@ -16,6 +16,11 @@
       "team_size": 2
     },
     {
+      "game": "TMNF",
+      "title": "TrackMania Nations Forever",
+      "team_size": 1
+    },
+    {
       "game": "S4",
       "title": "Super Smash Bros 4",
       "team_size": 1
@@ -23,11 +28,6 @@
     {
       "game": "Melee",
       "title": "Super Smash Bros Melee",
-      "team_size": 1
-    },
-    {
-      "game": "HS",
-      "title": "Hearthstone",
       "team_size": 1
     }
   ]
