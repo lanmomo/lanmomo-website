@@ -190,6 +190,19 @@ app.controller('TournamentsController', function($scope, $http, $location) {
       }
   }
 
+  $scope.hasTicket = function() {
+    return $scope.loggedIn && $scope.ticket && $scope.ticket.paid;
+  };
+  $scope.isSingle = function(tournament) {
+    return tournament.team_size == 1;
+  };
+  $scope.isTeam = function(tournament) {
+    return tournament.team_size != 1;
+  };
+  $scope.isCaptain = function(team) {
+    return $scope.user && $scope.user.username == team.captain_name;
+  };
+
   $scope.createTeam = function(_name, _game) {
     var data = {
       game: _game,
@@ -217,7 +230,7 @@ app.controller('TournamentsController', function($scope, $http, $location) {
   };
 
   $scope.deleteTeamUser = function(id, index) {
-    if (confirm('Êtes vous certain de vouloir supprimer cette personne ?')) {
+    if (confirm('Êtes vous certain de vouloir retirer cette personne ?')) {
       $http.delete('/api/team_users/' + id)
         .success(function(data) {
           $scope.team_users.splice(index, 1);

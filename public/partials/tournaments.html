@@ -3,6 +3,16 @@
     <h1>Tournois</h1>
   </div>
 
+  <div ng-hide="loggedIn">
+    <div class="well">
+      <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Attention!</strong> Vous devez être connecté pour vous inscrire à un tournois.</p>
+      <div class="btn-group" role="group">
+        <a href="/signup" class="btn btn-default btn-sm"><i class="fa fa-pencil-square-o"></i> Créer un compte</a>
+        <a href="/login" class="btn btn-default btn-sm"><i class="fa fa-sign-in"></i> Se connecter</a>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col-sm-6 col-md-4">
       <div class="well" tooltip-placement="bottom" tooltip="Counter-Strike: Global Offensive">
@@ -40,93 +50,65 @@
     <h1>Équipes</h1>
   </div>
 
-  <div ng-hide="loggedIn">
-    <div class="well">
-      <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Attention!</strong> Vous devez être connecté pour vous inscrire à un tournois.</p>
-      <div class="btn-group" role="group">
-        <a href="/signup" class="btn btn-default btn-sm"><i class="fa fa-pencil-square-o"></i> Créer un compte</a>
-        <a href="/login" class="btn btn-default btn-sm"><i class="fa fa-sign-in"></i> Se connecter</a>
-      </div>
-    </div>
-  </div>
-
-  <div ng-show="!ticket.paid && loggedIn">
+  <div ng-show="loggedIn && !hasTicket()">
     <div class="well">
       <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Attention!</strong> Vous devez avoir un billet pour vous inscrire à un tournois.</p>
       <div class="btn-group" role="group">
-        <a href="/tickets" class="btn btn-default btn-sm"><i class="fa fa fa-ticket"></i> Acheter un billet </a>
+        <a href="/tickets" class="btn btn-default btn-sm"><i class="fa fa fa-ticket"></i> Billets</a>
       </div>
     </div>
   </div>
 
-  <div class="alert alert-danger alert-dismissible fade-in" role="alert" ng-show="error">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-    <i class="fa fa-info-circle"></i> status: {{error.status}} | {{error.message}}
+  <div class="alert alert-danger" role="alert" ng-show="error">
+    <i class="fa fa-exclamation-triangle"></i> {{ error.message }}
   </div>
 
-  <button data-toggle="modal" data-target="#myModal" ng-show="loggedIn && ticket.paid" type="submit" class="btn btn-success">Créer une équipe</button>
-  <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments" ng-if="tournament.team_size > 1">
-    <div class="panel-heading">
-      <div class="panel-title row tournaments-text">
-        <strong>{{tournament.title}}</strong>
+  <div class="tournaments">
+    <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments">
+      <div class="panel-heading clearfix">
+        <button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#myModal" ng-show="hasTicket() && isTeam(tournament)">
+          <i class="fa fa-plus"></i> Créer une équipe
+        </button>
+        <button class="btn btn-success btn-sm pull-right" ng-show="hasTicket() && isSingle(tournament)" ng-click="joinTourney(tournament.game)">
+          <i class="fa fa-plus"></i> Participer
+        </button>
+        <h4 class="panel-title">{{ tournament.title }}</h4>
       </div>
-    </div>
-    <div class="panel-body">
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Nom de l'équipe</th>
-            <th>Joueurs</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="(key, team) in teams" ng-if="team.game == tournament.game">
-            <th>{{team.name}}</th>
-            <td>
-              {{team.captain_name}} <br />
-              <div ng-show="user.username == team.captain_name" ng-repeat="(key, team_user) in team_users" ng-if="team_user.team_id == team.id">
-                {{team_user.username}}
-                <button ng-click="deleteTeamUser(team_user.id, key)" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
-              </div>
-              <div ng-show="user.username != team.captain_name" ng-repeat="(key, team_user) in team_users" ng-if="team_user.team_id == team.id">
-                {{team_user.username}}
-              </div>
-            </td>
-            <td>
-              <button ng-click="deleteTeam(team.id, key)" ng-hide="user.username != team.captain_name" class="btn btn-danger pull-right">supprimer</i></button>
-              <button ng-show="user.username != team.captain_name && ticket.paid" ng-click="joinTeam(team.id, team.game)" type="submit" class="btn btn-success pull-right">Rejoindre</i></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments" ng-if="tournament.team_size == 1">
-    <div class="panel-heading">
-      <div class="panel-title row tournaments-text">
-        <strong>{{tournament.title}}</strong>
-        <button ng-click="joinTourney(tournament.game)" ng-show="loggedIn && ticket.paid" type="submit" class="btn btn-success pull-right">Rejoindre</button>
+      <div class="panel-body">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th ng-if="isTeam(tournament)">Nom de l'équipe</th>
+              <th>Joueurs</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="(key, team) in teams" ng-if="team.game == tournament.game">
+              <th ng-if="isTeam(tournament)">{{ team.name }}</th>
+              <td ng-if="isSingle(tournament)">{{ team.captain_name }}</td>
+              <td ng-if="isTeam(tournament)">
+                <i class="fa fa-star"></i> {{ team.captain_name }}
+                <div ng-repeat="(key, team_user) in team_users" ng-if="team_user.team_id == team.id">
+                  <button class="btn btn-xs btn-danger" ng-if="isCaptain(team)" ng-click="deleteTeamUser(team_user.id, key)">
+                    <i class="fa fa-user-times"></i>
+                  </button>
+                  {{ team_user.username }}
+                </div>
+              </td>
+              <td>
+                <button class="btn btn-danger btn-sm pull-right" ng-show="hasTicket() && isCaptain(team)" ng-click="deleteTeam(team.id, key)">
+                  <span ng-show="isSingle(tournament)"><i class="fa fa-minus"></i> Me retirer</span>
+                  <span ng-show="isTeam(tournament)"><i class="fa fa-times"></i> Supprimer l'équipe</span>
+                </button>
+                <button class="btn btn-success btn-sm pull-right" ng-show="hasTicket() && isTeam(tournament) && !isCaptain(team)" ng-click="joinTeam(team.id, team.game)">
+                  <i class="fa fa-user-plus"></i> Rejoindre
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </div>
-    <div class="panel-body">
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Joueur</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="(key, team) in teams" ng-if="team.game==tournament.game">
-            <td>{{team.captain_name}}</td>
-            <td>
-              <button ng-click="deleteTeam(team.id, key)" ng-hide="user.username != team.captain_name" class="btn btn-danger pull-right">supprimer</i></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </div>
