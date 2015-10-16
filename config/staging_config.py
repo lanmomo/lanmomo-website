@@ -1,4 +1,5 @@
 DEBUG = False
+WEB_ROOT = 'http://patate.lanmomo.org'
 DATABASE_URI = 'mysql+mysqlconnector://lanmomo@localhost/lanmomo'
 SECRET_KEY = 'secret'
 
@@ -11,9 +12,6 @@ MAILGUN_KEY = 'secret'
 PAYPAL_API_ID = 'get_rect()'
 PAYPAL_API_SECRET = 'get_rect()'
 PAYPAL_API_MODE = 'sandbox'
-PAYPAL_RETURN_URL = 'http://patate.lanmomo.org/pay/execute'
-# TODO check cancel url
-PAYPAL_CANCEL_URL = 'http://patate.lanmomo.org/pay/cancel'
 
 # Lanmomo
 TYPE_IDS = {'pc': 0, 'console': 1}

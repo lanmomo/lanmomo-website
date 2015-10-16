@@ -1,4 +1,5 @@
 DEBUG = True
+WEB_ROOT = 'http://localhost:5000/#'
 DATABASE_URI = 'sqlite:////tmp/test.db'
 SECRET_KEY = 'secret'
 
@@ -11,9 +12,6 @@ MAILGUN_KEY = 'secret'
 PAYPAL_API_ID = ''
 PAYPAL_API_SECRET = ''
 PAYPAL_API_MODE = 'sandbox'
-PAYPAL_RETURN_URL = 'http://localhost:5000/#/pay/execute'
-# TODO check cancel url
-PAYPAL_CANCEL_URL = 'http://localhost:5000/#/pay/cancel'
 
 # Lanmomo
 TYPE_IDS = {'pc': 0, 'console': 1}

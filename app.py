@@ -72,7 +72,7 @@ def create_pdf_from_ticket(ticket, filename):
     if not isdir(dirname(filename)):
         os.makedirs(dirname(filename))
 
-    qr_string = 'https://lanmomo.org/qr/%s' % ticket.qr_token
+    qr_string = '{}/qr/{}'.format(app.config['WEB_ROOT'], ticket.qr_token)
 
     p = canvas.Canvas(filename)
     p.translate(cm * 5.2, cm * 12)
@@ -692,7 +692,9 @@ def get_ticket_from_user(user_id):
     if not ticket:
         return jsonify({}), 200
     if owner:
-        return jsonify({'ticket': ticket.as_private_dict()}), 200
+        ticket = ticket.as_private_dict()
+        ticket['qr_url'] = '{}/qr/{}'.format(app.config['WEB_ROOT'], ticket['qr_token'])
+        return jsonify({'ticket': ticket}), 200
     return jsonify({'ticket': ticket.as_pub_dict()}), 200
 
 
@@ -791,7 +793,7 @@ def signup():
     user = User.query.filter(User.email == req['email']).one()
 
     fullname = '%s %s' % (req['firstname'], req['lastname'])
-    conf_url = 'https://lanmomo.org/verify/%s' % user.confirmation_token
+    conf_url = '{}/verify/{}'.format(app.config['WEB_ROOT'], user.confirmation_token)
 
     message = ("""\
 Bonjour %s, <br><br>
@@ -919,8 +921,8 @@ def setup(env):
         client_id=app.config['PAYPAL_API_ID'],
         client_secret=app.config['PAYPAL_API_SECRET'],
         mode=app.config['PAYPAL_API_MODE'],
-        return_url=app.config['PAYPAL_RETURN_URL'],
-        cancel_url=app.config['PAYPAL_CANCEL_URL'])
+        return_url='{}/pay/execute'.format(app.config['WEB_ROOT']),
+        cancel_url='{}/pay/cancel'.format(app.config['WEB_ROOT']))  # TODO check cancel url
 
     if 'STAGING' in app.config:
         app.config['CURRENT_COMMIT'] = '!!Staging is broken!!'

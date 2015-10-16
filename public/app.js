@@ -588,7 +588,7 @@ app.controller('ProfileController', function ($scope, $http) {
     .success(function(data) {
       if (data.ticket) {
         $scope.userTicket = data.ticket;
-        $scope.qrCodeString = 'https://lanmomo.org/qr/' + data.ticket.qr_token;
+        $scope.qrCodeString = data.ticket.qr_url;
       }
     })
     .error(function(err) {
