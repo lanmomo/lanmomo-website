@@ -145,8 +145,8 @@ app.controller('GamesController', function($scope, $http) {
     });
 });
 
-app.controller('TournamentsController', function($scope, $http, $location) {
-  function refreshData() {
+app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
+  $scope.init = function() {
     $http.get('/assets/tournaments.json')
       .success(function(data) {
         $scope.tournaments = data.tournaments;
@@ -155,40 +155,40 @@ app.controller('TournamentsController', function($scope, $http, $location) {
         $scope.error = {message: err.message, status: status};
       });
 
-      $http.get('/api/teams')
-        .success(function(data) {
-          $scope.teams = data.teams;
-        })
-        .error(function(err, status) {
-          $scope.error = {message: err.message, status: status};
-        });
-
-        $http.get('/api/team_users')
-        .success(function(data) {
-          $scope.team_users = data.team_users;
-        })
-        .error(function(err, status) {
-          $scope.error = {message: err.message, status: status};
-        });
-
-      if ($scope.loggedIn) {
-        $http.get('/api/profile')
-        .success(function(data) {
-          $scope.user = data.user;
-        })
-        .error(function(err, status) {
-          $scope.error = {message: err.message, status: status};
-        });
-
-        $http.get('/api/users/ticket')
+    if (Auth.isLoggedIn()) {
+      $http.get('/api/users/ticket')
         .success(function (data) {
           $scope.ticket = data.ticket;
         })
         .error(function(err, status) {
           $scope.error = {message: err.message, status: status};
         });
-      }
-  }
+    }
+  };
+
+  $scope.refresh = function() {
+    $http.get('/api/teams')
+      .success(function(data) {
+        $scope.teams = data.teams;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.message, status: status};
+      });
+
+    $http.get('/api/team_users')
+      .success(function(data) {
+        $scope.team_users = data.team_users;
+      })
+      .error(function(err, status) {
+        $scope.error = {message: err.message, status: status};
+      });
+  };
+
+  $scope.init();
+  $scope.refresh();
+  $scope.$on('login', function() {
+    $scope.init();
+  });
 
   $scope.hasTicket = function() {
     return $scope.loggedIn && $scope.ticket && $scope.ticket.paid;
@@ -200,17 +200,18 @@ app.controller('TournamentsController', function($scope, $http, $location) {
     return tournament.team_size != 1;
   };
   $scope.isCaptain = function(team) {
-    return $scope.user && $scope.user.username == team.captain_name;
+    return $scope.ticket && $scope.ticket.owner_username == team.captain_name;
   };
 
-  $scope.createTeam = function(_name, _game) {
+  $scope.createTeam = function(name, game) {
     var data = {
-      game: _game,
-      name: _name
+      game: game,
+      name: name
     };
+
     $http.post('/api/teams',data)
-      .success(function(data) {
-        refreshData();
+      .success(function() {
+        $scope.refresh();
       })
       .error(function(err, status) {
         $scope.error = {message: err.message, status: status};
@@ -232,7 +233,7 @@ app.controller('TournamentsController', function($scope, $http, $location) {
   $scope.deleteTeamUser = function(id, index) {
     if (confirm('Êtes vous certain de vouloir retirer cette personne ?')) {
       $http.delete('/api/team_users/' + id)
-        .success(function(data) {
+        .success(function() {
           $scope.team_users.splice(index, 1);
         })
         .error(function(err, status) {
@@ -242,26 +243,45 @@ app.controller('TournamentsController', function($scope, $http, $location) {
   };
 
   $scope.joinTourney = function(game) {
-    name = Math.random().toString(36).replace(/[^a-zA-Z0-9]+/g, '')
-            .substr(0, 26);
+    var name = Math.random().toString(36).replace(/[^a-zA-Z0-9]+/g, '').substr(0, 26);
     $scope.createTeam(name, game);
   };
 
-  $scope.joinTeam = function(id, _game) {
+  $scope.joinTeam = function(id, game) {
     var data = {
       team_id: id,
-      game: _game
+      game: game
     };
+
     $http.post('/api/team_users', data)
-      .success(function(data) {
-        refreshData();
+      .success(function() {
+        $scope.refresh();
       })
       .error(function(err, status) {
         $scope.error = {message: err.message, status: status};
       });
   };
 
-  refreshData();
+  $scope.modal = function(game) {
+    var modalInstance = $modal.open({
+      controller: 'TournamentsModalController',
+      templateUrl: 'partials/tournaments-modal.html'
+    });
+    modalInstance.result.then(function(name) {
+      if (name) {
+        $scope.createTeam(name, game);
+      }
+    });
+  };
+});
+
+app.controller('TournamentsModalController', function($scope, $modalInstance) {
+  $scope.ok = function() {
+    $modalInstance.close($scope.name);
+  };
+  $scope.cancel = function() {
+    $modalInstance.close();
+  };
 });
 
 app.controller('ServersController', function($scope, $http, $interval) {
