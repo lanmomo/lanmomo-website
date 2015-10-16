@@ -41,9 +41,3 @@ Please read the license provided in LICENSE before modifying this software.
 Windows is not supported. If you are not familiar with Linux, now is the time !
 
 You can dual-boot or use a virtualisation software like VirtualBox and install a user-friendly distribution.
-
-## Cache busting in production
-In order to cache bust, you need to use the grunt task to build the static directory with the latest md5s:
-```
-grunt build
-```

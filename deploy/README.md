@@ -26,7 +26,7 @@ You are strongly advised to run this application inside a container/VM. Python d
 * `sudo cp deploy/nginx/lanmomo.org /etc/nginx/sites-enabled/`
 * `cp deploy/lanmomo.service /etc/systemd/system/`
 * Change config/prod_config.py to your needs
-* `(cd deploy/ && ./cache_bust.py)`
+* `grunt build`
 * `sudo systemctl enable lanmomo`
 * `sudo systemctl start lanmomo`
 * `sudo systemctl reload nginx`
@@ -40,6 +40,6 @@ You are strongly advised to run this application inside a container/VM. Python d
 * `sudo cp deploy/lanmomo.org /etc/nginx/sites-enabled/`
 * `sudo pip3 install -r requirements.txt`
 * `bower install`
-* `(cd deploy/ && ./cache_bust.py)`
+* `grunt build`
 * `sudo systemctl start lanmomo`
 * `sudo systemctl reload nginx`
