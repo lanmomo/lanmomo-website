@@ -191,6 +191,9 @@ body.staging .body {
   width: 100%;
   text-shadow: 1px 1px 4px black;
 }
+a.terms {
+  text-decoration: underline;
+}
 /* END SUBSCRIPTION */
 
 /* BEGIN LOGIN */
