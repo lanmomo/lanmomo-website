@@ -136,6 +136,27 @@ app.controller('NavbarController', function($scope, $location, Auth) {
   });
 });
 
+app.controller('HomeController', function($scope, $http, Auth) {
+  $scope.hasTicket = false;
+
+  $scope.init = function() {
+    if (Auth.isLoggedIn()) {
+      $http.get('/api/users/ticket')
+        .success(function (data) {
+          $scope.hasTicket = $scope.loggedIn && data.ticket && data.ticket.paid;
+        })
+        .error(function (err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+    }
+  };
+
+  $scope.init();
+  $scope.$on('login', function() {
+    $scope.init();
+  });
+});
+
 app.controller('GamesController', function($scope, $http) {
   $http.get('/assets/games.json')
     .success(function(games) {
@@ -147,6 +168,8 @@ app.controller('GamesController', function($scope, $http) {
 });
 
 app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
+  $scope.hasTicket = false;
+
   $scope.init = function() {
     $http.get('/assets/tournaments.json')
       .success(function(data) {
@@ -160,6 +183,7 @@ app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
       $http.get('/api/users/ticket')
         .success(function (data) {
           $scope.ticket = data.ticket;
+          $scope.hasTicket = $scope.loggedIn && $scope.ticket && $scope.ticket.paid;
         })
         .error(function(err, status) {
           $scope.error = {message: err.message, status: status};
@@ -191,9 +215,6 @@ app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
     $scope.init();
   });
 
-  $scope.hasTicket = function() {
-    return $scope.loggedIn && $scope.ticket && $scope.ticket.paid;
-  };
   $scope.isSingle = function(tournament) {
     return tournament.team_size == 1;
   };
@@ -322,6 +343,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
 
 app.controller('TicketsController', function($scope, $http, $location, Auth, Timer) {
   $scope.canBuy = false;
+  $scope.hasTicket = false;
   $scope.submitted = false;
   $scope.max = {
     pc: 96,
@@ -339,7 +361,8 @@ app.controller('TicketsController', function($scope, $http, $location, Auth, Tim
           if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
             Timer.bootstrap($scope, data.ticket.reserved_until);
           }
-          $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
+          $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid);
+          $scope.hasTicket = $scope.loggedIn && data.ticket && data.ticket.paid;
         })
         .error(function (err, status) {
           $scope.error = {message: err.message, status: status};
@@ -784,7 +807,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
     return $scope.userTicketSeatID == seat && $scope.getOwner(seat) == $scope.userTicketOwner;
   };
   $scope.isUser = function(seat) {
-    return $scope.userPaidSeatID == seat || $scope.isAlreadyReserved(seat);
+    return $scope.userPaidSeatID == seat;
   };
   $scope.getOwner = function(seat) {
     return seatOwners[seat];
@@ -800,7 +823,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
     if (Auth.isLoggedIn()) {
       $http.get('/api/users/ticket')
         .success(function (data) {
-          if (data.ticket && data.ticket.type_id !== TICKET_TYPES.PC) {
+          if (data.ticket && data.ticket.type_id !== TICKET_TYPES.PC && !data.ticket.paid) {
             $location.path('/pay');
           }
           if (data.ticket && data.ticket.paid) {
@@ -832,7 +855,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
     $scope.selectedSeat = true;
     $scope.selectedSeatID = seat;
 
-    if (!$scope.isAvail(seat) && !$scope.isAlreadyReserved(seat)) {
+    if (!$scope.isAvail(seat)) {
       $scope.selectSeatIsFree = false;
       $scope.selectedSeatTicketPaid = $scope.isTaken(seat);
       $scope.selectedSeatUser = $scope.getOwner(seat);
@@ -918,8 +941,10 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
 });
 
 app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
-  $routeProvider.when('/', {
-    templateUrl: 'partials/home.html'
+  $routeProvider
+  .when('/', {
+    templateUrl: 'partials/home.html',
+    controller: 'HomeController'
   })
   .when('/tickets', {
     templateUrl: 'partials/tickets.html',

@@ -3,32 +3,38 @@
     {
       "game": "LoL",
       "title": "League of Legends",
-      "team_size": 5
+      "team_size": 5,
+      "rules": "5v5"
     },
     {
       "game": "CS:GO",
       "title": "Counter Strike: Global Offensive",
-      "team_size": 5
+      "team_size": 5,
+      "rules": "5v5"
     },
     {
       "game": "RL",
       "title": "Rocket League",
-      "team_size": 2
+      "team_size": 2,
+      "rules": "2v2"
     },
     {
       "game": "TMNF",
       "title": "TrackMania Nations Forever",
-      "team_size": 1
+      "team_size": 1,
+      "rules": "1 contre tous"
     },
     {
       "game": "S4",
       "title": "Super Smash Bros 4",
-      "team_size": 1
+      "team_size": 1,
+      "rules": "1v1"
     },
     {
       "game": "Melee",
       "title": "Super Smash Bros Melee",
-      "team_size": 1
+      "team_size": 1,
+      "rules": "1v1"
     }
   ]
 }

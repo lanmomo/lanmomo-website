@@ -44,11 +44,11 @@
       <div class="panel-body">
         <div class="media">
           <div class="media-left">
-            <img class="media-object" src="assets/a-logo.png" alt="LAN Montmorency Logo">
+            <img class="media-object" src="/assets/a-logo.png" alt="LAN Montmorency Logo">
           </div>
           <div class="media-body">
-            <h3 class="media-heading">LAN Montmorency BYOC</h3>
-            <div class="ticket-date">14 et 15 novembre 2015</div>
+            <h3 class="media-heading">LAN Montmorency <abbr title="Bring Your Own PC / Apporter votre propre ordinateur">BYOC</abbr></h3>
+            <div class="ticket-date">14 et 15 novembre 2015, de 10h le samedi à 16h le dimanche</div>
             <div class="ticket-venue">Collège Montmorency</div>
           </div>
           <div class="media-right">
@@ -61,6 +61,7 @@
             <div ng-hide="ticketCount.pc.soldout">
               <button ng-show="canBuy" ng-disabled="submitted" ng-click="buy(0)" class="btn btn-success">Acheter <i class="fa fa-chevron-right"></i></button>
               <span ng-hide="canBuy" class="label label-success">Disponible</span>
+              <span ng-show="hasTicket" class="label label-danger">Acheté</span>
             </div>
           </div>
         </div>
@@ -85,11 +86,11 @@
       <div class="panel-body">
         <div class="media">
           <div class="media-left">
-            <img class="media-object" src="assets/a-logo.png" alt="LAN Montmorency Logo">
+            <img class="media-object" src="/assets/a-logo.png" alt="LAN Montmorency Logo">
           </div>
           <div class="media-body">
             <h3 class="media-heading">LAN Montmorency Console</h3>
-            <div class="ticket-date">14 et 15 novembre 2015</div>
+            <div class="ticket-date">14 et 15 novembre 2015, de 10h le samedi à 16h le dimanche</div>
             <div class="ticket-venue">Collège Montmorency</div>
           </div>
           <div class="media-right">
@@ -102,6 +103,7 @@
             <div ng-hide="ticketCount.console.soldout">
               <button ng-show="canBuy" ng-disabled="submitted" ng-click="buy(1)" class="btn btn-success">Acheter <i class="fa fa-chevron-right"></i></button>
               <span ng-hide="canBuy" class="label label-success">Disponible</span>
+              <span ng-show="hasTicket" class="label label-danger">Acheté</span>
             </div>
           </div>
         </div>

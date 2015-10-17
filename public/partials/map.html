@@ -78,7 +78,7 @@
   <div class="well seat-map-preview" ng-show="selectedSeat">
     <div class="media">
       <div class="media-left">
-        <div class="preview-seat">
+        <div class="preview-seat" ng-class="{selected: isSelected(selectedSeatID), taken: isTaken(selectedSeatID), reserved: isReserved(selectedSeatID), user: isUser(selectedSeatID)}">
           <span>{{ selectedSeatID }}</span>
         </div>
       </div>
@@ -89,7 +89,8 @@
       </div>
       <div class="media-body preview-text" ng-show="!selectSeatIsFree && !selectedSeatTicketPaid && !selectedSeatIsUserPaidSeat">
         <h3 class="media-heading text-warning">Réservé</h3>
-        <p>Ce siège est réservé par <strong>{{ selectedSeatUser }}</strong> jusqu'à {{ selectedSeatUntil | amDateFormat:'HH:mm:ss' }}.</p>
+        <p><button ng-show="isAlreadyReserved(selectedSeatID)" class="btn btn-warning" ng-disabled="submitted" ng-click="buy(selectedSeatID)">Conserver ce siège <i class="fa fa-chevron-right"></i></button>
+        Ce siège est réservé par <strong>{{ selectedSeatUser }}</strong> jusqu'à {{ selectedSeatUntil | amDateFormat:'HH:mm:ss' }}.</p>
       </div>
       <div class="media-body preview-text" ng-show="!selectSeatIsFree && selectedSeatTicketPaid && !selectedSeatIsUserPaidSeat">
         <h3 class="media-heading text-danger">Vendu</h3>

@@ -548,28 +548,32 @@ table.table-no-margin {
 .seat-map-section .seat:hover {
   background-color: #49515a;
 }
-.seat-map-section .seat.selected {
+.seat-map-section .seat.selected,
+.seat-map-preview .preview-seat.selected {
   color: #fff;
   background-color: #62c462;
 }
 .seat-map-section .seat.selected:hover {
   background-color: #4fbd4f;
 }
-.seat-map-section .seat.reserved {
+.seat-map-section .seat.reserved,
+.seat-map-preview .preview-seat.reserved {
   color: #fff;
   background-color: #f89406;
 }
 .seat-map-section .seat.reserved:hover {
   background-color: #df8505;
 }
-.seat-map-section .seat.taken {
+.seat-map-section .seat.taken,
+.seat-map-preview .preview-seat.taken {
   color: #fff;
   background-color: #ee5f5b;
 }
 .seat-map-section .seat.taken:hover {
   background-color: #ec4844;
 }
-.seat-map-section .seat.user {
+.seat-map-section .seat.user,
+.seat-map-preview .preview-seat.user {
   color: #fff;
   background-color: #5bc0de;
 }
@@ -612,6 +616,9 @@ table.table-no-margin {
 .tournaments .panel .panel-heading .panel-title {
   line-height: 30px;
   font-size: 20px;
+}
+.tournaments .panel .panel-heading .panel-title small {
+  padding-left: 10px;
 }
 /* END TOURNAMENTS */
 

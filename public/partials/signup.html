@@ -16,18 +16,18 @@
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.username.$invalid && form.username.$dirty) || (!state.usernameAvailable && state.usernameChanged), 'has-success' : form.username.$valid && state.usernameChanged && state.usernameAvailable }">
       <label for="username" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Saisissez un pseudonyme ou gamertag qui vous représente">Pseudonyme <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <input type="text" name="username" id="username" ng-model="user.username" ng-blur="isUsernameAvailable(user)" ng-change="resetUsernameChanged()" class="form-control" placeholder="Saisissez votre pseudonyme" required>
+        <input type="text" name="username" id="username" ng-model="user.username" ng-blur="isUsernameAvailable(user)" ng-change="resetUsernameChanged()" class="form-control" placeholder="Saisissez votre pseudonyme" maxlength="64" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="username" class="control-label" ng-show="form.username.$invalid">Vous devez saisir un nom d'utilisateur.</label>
-        <label for="username" class="control-label" ng-show="!state.usernameAvailable && state.usernameChanged">Ce nom d'utilisateur est déjà utilisée.</label>
+        <label for="username" class="control-label" ng-show="form.username.$valid && !state.usernameAvailable && state.usernameChanged">Ce nom d'utilisateur est déjà utilisée.</label>
       </div>
     </div>
 
     <div class="form-group has-feedback" ng-class="{ 'has-error' : form.firstname.$invalid && form.firstname.$dirty, 'has-success' : form.firstname.$valid && form.firstname.$touched }">
       <label for="firstname" class="col-sm-4 col-md-3 col-lg-2 control-label">Prénom</label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <input type="text" name="firstname" id="firstname" ng-model="user.firstname" class="form-control" placeholder="Saisissez votre prénom" required>
+        <input type="text" name="firstname" id="firstname" ng-model="user.firstname" class="form-control" placeholder="Saisissez votre prénom" maxlength="64" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="firstname" class="control-label">Vous devez saisir votre prénom.</label>
@@ -37,7 +37,7 @@
     <div class="form-group has-feedback" ng-class="{ 'has-error' : form.lastname.$invalid && form.lastname.$dirty, 'has-success' : form.lastname.$valid && form.lastname.$touched }">
       <label for="lastname" class="col-sm-4 col-md-3 col-lg-2 control-label">Nom</label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <input type="text" name="lastname" id="lastname" ng-model="user.lastname" class="form-control" placeholder="Saisissez votre nom" required>
+        <input type="text" name="lastname" id="lastname" ng-model="user.lastname" class="form-control" placeholder="Saisissez votre nom" maxlength="64" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="lastname" class="control-label">Vous devez saisir votre nom.</label>
@@ -47,7 +47,7 @@
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.email.$invalid && form.email.$dirty) || (!state.emailAvailable && state.emailChanged), 'has-success' : form.email.$valid && state.emailChanged && state.emailAvailable }">
       <label for="email" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Un code de confirmation sera envoyé à l'adresse courriel saisie">Courriel <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <input type="email" name="email" id="email" ng-model="user.email" ng-blur="isEmailAvailable(user)" ng-change="resetEmailChanged()" class="form-control" placeholder="Saisissez votre courriel" required>
+        <input type="email" name="email" id="email" ng-model="user.email" ng-blur="isEmailAvailable(user)" ng-change="resetEmailChanged()" class="form-control" placeholder="Saisissez votre courriel" maxlength="64" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="email" class="control-label" ng-show="form.email.$invalid">Vous devez saisir une adresse courriel valide.</label>
@@ -58,7 +58,7 @@
     <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.phone.$invalid || form.phone.$error.pattern) && form.phone.$dirty, 'has-success' : form.phone.$valid }">
       <label for="phone" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Le numéro de téléphone est requis par les autorités du cégep">Numéro de téléphone <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <input type="text" name="phone" id="phone" ng-model="user.phone" ng-pattern="/^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i" class="form-control" placeholder="Saisissez votre numéro de téléphone" required>
+        <input type="text" name="phone" id="phone" ng-model="user.phone" ng-pattern="/^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i" class="form-control" placeholder="Saisissez votre numéro de téléphone" maxlength="64" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="phone" class="control-label">Vous devez saisir un numéro de téléphone valide sous le format 123-123-1234.</label>
@@ -68,7 +68,7 @@
     <div class="form-group has-feedback" ng-class="{ 'has-error' : form.password.$invalid && form.password.$dirty, 'has-success' : form.password.$valid }">
       <label for="password" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Mot de passe d'au moins 8 caractères">Mot de passe <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <input type="password" name="password" id="password" ng-model="user.password" class="form-control" ng-minlength="8" placeholder="Saisissez votre mot de passe" required>
+        <input type="password" name="password" id="password" ng-model="user.password" class="form-control" ng-minlength="8" placeholder="Saisissez votre mot de passe" maxlength="2048" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="password" class="control-label">Vous devez un mot de passe d'au moins 8 caractères.</label>
@@ -78,7 +78,7 @@
     <div class="form-group has-feedback" ng-class="{ 'has-error' : form.conf.$invalid && form.conf.$dirty && !form.conf.$error.passwordCheck, 'has-success' : form.conf.$valid }">
       <label for="conf" class="col-sm-4 col-md-3 col-lg-2 control-label" tooltip-placement="top" tooltip="Confirmez votre mot de passe">Confirmation <i class="fa fa-info-circle"></i></label>
       <div class="col-sm-8 col-md-9 col-lg-10 control-label-hidden">
-        <input type="password" name="conf" id="conf" class="form-control" ng-minlength="8" ng-model="none" password-check="user.password" placeholder="Confirmez votre mot de passe" required>
+        <input type="password" name="conf" id="conf" class="form-control" ng-minlength="8" ng-model="none" password-check="user.password" placeholder="Confirmez votre mot de passe" maxlength="2048" required>
         <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
         <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
         <label for="conf" class="control-label">Vous devez un mot de passe identique au précédant.</label>
@@ -99,7 +99,7 @@
     <div class="form-group">
       <div class="col-sm-offset-4 col-md-offset-3 col-lg-offset-2 col-sm-8 col-md-9 col-lg-10">
         <button type="submit" class="btn btn-primary" ng-disabled="state.success || !checked || form.email.$invalid || form.lastname.$invalid || form.firstname.$invalid || form.username.$invalid || form.phone.$invalid || !state.usernameAvailable || !state.emailAvailable"
-          ng-click="signup(user)"><i class="fa fa-pencil"></i> S'enregistrer</button>
+          ng-click="signup(user)"><i class="fa fa-check"></i> Créer mon compte</button>
       </div>
     </div>
   </form>
