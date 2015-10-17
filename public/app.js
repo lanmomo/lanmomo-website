@@ -168,6 +168,8 @@ app.controller('GamesController', function($scope, $http) {
 });
 
 app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
+  $scope.hasTicket = false;
+
   $scope.init = function() {
     $http.get('/assets/tournaments.json')
       .success(function(data) {
@@ -181,6 +183,7 @@ app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
       $http.get('/api/users/ticket')
         .success(function (data) {
           $scope.ticket = data.ticket;
+          $scope.hasTicket = $scope.loggedIn && $scope.ticket && $scope.ticket.paid;
         })
         .error(function(err, status) {
           $scope.error = {message: err.message, status: status};
@@ -212,9 +215,6 @@ app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
     $scope.init();
   });
 
-  $scope.hasTicket = function() {
-    return $scope.loggedIn && $scope.ticket && $scope.ticket.paid;
-  };
   $scope.isSingle = function(tournament) {
     return tournament.team_size == 1;
   };
@@ -343,6 +343,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
 
 app.controller('TicketsController', function($scope, $http, $location, Auth, Timer) {
   $scope.canBuy = false;
+  $scope.hasTicket = false;
   $scope.submitted = false;
   $scope.max = {
     pc: 96,
@@ -360,7 +361,8 @@ app.controller('TicketsController', function($scope, $http, $location, Auth, Tim
           if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
             Timer.bootstrap($scope, data.ticket.reserved_until);
           }
-          $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
+          $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid);
+          $scope.hasTicket = $scope.loggedIn && data.ticket && data.ticket.paid;
         })
         .error(function (err, status) {
           $scope.error = {message: err.message, status: status};

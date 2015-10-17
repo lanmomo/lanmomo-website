@@ -50,7 +50,7 @@
     <h1>Équipes</h1>
   </div>
 
-  <div ng-show="loggedIn && !hasTicket()">
+  <div ng-show="loggedIn && !hasTicket">
     <div class="well">
       <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Attention!</strong> Vous devez avoir un billet pour vous inscrire à un tournois.</p>
       <div class="btn-group" role="group">
@@ -66,10 +66,10 @@
   <div class="tournaments">
     <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments">
       <div class="panel-heading clearfix">
-        <button class="btn btn-success btn-sm pull-right" ng-show="hasTicket() && isTeam(tournament)" ng-click="modal(tournament.game)">
+        <button class="btn btn-success btn-sm pull-right" ng-show="hasTicket && isTeam(tournament)" ng-click="modal(tournament.game)">
           <i class="fa fa-plus"></i> Créer une équipe
         </button>
-        <button class="btn btn-success btn-sm pull-right" ng-show="hasTicket() && isSingle(tournament)" ng-click="joinTourney(tournament.game)">
+        <button class="btn btn-success btn-sm pull-right" ng-show="hasTicket && isSingle(tournament)" ng-click="joinTourney(tournament.game)">
           <i class="fa fa-plus"></i> Participer
         </button>
         <h4 class="panel-title">{{ tournament.title }}</h4>
@@ -97,11 +97,11 @@
                 </div>
               </td>
               <td>
-                <button class="btn btn-danger btn-sm pull-right" ng-show="hasTicket() && isCaptain(team)" ng-click="deleteTeam(team.id, key)">
+                <button class="btn btn-danger btn-sm pull-right" ng-show="hasTicket && isCaptain(team)" ng-click="deleteTeam(team.id, key)">
                   <span ng-show="isSingle(tournament)"><i class="fa fa-minus"></i> Me retirer</span>
                   <span ng-show="isTeam(tournament)"><i class="fa fa-times"></i> Supprimer l'équipe</span>
                 </button>
-                <button class="btn btn-success btn-sm pull-right" ng-show="hasTicket() && isTeam(tournament) && !isCaptain(team)" ng-click="joinTeam(team.id, team.game)">
+                <button class="btn btn-success btn-sm pull-right" ng-show="hasTicket && isTeam(tournament) && !isCaptain(team)" ng-click="joinTeam(team.id, team.game)">
                   <i class="fa fa-user-plus"></i> Rejoindre
                 </button>
               </td>
