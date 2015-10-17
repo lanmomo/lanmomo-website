@@ -90,7 +90,7 @@
               <td ng-if="isTeam(tournament)">
                 <i class="fa fa-star"></i> {{ team.captain_name }}
                 <div ng-repeat="(key, team_user) in team_users" ng-if="team_user.team_id == team.id">
-                  <button class="btn btn-xs btn-danger" ng-if="isCaptain(team)" ng-click="deleteTeamUser(team_user.id, key)">
+                  <button class="btn btn-xs btn-danger" ng-if="isCaptain(team) || isMember(team_user)" ng-click="deleteTeamUser(team_user.id, key)">
                     <i class="fa fa-user-times"></i>
                   </button>
                   {{ team_user.username }}

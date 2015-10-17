@@ -221,6 +221,9 @@ app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
   $scope.isTeam = function(tournament) {
     return tournament.team_size != 1;
   };
+  $scope.isMember = function(team_user) {
+    return $scope.ticket && $scope.ticket.owner_username == team_user.username;
+  };
   $scope.isCaptain = function(team) {
     return $scope.ticket && $scope.ticket.owner_username == team.captain_name;
   };

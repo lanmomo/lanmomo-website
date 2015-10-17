@@ -200,7 +200,7 @@ def delete_team_user(id):
     if not team_user:
         return jsonify({'message': 'Aucune Utilisateur Trouvé'}), 500
 
-    if team.captain_id != user_id and user_id != id:
+    if team.captain_id != user_id and user_id != team_user.user_id:
         return jsonify({'message': "Vous n'êtes pas le capitaine " +
                         "de cette équipe"}), 401
 
