@@ -61,7 +61,7 @@
             <div ng-hide="ticketCount.pc.soldout">
               <button ng-show="canBuy" ng-disabled="submitted" ng-click="buy(0)" class="btn btn-success">Acheter <i class="fa fa-chevron-right"></i></button>
               <span ng-hide="canBuy" class="label label-success">Disponible</span>
-              <span ng-show="hasTicket" class="label label-danger">Acheté</span>
+              <span ng-show="hasTicket(0)" class="label label-danger">Acheté</span>
             </div>
           </div>
         </div>
@@ -103,7 +103,7 @@
             <div ng-hide="ticketCount.console.soldout">
               <button ng-show="canBuy" ng-disabled="submitted" ng-click="buy(1)" class="btn btn-success">Acheter <i class="fa fa-chevron-right"></i></button>
               <span ng-hide="canBuy" class="label label-success">Disponible</span>
-              <span ng-show="hasTicket" class="label label-danger">Acheté</span>
+              <span ng-show="hasTicket(1)" class="label label-danger">Acheté</span>
             </div>
           </div>
         </div>
