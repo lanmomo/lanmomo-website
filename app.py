@@ -693,7 +693,8 @@ def get_ticket_from_user(user_id):
         return jsonify({}), 200
     if owner:
         ticket = ticket.as_private_dict()
-        ticket['qr_url'] = '{}/qr/{}'.format(app.config['WEB_ROOT'], ticket['qr_token'])
+        ticket['qr_url'] = '{}/qr/{}'.format(app.config['WEB_ROOT'],
+                                             ticket['qr_token'])
         return jsonify({'ticket': ticket}), 200
     return jsonify({'ticket': ticket.as_pub_dict()}), 200
 
@@ -736,11 +737,14 @@ def login():
     email = req['email']
     password = req['password']
 
+    if len(password) > 2048:
+        return bad_request("Ce mot de passe est beaucoup trop long !")
+
     user = User.query.filter(User.email == email).first()
 
     if not user:
-        return jsonify({'message': 'Les informations ne concordent pas !'}),\
-                        401
+        return jsonify({'message':
+                        'Les informations ne concordent pas !'}), 401
 
     if not user.confirmed and not app.config['DEBUG']:
         return jsonify({'message': """\
@@ -793,7 +797,8 @@ def signup():
     user = User.query.filter(User.email == req['email']).one()
 
     fullname = '%s %s' % (req['firstname'], req['lastname'])
-    conf_url = '{}/verify/{}'.format(app.config['WEB_ROOT'], user.confirmation_token)
+    conf_url = '{}/verify/{}'.format(app.config['WEB_ROOT'],
+                                     user.confirmation_token)
 
     message = ("""\
 Bonjour %s, <br><br>
@@ -922,7 +927,8 @@ def setup(env):
         client_secret=app.config['PAYPAL_API_SECRET'],
         mode=app.config['PAYPAL_API_MODE'],
         return_url='{}/pay/execute'.format(app.config['WEB_ROOT']),
-        cancel_url='{}/pay/cancel'.format(app.config['WEB_ROOT']))  # TODO check cancel url
+        # TODO check cancel url
+        cancel_url='{}/pay/cancel'.format(app.config['WEB_ROOT']))
 
     if 'STAGING' in app.config:
         app.config['CURRENT_COMMIT'] = '!!Staging is broken!!'
