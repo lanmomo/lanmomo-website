@@ -823,7 +823,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
     if (Auth.isLoggedIn()) {
       $http.get('/api/users/ticket')
         .success(function (data) {
-          if (data.ticket && data.ticket.type_id !== TICKET_TYPES.PC) {
+          if (data.ticket && data.ticket.type_id !== TICKET_TYPES.PC && !data.ticket.paid) {
             $location.path('/pay');
           }
           if (data.ticket && data.ticket.paid) {
