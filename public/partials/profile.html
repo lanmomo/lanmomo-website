@@ -80,7 +80,7 @@
         <div class="form-group has-feedback" ng-class="{ 'has-error' : (form.username.$invalid) || (!state.usernameAvailable && state.usernameChanged) }">
           <label for="username" class="col-sm-4 col-md-3 col-lg-3 control-label" data-toggle="tooltip" data-placement="top" title="Saisissez un pseudonyme ou gamertag qui vous représente">Pseudonyme <i class="fa fa-info-circle"></i></label>
           <div class="col-sm-8 col-md-9 col-lg-9 control-label-hidden">
-            <input type="text" name="username" id="username" ng-model="formUser.username" ng-blur="isUsernameAvailable(formUser)" ng-change="resetUsernameChanged()" class="form-control" required>
+            <input type="text" name="username" id="username" ng-model="formUser.username" ng-blur="isUsernameAvailable(formUser)" ng-change="resetUsernameChanged()" class="form-control" maxlength="64" required>
             <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
             <label for="username" class="control-label" ng-show="form.username.$invalid">Vous devez saisir un nom d'utilisateur.</label>
             <label for="username" class="control-label" ng-show="!state.usernameAvailable && state.usernameChanged">Ce nom d'utilisateur est déjà utilisée.</label>
@@ -90,7 +90,7 @@
         <div class="form-group has-feedback" ng-class="{ 'has-error' : form.firstname.$invalid }">
           <label for="firstname" class="col-sm-4 col-md-3 col-lg-3 control-label">Prénom</label>
           <div class="col-sm-8 col-md-9 col-lg-9 control-label-hidden">
-            <input type="text" name="firstname" id="firstname" ng-model="formUser.firstname" class="form-control" required>
+            <input type="text" name="firstname" id="firstname" ng-model="formUser.firstname" class="form-control" maxlength="64" required>
             <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
             <label for="firstname" class="control-label">Vous devez saisir votre prénom.</label>
           </div>
@@ -99,7 +99,7 @@
         <div class="form-group has-feedback" ng-class="{ 'has-error' : form.lastname.$invalid }">
           <label for="lastname" class="col-sm-4 col-md-3 col-lg-3 control-label">Nom</label>
           <div class="col-sm-8 col-md-9 col-lg-9 control-label-hidden">
-            <input type="text" name="lastname" id="lastname" ng-model="formUser.lastname" class="form-control" required>
+            <input type="text" name="lastname" id="lastname" ng-model="formUser.lastname" class="form-control" maxlength="64" required>
             <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
             <label for="lastname" class="control-label">Vous devez saisir votre nom.</label>
           </div>
@@ -108,7 +108,7 @@
         <div class="form-group has-feedback" ng-class="{ 'has-error' : form.email.$invalid || (!state.emailAvailable && state.emailChanged) }">
           <label for="email" class="col-sm-4 col-md-3 col-lg-3 control-label" data-toggle="tooltip" data-placement="top" title="Un code de confirmation sera envoyé à l'adresse courriel saisie">Courriel <i class="fa fa-info-circle"></i></label>
           <div class="col-sm-8 col-md-9 col-lg-9 control-label-hidden">
-            <input type="email" name="email" id="email" ng-model="formUser.email" ng-blur="isEmailAvailable(formUser)" ng-change="resetEmailChanged()" class="form-control" required>
+            <input type="email" name="email" id="email" ng-model="formUser.email" ng-blur="isEmailAvailable(formUser)" ng-change="resetEmailChanged()" class="form-control" maxlength="64" required>
             <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
             <label for="email" class="control-label" ng-show="form.email.$invalid">Vous devez saisir une adresse courriel valide.</label>
             <label for="email" class="control-label" ng-show="form.email.$valid && !state.emailAvailable && state.emailChanged">Cette adresse courriel est déjà utilisée.</label>
@@ -118,7 +118,7 @@
         <div class="form-group has-feedback" ng-class="{ 'has-error' : form.phone.$invalid || form.phone.$error.pattern }">
           <label for="phone" class="col-sm-4 col-md-3 col-lg-3 control-label" data-toggle="tooltip" data-placement="top" title="Le numéro de téléphone est requis par les autorités du cégep">Numéro de téléphone <i class="fa fa-info-circle"></i></label>
           <div class="col-sm-8 col-md-9 col-lg-9 control-label-hidden">
-            <input type="text" name="phone" id="phone" ng-model="formUser.phone" ng-pattern="/^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i" class="form-control" required>
+            <input type="text" name="phone" id="phone" ng-model="formUser.phone" ng-pattern="/^([+]?1[. -]?)?[(]?[0-9]{3}[)]?[. -]?[0-9]{3}[. -]?[0-9]{4}$/i" class="form-control" maxlength="64" required>
             <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
             <label for="phone" class="control-label">Vous devez saisir un numéro de téléphone valide sous le format 123-123-1234.</label>
           </div>
@@ -139,7 +139,7 @@
           <div class="form-group has-feedback" ng-class="{ 'has-error' : form.oldPassword.$invalid && form.oldPassword.$dirty }">
             <label for="oldPassword" class="col-sm-4 col-md-3 col-lg-3 control-label" data-toggle="tooltip" data-placement="top" title="Mot de passe d'au moins 8 caractères">Mot de passe actuel <i class="fa fa-info-circle"></i></label>
             <div class="col-sm-8 col-md-9 col-lg-9 control-label-hidden">
-              <input type="password" name="oldPassword" id="oldPassword" ng-model="formUser.oldPassword" class="form-control" ng-minlength="8" placeholder="Mot de passe courant" required>
+              <input type="password" name="oldPassword" id="oldPassword" ng-model="formUser.oldPassword" class="form-control" ng-minlength="8" placeholder="Mot de passe courant" maxlength="2048" required>
               <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
               <label for="oldPassword" class="control-label">Vous devez entrer votre mot de passe actuel</label>
             </div>
@@ -148,7 +148,7 @@
           <div class="form-group has-feedback" ng-class="{ 'has-error' : form.password.$invalid && form.password.$dirty, 'has-success' : form.password.$valid }">
             <label for="password" class="col-sm-4 col-md-3 col-lg-3 control-label" data-toggle="tooltip" data-placement="top" title="Mot de passe d'au moins 8 caractères">Nouveau mot de passe <i class="fa fa-info-circle"></i></label>
             <div class="col-sm-8 col-md-9 col-lg-9 control-label-hidden">
-              <input type="password" name="password" id="password" ng-model="formUser.password" class="form-control" ng-minlength="8" placeholder="Nouveau mot de passe" required>
+              <input type="password" name="password" id="password" ng-model="formUser.password" class="form-control" ng-minlength="8" placeholder="Nouveau mot de passe" maxlength="2048" required>
               <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
               <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
               <label for="password" class="control-label">Vous devez un mot de passe d'au moins 8 caractères.</label>
@@ -158,7 +158,7 @@
           <div class="form-group has-feedback" ng-class="{ 'has-error' : form.conf.$invalid && form.conf.$dirty && !form.conf.$error.passwordCheck, 'has-success' : form.conf.$valid }">
             <label for="conf" class="col-sm-4 col-md-3 col-lg-3 control-label" data-toggle="tooltip" data-placement="top" title="Confirmez votre mot de passe">Confirmation <i class="fa fa-info-circle"></i></label>
             <div class="col-sm-8 col-md-9 col-lg-9 control-label-hidden">
-              <input type="password" name="conf" id="conf" class="form-control" ng-minlength="8" ng-model="none" password-check="formUser.password" placeholder="Confirmez votre nouveau mot de passe" required>
+              <input type="password" name="conf" id="conf" class="form-control" ng-minlength="8" ng-model="none" password-check="formUser.password" placeholder="Confirmez votre nouveau mot de passe" maxlength="2048" required>
               <span class="glyphicon glyphicon-remove form-control-feedback feedback-error"></span>
               <span class="glyphicon glyphicon-ok form-control-feedback feedback-success"></span>
               <label for="conf" class="control-label">Vous devez un mot de passe identique au précédant.</label>
