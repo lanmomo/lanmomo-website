@@ -49,7 +49,9 @@ ERR_COMPLETION = """\
 Une erreur est survenue lors de la mise à jour de votre billet."""
 
 MSG_SUCCESS_PAY = """\
-Félicitations, votre billet est maintenant payé !"""
+Félicitations, votre billet est maintenant payé ! Vous allez recevoir votre
+billet en format PDF par courriel. Si le message n'est pas reçu dans les
+prochaines minutes, vérifiez votre courrier indésirable."""
 
 app = Flask(__name__)
 
@@ -198,7 +200,7 @@ def delete_team_user(id):
     if not team_user:
         return jsonify({'message': 'Aucune Utilisateur Trouvé'}), 500
 
-    if team.captain_id != user_id and user_id != id:
+    if team.captain_id != user_id and user_id != team_user.user_id:
         return jsonify({'message': "Vous n'êtes pas le capitaine " +
                         "de cette équipe"}), 401
 
@@ -662,11 +664,17 @@ def complete_purchase(ticket):
         user = User.query.filter(User.id == ticket.owner_id).one()
         fullname = '%s %s' % (user.firstname, user.lastname)
         subject = 'Confirmation de votre achat de billet du LAN Montmorency'
-        attachements = [pdf_filename]
-        message = 'va voir tes pièces jointes le gros'  # TODO
+        attachments = [pdf_filename]
+        message = ("""\
+Bonjour %s, <br><br>
+Vous trouverez ci-joint votre billet du LAN Montmorency en format PDF.
+<br><br>
+Merci et à bientôt !<br><br>
+<small>Ceci est un courriel envoyé automatiquement.
+ Veuillez ne pas y répondre.</small>""") % fullname
 
         # Send email with payment confirmation
-        send_email(user.email, fullname, subject, message, attachements)
+        send_email(user.email, fullname, subject, message, attachments)
     except Exception as e:
         app.logger.error(
             'Erreur lors de la fermeture de la commande pour ' +

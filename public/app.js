@@ -221,6 +221,9 @@ app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
   $scope.isTeam = function(tournament) {
     return tournament.team_size != 1;
   };
+  $scope.isMember = function(team_user) {
+    return $scope.ticket && $scope.ticket.owner_username == team_user.username;
+  };
   $scope.isCaptain = function(team) {
     return $scope.ticket && $scope.ticket.owner_username == team.captain_name;
   };
@@ -343,7 +346,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
 
 app.controller('TicketsController', function($scope, $http, $location, Auth, Timer) {
   $scope.canBuy = false;
-  $scope.hasTicket = false;
+  $scope.ticket = null;
   $scope.submitted = false;
   $scope.max = {
     pc: 96,
@@ -362,7 +365,7 @@ app.controller('TicketsController', function($scope, $http, $location, Auth, Tim
             Timer.bootstrap($scope, data.ticket.reserved_until);
           }
           $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid);
-          $scope.hasTicket = $scope.loggedIn && data.ticket && data.ticket.paid;
+          $scope.ticket = data.ticket;
         })
         .error(function (err, status) {
           $scope.error = {message: err.message, status: status};
@@ -374,6 +377,10 @@ app.controller('TicketsController', function($scope, $http, $location, Auth, Tim
   $scope.$on('login', function() {
     $scope.init();
   });
+
+  $scope.hasTicket = function(type) {
+    return $scope.loggedIn && $scope.ticket && $scope.ticket.paid && $scope.ticket.type_id == type;
+  };
 
   $http.get('/api/tickets')
     .success(function(data) {
