@@ -807,7 +807,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
     return $scope.userTicketSeatID == seat && $scope.getOwner(seat) == $scope.userTicketOwner;
   };
   $scope.isUser = function(seat) {
-    return $scope.userPaidSeatID == seat || $scope.isAlreadyReserved(seat);
+    return $scope.userPaidSeatID == seat;
   };
   $scope.getOwner = function(seat) {
     return seatOwners[seat];
@@ -855,7 +855,7 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
     $scope.selectedSeat = true;
     $scope.selectedSeatID = seat;
 
-    if (!$scope.isAvail(seat) && !$scope.isAlreadyReserved(seat)) {
+    if (!$scope.isAvail(seat)) {
       $scope.selectSeatIsFree = false;
       $scope.selectedSeatTicketPaid = $scope.isTaken(seat);
       $scope.selectedSeatUser = $scope.getOwner(seat);
