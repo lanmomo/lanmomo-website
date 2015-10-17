@@ -136,6 +136,27 @@ app.controller('NavbarController', function($scope, $location, Auth) {
   });
 });
 
+app.controller('HomeController', function($scope, $http, Auth) {
+  $scope.hasTicket = false;
+
+  $scope.init = function() {
+    if (Auth.isLoggedIn()) {
+      $http.get('/api/users/ticket')
+        .success(function (data) {
+          $scope.hasTicket = $scope.loggedIn && data.ticket && data.ticket.paid;
+        })
+        .error(function (err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+    }
+  };
+
+  $scope.init();
+  $scope.$on('login', function() {
+    $scope.init();
+  });
+});
+
 app.controller('GamesController', function($scope, $http) {
   $http.get('/assets/games.json')
     .success(function(games) {
@@ -918,8 +939,10 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
 });
 
 app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
-  $routeProvider.when('/', {
-    templateUrl: 'partials/home.html'
+  $routeProvider
+  .when('/', {
+    templateUrl: 'partials/home.html',
+    controller: 'HomeController'
   })
   .when('/tickets', {
     templateUrl: 'partials/tickets.html',
