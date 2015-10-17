@@ -617,6 +617,9 @@ table.table-no-margin {
   line-height: 30px;
   font-size: 20px;
 }
+.tournaments .panel .panel-heading .panel-title small {
+  padding-left: 10px;
+}
 /* END TOURNAMENTS */
 
 /* BEGIN BTN-SUBSCRIBE */
