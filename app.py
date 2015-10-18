@@ -3,10 +3,8 @@ import hashlib
 import mail
 import uuid
 import logging
-import os
 import json
 
-from os.path import isdir, isfile, dirname
 from datetime import datetime
 
 from logging import Formatter
@@ -21,17 +19,13 @@ from paypalrestsdk import Payment as PaypalPayment
 from sqlalchemy import or_, not_
 from sqlalchemy.orm import contains_eager
 
-from reportlab.pdfgen import canvas
-from reportlab.graphics.shapes import Drawing
-from reportlab.graphics.barcode.qr import QrCodeWidget
-from reportlab.graphics import renderPDF
-from reportlab.lib.units import cm
-
 # Lanmomo's imports
 from database import db_session, init_db, init_engine
 from models import Ticket, User, Payment, Team, TeamUser
 
 from paypal import Paypal
+
+from pdfticket import PDFTicket
 
 
 ERR_INVALID_PAYPAL = """\
@@ -61,41 +55,6 @@ def set_app_commit():
     commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
     if len(commit) <= 41:
         app.config['CURRENT_COMMIT'] = commit[:-1].decode('utf8')
-
-
-def get_qr_filename_for_ticket(ticket):
-    return 'cache/%s/billet.pdf' % ticket.qr_token
-
-
-def create_pdf_from_ticket(ticket, filename):
-    if isfile(filename):
-        return
-
-    if not isdir(dirname(filename)):
-        os.makedirs(dirname(filename))
-
-    qr_string = '{}/qr/{}'.format(app.config['WEB_ROOT'], ticket.qr_token)
-
-    p = canvas.Canvas(filename)
-    p.translate(cm * 5.2, cm * 12)
-    qrw = QrCodeWidget(qr_string)
-    b = qrw.getBounds()
-
-    w = b[2] - b[0]
-    h = b[3] - b[1]
-
-    d = Drawing(240, 240, transform=[240 / w, 0, 0, 240 / h, 0, 0])
-    d.add(qrw)
-
-    line1 = """\
-Veuillez présenter ce code QR à l'acceuil lors de votre arrivée au LAN."""
-    line2 = "Il est recommandé d'enregistrer ce PDF sur un appareil mobile," +\
-        " mais il est aussi possible de l'imprimer."
-    p.drawCentredString(5 * cm, 15 * cm, line1)
-    p.drawCentredString(5 * cm, 16 * cm, line2)
-
-    renderPDF.draw(d, p, 40, 180)
-    p.save()
 
 
 def get_logger():
@@ -514,10 +473,10 @@ def download_ticket_pdf():
     if not ticket:
         return bad_request('Pas de billet')
 
-    pdf_filename = get_qr_filename_for_ticket(ticket)
-    create_pdf_from_ticket(ticket, pdf_filename)
+    pdf = PDFTicket(ticket, app.config['WEB_ROOT'])
+    pdf.build()
 
-    return send_file(pdf_filename, mimetype='application/pdf',
+    return send_file(pdf.get_filename(), mimetype='application/pdf',
                      as_attachment=False)
 
 
@@ -655,16 +614,14 @@ def complete_purchase(ticket):
 
         db_session.execute('UNLOCK TABLES;')
 
-        # Temp file for the PDF
-        pdf_filename = get_qr_filename_for_ticket(ticket)
-        # Create PDF with the QR code linking to online verification
-        create_pdf_from_ticket(ticket, pdf_filename)
+        pdf = PDFTicket(ticket, app.config['WEB_ROOT'])
+        pdf.build()
 
         # Find ticket owner to send email to
         user = User.query.filter(User.id == ticket.owner_id).one()
         fullname = '%s %s' % (user.firstname, user.lastname)
         subject = 'Confirmation de votre achat de billet du LAN Montmorency'
-        attachments = [pdf_filename]
+        attachments = [pdf.get_filename()]
         message = ("""\
 Bonjour %s, <br><br>
 Vous trouverez ci-joint votre billet du LAN Montmorency en format PDF.
