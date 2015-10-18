@@ -4,12 +4,12 @@ server {
 
     server_name lanmomo.org www.lanmomo.org;
 
-    rewrite ^/(about|contact|execute|faq|games|home|login|map|pay|profile|qr|servers|signup|signup-modal|terms|terms-partial|tickets|tournaments|users|verify) / last;
+    rewrite ^/(about|contact|execute|faq|games|home|login|map|pay|profile|qr|servers|signup|signup-modal|terms|terms-partial|tickets|tickets-modal|tournaments|tournaments-modal|users|verify) / last;
 
     access_log off;
     error_log off;
 
-    location ~* \.(?:manifest|appcache|html?|xml|json)$ {
+    location ~* \.(?:manifest|appcache|html?|xml|json|pdf)$ {
         expires -1;
     }
 
