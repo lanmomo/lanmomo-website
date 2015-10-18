@@ -344,7 +344,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
   });
 });
 
-app.controller('TicketsController', function($scope, $http, $location, Auth, Timer) {
+app.controller('TicketsController', function($scope, $http, $location, $modal, Auth, Timer) {
   $scope.canBuy = false;
   $scope.ticket = null;
   $scope.submitted = false;
@@ -464,6 +464,24 @@ app.controller('TicketsController', function($scope, $http, $location, Auth, Tim
     } else {
       console.log('wrong type id');
     }
+  };
+
+  $scope.modal = function() {
+    $modal.open({
+      controller: 'TicketsModalController',
+      templateUrl: 'partials/tickets-modal.html'
+    });
+  };
+});
+
+app.controller('TicketsModalController', function($scope, $modalInstance, $location) {
+  $scope.signup = function() {
+    $modalInstance.close();
+    $location.path('/signup');
+  };
+  $scope.login = function() {
+    $modalInstance.close();
+    $location.path('/login');
   };
 });
 
