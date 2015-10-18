@@ -451,6 +451,10 @@ table.table-no-margin {
   /*width: 90px;*/
   height: 90px;
 }
+.tickets .panel .media .media-body .media-heading sup {
+  top: -1em;
+  font-size: 50%;
+}
 .tickets .panel .media .media-body .ticket-date {
   font-size: 1.2em;
   margin-top: 10px;
