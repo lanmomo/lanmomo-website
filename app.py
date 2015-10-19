@@ -43,9 +43,10 @@ ERR_COMPLETION = """\
 Une erreur est survenue lors de la mise à jour de votre billet."""
 
 MSG_SUCCESS_PAY = """\
-Félicitations, votre billet est maintenant payé ! Vous allez recevoir votre
-billet en format PDF par courriel. Si le message n'est pas reçu dans les
-prochaines minutes, vérifiez votre courrier indésirable."""
+Félicitations ! Votre billet est maintenant payé. Vous recevrez votre billet
+en format PDF par courriel. Si le message n'est pas reçu dans les prochaines
+minutes, vérifiez votre courrier indésirable. Vous pouvez aussi télécharger
+votre billet depuis la page Mon profile."""
 
 app = Flask(__name__)
 
