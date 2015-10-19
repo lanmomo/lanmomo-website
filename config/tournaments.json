@@ -35,6 +35,12 @@
       "title": "Super Smash Bros Melee",
       "team_size": 1,
       "rules": "1v1"
-    }
+  },
+  {
+    "game": "HS",
+    "title": "Hearthstone",
+    "team_size": 1,
+    "rules": "1v1"
+  }
   ]
 }
