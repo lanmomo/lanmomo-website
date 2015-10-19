@@ -610,7 +610,7 @@ app.controller('ExecuteController', function ($scope, $http, $location, $routePa
     });
 });
 
-app.controller('ProfileController', function ($scope, $http) {
+app.controller('ProfileController', function ($scope, $http, Auth) {
   $scope.alerts= [];
   $scope.state = {
     submitted: false,
@@ -623,25 +623,34 @@ app.controller('ProfileController', function ($scope, $http) {
     emailAvailable: false
   };
 
-  $http.get('/api/profile')
-    .success(function(data) {
-      $scope.userData = data.user;
-      $scope.formUser = angular.copy($scope.userData);
-      $scope.resetMods();
-    })
-    .error(function(err, status) {
-      $scope.error = {message: err.message, status: status};
-    });
-  $http.get('/api/users/ticket')
-    .success(function(data) {
-      if (data.ticket) {
-        $scope.userTicket = data.ticket;
-        $scope.qrCodeString = data.ticket.qr_url;
-      }
-    })
-    .error(function(err) {
-      $scope.alerts.push({msg: err.message, type: 'danger'});
-    });
+  $scope.init = function() {
+    if (Auth.isLoggedIn()) {
+      $http.get('/api/profile')
+        .success(function(data) {
+          $scope.userData = data.user;
+          $scope.formUser = angular.copy($scope.userData);
+          $scope.resetMods();
+        })
+        .error(function(err, status) {
+          $scope.error = {message: err.message, status: status};
+        });
+      $http.get('/api/users/ticket')
+        .success(function(data) {
+          if (data.ticket) {
+            $scope.userTicket = data.ticket;
+            $scope.qrCodeString = data.ticket.qr_url;
+          }
+        })
+        .error(function(err) {
+          $scope.alerts.push({msg: err.message, type: 'danger'});
+        });
+    }
+  };
+
+  $scope.init();
+  $scope.$on('login', function() {
+    $scope.init();
+  });
 
   $scope.submitUserMods = function () {
     $http.put('/api/users', $scope.formUser)
