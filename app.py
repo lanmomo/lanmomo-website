@@ -202,11 +202,13 @@ def add_team():
     return jsonify({'message': 'Équipe Créé'}), 200
 
 
-@app.route('/api/teams/<id>', methods=['DELETE'])
-def delete_team(id):
+@app.route('/api/teams/<id>', methods=['PUT'])
+def change_Team_name(id):
     if 'user_id' not in session:
         return login_in_please()
     user_id = session['user_id']
+
+    req = request.get_json()
 
     team = Team.query.filter(Team.id == id).first()
     if not team:
@@ -216,6 +218,28 @@ def delete_team(id):
         return jsonify({'message':
                         "Vous n'êtes pas le capitaine de cette équipe"}), 401
     else:
+        team.name = req['team_name']
+        db_session.commit()
+
+
+@app.route('/api/teams/<id>', methods=['DELETE'])
+def delete_team(id):
+    if 'user_id' not in session:
+        return login_in_please()
+    user_id = session['user_id']
+
+    team = Team.query.filter(Team.id == id).first()
+    members = TeamUser.query.filter(TeamUser.team_id == id)
+    if not team:
+        return jsonify({'message': 'no team found'}), 500
+
+    if team.captain_id != user_id:
+        return jsonify({'message':
+                        "Vous n'êtes pas le capitaine de cette équipe"}), 401
+    else:
+        if members:
+            for member in members:
+                db_session.delete(member)
         db_session.delete(team)
         db_session.commit()
         return jsonify({'message': 'Équipe Supprimé!'}), 200
