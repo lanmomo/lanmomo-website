@@ -70,12 +70,14 @@ class Ticket():
         return '<Ticket %r>' % (self.id)
 
     def as_pub_dict(self):
-        formatted_date = self.reserved_until.strftime('%Y-%m-%dT%H:%M:%S')
+        reserved_until = self.reserved_until.strftime('%Y-%m-%dT%H:%M:%S')
+        now = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
         pub_dict = {
             'type_id': self.type_id,
             'owner_id': self.owner_id,
             'paid': self.paid,
-            'reserved_until': formatted_date,
+            'reserved_until': reserved_until,
+            'now': now,
             'price': self.price,
             'discount_amount': self.discount_amount,
             'total': self.total
