@@ -55,7 +55,8 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
   .factory('Timer', function($rootScope, $interval) {
     return {
       intervalPromise: null,
-      timestamp: null,
+      timestamp_until: null,
+      diff: null,
       /**
        * Timer bootstrap method.
        *
@@ -67,9 +68,11 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
        * @param {Date} datetime Date object or string representing a date.
        *
        */
-      bootstrap: function($scope, datetime) {
+      bootstrap: function($scope, datetime_now, datetime_until) {
         this.cleanup();
-        this.timestamp = moment(datetime).valueOf();
+        this.timestamp_until = moment(datetime_until).valueOf();
+        var timestamp_now = moment(datetime_now).valueOf();
+        this.diff = timestamp_now - Date.now();
 
         this.intervalPromise = $interval(function() {
           this.refresh();
@@ -80,7 +83,7 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
         }.bind(this));
       },
       refresh: function() {
-        var date = this.timestamp - Date.now();
+        var date = this.timestamp_until - (Date.now() + this.diff);
 
         if (date < 1) {
             $interval.cancel(this.intervalPromise);
@@ -106,7 +109,8 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
         }
 
         this.intervalPromise = null;
-        this.timestamp = null;
+        this.timestamp_until = null;
+        this.diff = null;
       }
     };
   });
@@ -361,8 +365,8 @@ app.controller('TicketsController', function($scope, $http, $location, $modal, A
     if (Auth.isLoggedIn()) {
       $http.get('/api/users/ticket')
         .success(function (data) {
-          if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
-            Timer.bootstrap($scope, data.ticket.reserved_until);
+          if (data.ticket && !data.ticket.paid && data.ticket.now && data.ticket.reserved_until) {
+            Timer.bootstrap($scope, data.ticket.now, data.ticket.reserved_until);
           }
           $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid);
           $scope.ticket = data.ticket;
@@ -496,8 +500,8 @@ app.controller('PayController', function($scope, $http, $window, $interval, Time
       } else {
         $scope.error = {message: 'Vous n\'avez sélectionné aucun billet.'};
       }
-      if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
-        Timer.bootstrap($scope, data.ticket.reserved_until);
+      if (data.ticket && !data.ticket.paid && data.ticket.now && data.ticket.reserved_until) {
+        Timer.bootstrap($scope, data.ticket.now, data.ticket.reserved_until);
       }
     })
     .error(function(err, status) {
@@ -868,8 +872,8 @@ app.controller('MapController', function($scope, $http, $interval, $location, Au
             $scope.userTicketSeatID = data.ticket.seat_num;
             $scope.userTicketOwner = data.ticket.owner_username;
           }
-          if (data.ticket && !data.ticket.paid && data.ticket.reserved_until) {
-            Timer.bootstrap($scope, data.ticket.reserved_until);
+          if (data.ticket && !data.ticket.paid && data.ticket.now && data.ticket.reserved_until) {
+            Timer.bootstrap($scope, data.ticket.now, data.ticket.reserved_until);
           }
           $scope.canBuy = ($scope.loggedIn && !data.ticket) || ($scope.loggedIn && data.ticket && !data.ticket.paid)
         })
