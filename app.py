@@ -134,6 +134,17 @@ def func():
     session.modified = True
 
 
+@app.teardown_request
+def try_unlock(e):
+    if e:
+        app.logger.error(e)
+    try:
+        # Let's hope to find a better way
+        db_session.execute('UNLOCK TABLES;')
+    except:
+        pass
+
+
 @app.route('/api/team_users', methods=['GET'])
 def get_team_user():
     pub_team_users = []
