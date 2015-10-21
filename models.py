@@ -150,8 +150,11 @@ class Ticket():
             db_session.execute('UNLOCK TABLES;')
             return True, ticket
         except Exception as e:
-            db_session.rollback()
-            db_session.execute('UNLOCK TABLES;')
+            try:
+                db_session.rollback()
+                db_session.execute('UNLOCK TABLES;')
+            except Exception as e:
+                pass
             return False, '''\
 Une erreur inconnue être survenue lors de la réservation de votre bilet.''',
             str(e)

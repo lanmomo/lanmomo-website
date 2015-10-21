@@ -367,8 +367,10 @@ def change_seat():
         app.logger.error('Erreur lors du changement de siège: "%s"' % str(e))
         res = jsonify({'message': 'Erreur inconnue.'}), 500
     finally:
-        db_session.execute('UNLOCK TABLES;')
-
+        try:
+            db_session.execute('UNLOCK TABLES;')
+        except:
+            passs
     return res
 
 
@@ -676,6 +678,10 @@ Merci et à bientôt !<br><br>
         # Send email with payment confirmation
         send_email(user.email, fullname, subject, message, attachments)
     except Exception as e:
+        try:
+            db_session.execute('UNLOCK TABLES;')
+        except:
+            pass
         app.logger.error(
             'Erreur lors de la fermeture de la commande pour ' +
             'le billet "%s"!: "%s"'
