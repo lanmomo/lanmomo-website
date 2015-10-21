@@ -10,7 +10,7 @@ db_session = scoped_session(
 
 def init_engine(uri):
     global engine
-    engine = create_engine(uri, convert_unicode=True)
+    engine = create_engine(uri, convert_unicode=True, pool_recycle=60)
     return engine
 
 
