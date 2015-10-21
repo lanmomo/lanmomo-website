@@ -617,6 +617,22 @@ table.table-no-margin {
 /* END PAY */
 
 /* BEGIN TOURNAMENTS */
+.tournaments .well .img-container {
+  position: relative;
+  width: 100%;
+}
+.tournaments .well .img-container .overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  text-align: center;
+  color: #ffffff;
+  background: rgb(0, 0, 0); /* fallback color */
+  background: rgba(0, 0, 0, 0.7);
+}
 .tournaments .panel .panel-heading .panel-title {
   line-height: 30px;
   font-size: 20px;
