@@ -823,7 +823,8 @@ Merci et à bientôt !<br><br>
 
     return jsonify({'message': """\
 Un message de confirmation a été envoyé à votre adresse courriel. Si le message
- n'est pas reçu dans les prochaines minutes, vérifiez votre courrier indésirable !"""}), 201
+ n'est pas reçu dans les prochaines minutes,\
+ vérifiez votre courrier indésirable !"""}), 201
 
 
 @app.route('/api/users', methods=['PUT'])
