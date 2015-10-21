@@ -1,46 +1,68 @@
 {
   "tournaments": [
     {
-      "game": "LoL",
-      "title": "League of Legends",
-      "team_size": 5,
-      "rules": "5v5"
-    },
-    {
       "game": "CS:GO",
       "title": "Counter Strike: Global Offensive",
+      "imagePath": "/assets/game_banners/csgo.jpg",
       "team_size": 5,
-      "rules": "5v5"
+      "rules": "5v5",
+      "prize": "100$ à gagner"
+    },
+    {
+      "game": "LoL",
+      "title": "League of Legends",
+      "imagePath": "/assets/game_banners/lol.jpg",
+      "team_size": 5,
+      "rules": "5v5",
+      "prize": "100$ à gagner"
     },
     {
       "game": "RL",
       "title": "Rocket League",
+      "imagePath": "/assets/game_banners/rl.jpg",
       "team_size": 2,
-      "rules": "2v2"
+      "rules": "2v2",
+      "prize": "50$ à gagner"
     },
     {
       "game": "TMNF",
       "title": "TrackMania Nations Forever",
+      "imagePath": "/assets/game_banners/tmnations.jpg",
       "team_size": 1,
-      "rules": "1 contre tous"
+      "rules": "1 contre tous",
+      "prize": "Articles Nadeo à gagner"
+    },
+    {
+      "game": "HS",
+      "title": "Hearthstone",
+      "imagePath": "/assets/game_banners/hs.jpg",
+      "team_size": 1,
+      "rules": "1v1",
+      "prize": "Tournois amical"
     },
     {
       "game": "S4",
-      "title": "Super Smash Bros 4",
+      "title": "Super Smash Bros. 4",
+      "imagePath": "/assets/game_banners/ssb4.jpg",
       "team_size": 1,
-      "rules": "1v1"
+      "rules": "1v1",
+      "prize": "50$ à gagner"
     },
     {
       "game": "Melee",
-      "title": "Super Smash Bros Melee",
+      "title": "Super Smash Bros. Melee",
+      "imagePath": "/assets/game_banners/melee.jpg",
       "team_size": 1,
-      "rules": "1v1"
-  },
-  {
-    "game": "HS",
-    "title": "Hearthstone",
-    "team_size": 1,
-    "rules": "1v1"
-  }
+      "rules": "1v1",
+      "prize": "50$ à gagner"
+    },
+    {
+      "game": "PM",
+      "title": "ProjectM",
+      "imagePath": "/assets/game_banners/projectM.jpg",
+      "team_size": 1,
+      "rules": "1v1",
+      "prize": "50$ à gagner"
+    }
   ]
 }
