@@ -134,17 +134,6 @@ def func():
     session.modified = True
 
 
-@app.teardown_request
-def try_unlock(e):
-    if e:
-        app.logger.error(e)
-    try:
-        # Let's hope to find a better way
-        db_session.execute('UNLOCK TABLES;')
-    except:
-        pass
-
-
 @app.route('/api/team_users', methods=['GET'])
 def get_team_user():
     pub_team_users = []
@@ -362,7 +351,6 @@ def change_seat():
 
     res = None
     try:
-        db_session.execute('LOCK TABLES tickets WRITE, users READ;')
         err = change_seat_for_user(user_id, seat_num)
 
         if err:
@@ -377,16 +365,12 @@ def change_seat():
     except Exception as e:
         app.logger.error('Erreur lors du changement de siège: "%s"' % str(e))
         res = jsonify({'message': 'Erreur inconnue.'}), 500
-    finally:
-        try:
-            db_session.execute('UNLOCK TABLES;')
-        except:
-            pass
+
     return res
 
 
 def change_seat_for_user(user_id, seat_num):
-    """Please lock tables before calling. Returns error or None.
+    """Returns error or None.
     """
     try:
         current_ticket = Ticket.query.filter(Ticket.owner_id == user_id) \
@@ -551,9 +535,6 @@ def find_ticket_by_qr_token(qr_token):
 
 def err_execute_and_complete_payment(paypal_payment_id, paypal_payer_id):
     """"Returns ERROR or None"""
-    # lock table tickets
-    db_session.execute('LOCK TABLES tickets WRITE, payments WRITE;')
-
     payment = get_og_payment(paypal_payment_id)
     if not payment:
         return jsonify({'message': 'aucun paiement'}), 404
@@ -565,9 +546,6 @@ def err_execute_and_complete_payment(paypal_payment_id, paypal_payer_id):
         return err
 
     prepare_payment_execution(payment, paypal_payer_id, ticket)
-
-    # Unlock tables (we do not want to lock while we query the paypal api)
-    db_session.execute('UNLOCK TABLES;')
 
     # Validate payment is created
     paypal_payment = PaypalPayment.find(paypal_payment_id)
@@ -597,18 +575,11 @@ def execute_payment():
         err = err_execute_and_complete_payment(paypal_payment_id, payer_id)
         if err:
             db_session.rollback()
-            db_session.execute('UNLOCK TABLES;')
             return err
 
         # Success
         return jsonify({'message': MSG_SUCCESS_PAY}), 200
     except Exception as e:
-        try:
-            db_session.rollback()
-            # try to unlock table
-            db_session.execute('UNLOCK TABLES;')
-        except:
-            pass
         app.logger.error(
             'Exception lors de l\'exécution de paiment: "%s"' % str(e))
         return jsonify({'message': 'Une erreur inconnue est survenue.'}), 500
@@ -662,13 +633,10 @@ def get_err_from_ticket(ticket):
 
 def complete_purchase(ticket):
     try:
-        db_session.execute('LOCK TABLES tickets WRITE, payments WRITE;')
         # update ticket
         ticket.paid = True
         db_session.add(ticket)
         db_session.commit()
-
-        db_session.execute('UNLOCK TABLES;')
 
         pdf = PDFTicket(ticket, app.config['WEB_ROOT'])
         pdf.build()
@@ -689,10 +657,6 @@ Merci et à bientôt !<br><br>
         # Send email with payment confirmation
         send_email(user.email, fullname, subject, message, attachments)
     except Exception as e:
-        try:
-            db_session.execute('UNLOCK TABLES;')
-        except:
-            pass
         app.logger.error(
             'Erreur lors de la fermeture de la commande pour ' +
             'le billet "%s"!: "%s"'
