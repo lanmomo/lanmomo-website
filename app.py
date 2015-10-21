@@ -370,7 +370,7 @@ def change_seat():
         try:
             db_session.execute('UNLOCK TABLES;')
         except:
-            passs
+            pass
     return res
 
 
