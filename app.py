@@ -115,7 +115,7 @@ def user_in_team(game, user_id):
 def team_is_full(id):
     team = Team.query.filter(Team.id == id).first()
     if not team:
-        return false
+        return False
     members = TeamUser.query.filter(TeamUser.team_id == id).count()
     for tournament in tournaments['tournaments']:
         if tournament['game'] == team.game:
@@ -153,14 +153,14 @@ def join_team():
     req = request.get_json()
     team_user = TeamUser(req['team_id'], user_id)
     if user_in_team(req['game'], user_id):
-        return jsonify({'message': "Vous êtes déja dans une équipe."}), 400
+        return jsonify({'message': "Vous êtes déjà dans une équipe."}), 400
 
     if team_is_full(req['team_id']):
         return jsonify({'message': "L'équipe est pleine."}), 400
 
     db_session.add(team_user)
     db_session.commit()
-    return jsonify({'message': 'Équipe Créée.'}), 200
+    return jsonify({'message': "Vous avez bien rejoint l'équipe."}), 200
 
 
 @app.route('/api/team_users/<id>', methods=['DELETE'])
@@ -172,16 +172,16 @@ def delete_team_user(id):
     team_user = TeamUser.query.filter(TeamUser.id == id).first()
     team = Team.query.filter(Team.id == team_user.team_id).first()
     if not team_user:
-        return jsonify({'message': 'Aucun Utilisateur Trouvé'}), 404
+        return jsonify({'message': "Aucun utilisateur n'a été trouvé."}), 404
 
     if team.captain_id != user_id and user_id != team_user.user_id:
-        return jsonify({'message': "Vous n'êtes pas le capitaine " +
-                        "de cette équipe."}), 401
+        return jsonify({'message':
+                        "Vous n'êtes pas le capitaine de cette équipe."}), 401
 
     db_session.delete(team_user)
     db_session.commit()
-    return jsonify({'message': "cette personne à été " +
-                    "exclus de l'équipe."}), 200
+    return jsonify({'message': "Cette personne à bien été " +
+                    "retiré de l'équipe."}), 200
 
 
 @app.route('/api/teams', methods=['GET'])
@@ -208,12 +208,12 @@ def add_team():
             captain_has_team(team.game, team.captain_id) or \
             user_in_team(team.game, user_id) or \
             not user_has_paid_ticket(user_id):
-        return jsonify({'message': "Vous avez déja une équipe pour ce jeu " +
+        return jsonify({'message': "Vous avez déjà une équipe pour ce jeu " +
                         "ou le nom d'équipe est deja utilisé."}), 400
 
     db_session.add(team)
     db_session.commit()
-    return jsonify({'message': 'Équipe Créée'}), 200
+    return jsonify({'message': "L'équipe a bien été créée."}), 200
 
 
 @app.route('/api/teams/<id>', methods=['PUT'])
