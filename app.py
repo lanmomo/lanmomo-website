@@ -823,9 +823,9 @@ def mod_user():
     for mod_key in mod_keys:
         if mod_key in req and getattr(user, mod_key) != req[mod_key]:
             if mod_key == 'email' and email_exists(req['email']):
-                return jsonify({'Courriel déjà utilisé.'}), 409
+                return jsonify({message: 'Courriel déjà utilisé.'}), 409
             if mod_key == 'username' and username_exists(req['username']):
-                return jsonify({'Pseudonyme déjà utilisé.'}), 409
+                return jsonify({message: 'Pseudonyme déjà utilisé.'}), 409
             has_update = True
             setattr(user, mod_key, req[mod_key])
 
