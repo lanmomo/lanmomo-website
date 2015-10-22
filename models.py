@@ -95,8 +95,6 @@ class Ticket():
 
     def book_temp(user_id, ticket_type, price, tickets_max, seat_num=None):
         try:
-            db_session.execute('LOCK TABLES tickets WRITE;')
-
             # Get reservation and paid ticket total count for user
             user_ticket_count = Ticket.query \
                 .filter(Ticket.owner_id == user_id) \
@@ -107,7 +105,6 @@ class Ticket():
             # Check if user can order a ticket
             if user_ticket_count > 0:
                 db_session.rollback()
-                db_session.execute('UNLOCK TABLES;')
                 return False, \
                     'Vous avez déjà un billet ou une réservation en cours !'
 
@@ -121,7 +118,6 @@ class Ticket():
             # Check if more tickets is allowed for this type
             if ticket_type_count >= tickets_max[ticket_type]:
                 db_session.rollback()
-                db_session.execute('UNLOCK TABLES;')
                 return False, \
                     'Le maximum de billet a été réservé pour le moment !'
 
@@ -134,7 +130,6 @@ class Ticket():
                     .count()
                 if wanted_seat_count > 0:
                     db_session.rollback()
-                    db_session.execute('UNLOCK TABLES;')
                     return False, \
                         'Ce siège est déjà occupé ou réservé !'
 
@@ -147,12 +142,10 @@ class Ticket():
             db_session.add(ticket)
 
             db_session.commit()
-            db_session.execute('UNLOCK TABLES;')
             return True, ticket
         except Exception as e:
             try:
                 db_session.rollback()
-                db_session.execute('UNLOCK TABLES;')
             except Exception as e:
                 pass
             return False, '''\
