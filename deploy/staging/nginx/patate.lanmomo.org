@@ -9,7 +9,7 @@ server {
     access_log off;
     error_log off;
 
-    location ~* \.(?:manifest|appcache|html?|xml|json|pdf)$ {
+    location ~* \.(?:manifest|appcache|html?|xml|json)$ {
         expires -1;
     }
 
