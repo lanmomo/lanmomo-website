@@ -515,9 +515,13 @@ def download_ticket_pdf():
 
     pdf = PDFTicket(ticket, app.config['WEB_ROOT'])
     pdf.build()
+    response = send_file(pdf.get_filename(), mimetype='application/pdf',
+                         as_attachment=False)
 
-    return send_file(pdf.get_filename(), mimetype='application/pdf',
-                     as_attachment=False)
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, \
+post-check=0, pre-check=0, max-age=0'
+    response.headers['Expires'] = '-1'
+    return response
 
 
 @app.route('/api/qr/<qr_token>', methods=['GET'])
@@ -823,9 +827,9 @@ def mod_user():
     for mod_key in mod_keys:
         if mod_key in req and getattr(user, mod_key) != req[mod_key]:
             if mod_key == 'email' and email_exists(req['email']):
-                return jsonify({message: 'Courriel déjà utilisé.'}), 409
+                return jsonify({'message': 'Courriel déjà utilisé.'}), 409
             if mod_key == 'username' and username_exists(req['username']):
-                return jsonify({message: 'Pseudonyme déjà utilisé.'}), 409
+                return jsonify({'message': 'Pseudonyme déjà utilisé.'}), 409
             has_update = True
             setattr(user, mod_key, req[mod_key])
 
