@@ -2,6 +2,7 @@
 
 var TICKET_TYPES = {PC: 0, CONSOLE: 1};
 var TICKET_TYPES_STR = {0: 'BYOC', 1: 'Console'};
+var LAN_START = new Date(2015, 11 - 1, 14, 10, 0, 0, 0);
 
 var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment', 'ngCookies', 'ja.qr'])
   .directive('passwordCheck', [function () {
@@ -140,7 +141,7 @@ app.controller('NavbarController', function($scope, $location, Auth) {
   });
 });
 
-app.controller('HomeController', function($scope, $http, Auth) {
+app.controller('HomeController', function($scope, $http, $sce, $interval, Auth) {
   $scope.hasTicket = false;
 
   $scope.init = function() {
@@ -159,6 +160,32 @@ app.controller('HomeController', function($scope, $http, Auth) {
   $scope.$on('login', function() {
     $scope.init();
   });
+
+  $scope.refresh = function() {
+    if (LAN_START.valueOf() > Date.now()) {
+      var start = LAN_START;
+      var units = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
+      var max = 3;
+      var html = countdown(null, start, units, max).toHTML('strong');
+
+      $scope.countdown = $sce.trustAsHtml(html);
+    } else {
+      $scope.countdown = null; $($.doge);
+
+      $interval.cancel($scope.intervalPromise);
+    }
+  };
+
+  // Do not start the countdown if it's already over
+  if (LAN_START.valueOf() > Date.now()) {
+    $scope.refresh();
+    $scope.intervalPromise = $interval(function() {
+      $scope.refresh();
+    }, 1000);
+    $scope.$on('$destroy', function() {
+      $interval.cancel($scope.intervalPromise);
+    });
+  }
 });
 
 app.controller('GamesController', function($scope, $http) {
@@ -1056,6 +1083,14 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   cfpLoadingBarProvider.includeSpinner = false;
 
   moment.locale('fr-ca');
+
+  countdown.setFormat({
+    singular: ' milliseconde| seconde| minute| heure| jour| semaine| mois| année| décennie| siècle| millénaire',
+    plural: ' millisecondes| secondes| minutes| heures| jours| semaines| mois| années| décennies| siècles| millénaires',
+    last: ' et ',
+    delim: ', ',
+    empty: 'maintenant'
+  });
 });
 
 app.filter('capitalize', function() {
