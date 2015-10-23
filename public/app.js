@@ -170,7 +170,7 @@ app.controller('HomeController', function($scope, $http, $sce, $interval, Auth) 
 
       $scope.countdown = $sce.trustAsHtml(html);
     } else {
-      $scope.countdown = null; $($.doge);
+      $scope.countdown = null; // This is still a good place for an easter egg
 
       $interval.cancel($scope.intervalPromise);
     }
