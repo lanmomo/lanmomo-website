@@ -17,6 +17,11 @@
     <i class="fa fa-info-circle"></i> {{message}}
   </div>
 
+  <div class="well" ng-show="message">
+    <p class="text-info"><i class="fa fa-info-circle"></i> Vous pouvez maintenant vous inscrire aux tournois ! Rendez-vous sur la page:</p>
+    <a href="/tournaments" class="btn btn-default btn-sm"><i class="fa fa-shield"></i> Tournois</a>
+  </div>
+
   <div class="alert alert-danger" role="alert" ng-show="error">
     <i class="fa fa-exclamation-triangle"></i> {{error.message}}
   </div>

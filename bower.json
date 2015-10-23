@@ -27,6 +27,7 @@
     "angular-route": "~1.3.14",
     "components-font-awesome": "~4.4.0",
     "moment": "~2.10.6",
+    "countdownjs": "~2.6.0",
     "angular-moment": "~0.10.3",
     "angular-bootstrap": "~0.12.1",
     "angular-cookies": "~1.3.16",

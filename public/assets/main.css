@@ -116,6 +116,10 @@ body.staging .body {
 /* END LOADING-BAR */
 
 /* BEGIN HOME */
+.countdown h3 {
+  margin: 0;
+  text-align: center;
+}
 .jumbotron {
   text-align: center;
 }

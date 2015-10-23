@@ -2,6 +2,8 @@
 
 var TICKET_TYPES = {PC: 0, CONSOLE: 1};
 var TICKET_TYPES_STR = {0: 'BYOC', 1: 'Console'};
+var LAN_START = new Date(2015, 11 - 1, 14, 10, 0, 0, 0);
+var LAN_END = new Date(2015, 11 - 1, 15, 16, 0, 0, 0);
 
 var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 'ui.bootstrap', 'angularMoment', 'ngCookies', 'ja.qr'])
   .directive('passwordCheck', [function () {
@@ -140,7 +142,7 @@ app.controller('NavbarController', function($scope, $location, Auth) {
   });
 });
 
-app.controller('HomeController', function($scope, $http, Auth) {
+app.controller('HomeController', function($scope, $http, $sce, $interval, Auth) {
   $scope.hasTicket = false;
 
   $scope.init = function() {
@@ -158,6 +160,42 @@ app.controller('HomeController', function($scope, $http, Auth) {
   $scope.init();
   $scope.$on('login', function() {
     $scope.init();
+  });
+
+  $scope.refresh = function() {
+    // Before the LAN
+    if (LAN_START.valueOf() > Date.now()) {
+      var start = LAN_START;
+      var units = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
+      var max = 3;
+      var html = countdown(null, start, units, max).toHTML('strong');
+
+      $scope.countdown = $sce.trustAsHtml('<i class="fa fa-clock-o"></i> Il reste ' + html + ' avant le LAN !');
+
+    // While the LAN
+    } else if (LAN_START.valueOf() <= Date.now() && LAN_END.valueOf() > Date.now()) {
+      $scope.countdown = $sce.trustAsHtml('<span class="text-success"><i class="fa fa-play"></i> Le LAN est maintenant commencé !</span>');
+
+    // After the LAN
+    } else if (LAN_END.valueOf() <= Date.now()) {
+      $scope.countdown = $sce.trustAsHtml('Le LAN est maintenant terminé ! Merci à tous ceux qui ont participé !');
+
+      $interval.cancel($scope.intervalPromise);
+
+    // imgur.com/nIF8e
+    } else {
+      $scope.countdown = null;
+
+      $interval.cancel($scope.intervalPromise);
+    }
+  };
+
+  $scope.refresh();
+  $scope.intervalPromise = $interval(function() {
+    $scope.refresh();
+  }, 1000);
+  $scope.$on('$destroy', function() {
+    $interval.cancel($scope.intervalPromise);
   });
 });
 
@@ -1056,6 +1094,14 @@ app.config(function($routeProvider, $locationProvider, cfpLoadingBarProvider) {
   cfpLoadingBarProvider.includeSpinner = false;
 
   moment.locale('fr-ca');
+
+  countdown.setFormat({
+    singular: ' milliseconde| seconde| minute| heure| jour| semaine| mois| année| décennie| siècle| millénaire',
+    plural: ' millisecondes| secondes| minutes| heures| jours| semaines| mois| années| décennies| siècles| millénaires',
+    last: ' et ',
+    delim: ', ',
+    empty: 'maintenant'
+  });
 });
 
 app.filter('capitalize', function() {
