@@ -21,6 +21,13 @@
     </div>
   </div>
 
+  <div class="well">
+    <p class="text-danger"><i class="fa fa-exclamation-triangle"></i> <strong>Attention!</strong> PayPal procède présentement à des vérifications sur notre compte. La vente de billet est n'est présentement pas disponible ! </br>Nous enverrons un courriel au membres du site lorsque la situation sera résolue.</p>
+    <div class="btn-group" role="group">
+      <a href="/signup" class="btn btn-default btn-sm"><i class="fa fa-pencil-square-o"></i> Créer un compte</a>
+    </div>
+  </div>
+
   <div ng-hide="loggedIn">
     <div class="well">
       <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Attention!</strong> Vous devez être connecté pour réserver un siège.</p>
@@ -84,8 +91,9 @@
       </div>
       <div class="media-body preview-text" ng-show="selectSeatIsFree">
         <h3 class="media-heading text-success">Disponible</h3>
-        <p ng-show="canBuy"><button class="btn btn-success" ng-disabled="submitted" ng-click="buy(selectedSeatID)">Réserver ce siège <i class="fa fa-chevron-right"></i></button></p>
+        <!-- <p ng-show="canBuy"><button class="btn btn-success" ng-disabled="submitted" ng-click="buy(selectedSeatID)">Réserver ce siège <i class="fa fa-chevron-right"></i></button></p> -->
         <p ng-hide="canBuy">Ce siège est disponible.</p>
+        <span class="label label-danger">Temporairement non disponible</span>
       </div>
       <div class="media-body preview-text" ng-show="!selectSeatIsFree && !selectedSeatTicketPaid && !selectedSeatIsUserPaidSeat">
         <h3 class="media-heading text-warning">Réservé</h3>

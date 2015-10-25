@@ -416,6 +416,7 @@ def cancel_booking():
 
 @app.route('/api/tickets', methods=['POST'])
 def book_ticket():
+    return jsonify({'message': 'Paypal vérifie présentement nos informations bancaires. Veuillez réessayer demain.'}), 409
     if 'user_id' not in session:
         return login_in_please()
     user_id = session['user_id']
@@ -455,6 +456,7 @@ def book_ticket():
 
 @app.route('/api/tickets/pay', methods=['POST'])
 def pay_ticket():
+    return jsonify({'message': 'Paypal vérifie présentement nos informations bancaires. Veuillez réessayer demain.'}), 409
     if 'user_id' not in session:
         return login_in_please()
     user_id = session['user_id']
