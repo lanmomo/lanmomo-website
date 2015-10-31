@@ -7,6 +7,7 @@
       "imagePath": "/assets/game_banners/csgo.jpg",
       "team_size": 5,
       "rules": "5v5",
+      "rules_url": "https://docs.google.com/document/d/1V1X9bnwNsVsEsW_AqCwxgnVhIJFaK3jv34WH3x4KE5Q/edit",
       "prize": "100$ à gagner"
     },
     {
@@ -16,6 +17,7 @@
       "imagePath": "/assets/game_banners/lol.jpg",
       "team_size": 5,
       "rules": "5v5",
+      "rules_url": "http://cdn.leagueoflegends.com/prized-events/Tournament+Rules+Beta.pdf",
       "prize": "100$ à gagner"
     },
     {
@@ -25,6 +27,7 @@
       "imagePath": "/assets/game_banners/rl.jpg",
       "team_size": 2,
       "rules": "2v2",
+      "rules_url": "https://docs.google.com/document/d/19vkHKZMF2QB7e2iuLsArBydwYopvvveJPemlQacpL-E/edit",
       "prize": "50$ à gagner"
     },
     {
@@ -34,6 +37,7 @@
       "imagePath": "/assets/game_banners/tmnations.jpg",
       "team_size": 1,
       "rules": "1 contre tous",
+      "rules_url": "",
       "prize": "Articles Nadeo à gagner"
     },
     {
@@ -43,6 +47,7 @@
       "imagePath": "/assets/game_banners/hs.jpg",
       "team_size": 1,
       "rules": "1v1",
+      "rules_url": "",
       "prize": "Tournois amical"
     },
     {
@@ -52,6 +57,7 @@
       "imagePath": "/assets/game_banners/ssb4.jpg",
       "team_size": 1,
       "rules": "1v1",
+      "rules_url": "http://smashleaguegaming.com/tournament-rules/",
       "prize": "50$ à gagner"
     },
     {
@@ -61,6 +67,7 @@
       "imagePath": "/assets/game_banners/melee.jpg",
       "team_size": 1,
       "rules": "1v1",
+      "rules_url": "http://smashboards.com/rulesets/melee/",
       "prize": "50$ à gagner"
     },
     {
@@ -70,6 +77,7 @@
       "imagePath": "/assets/game_banners/projectM.jpg",
       "team_size": 1,
       "rules": "1v1",
+      "rules_url": "http://smashboards.com/rulesets/project-m/",
       "prize": "50$ à gagner"
     }
   ]
