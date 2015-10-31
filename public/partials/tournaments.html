@@ -15,7 +15,7 @@
 
   <div class="row tournaments">
     <div class="col-sm-6 col-md-4" ng-repeat="tournament in tournaments">
-      <div class="well" tooltip-placement="bottom" tooltip="{{ tournament.title }}">
+      <div class="well" tooltip-placement="bottom" tooltip="{{ tournament.title }}" ng-click="scrollTo(tournament.anchor)">
         <div class="img-container">
           <img ng-src="{{ tournament.imagePath }}" alt="{{ tournament.title }}" class="img-responsive" />
           <div class="overlay">{{ tournament.prize }}</div>
@@ -43,14 +43,20 @@
 
   <div class="tournaments">
     <div class="panel panel-default" ng-repeat="(key, tournament) in tournaments">
-      <div class="panel-heading clearfix">
+      <div class="panel-heading clearfix" id="{{ tournament.anchor }}">
         <button class="btn btn-success btn-sm pull-right" ng-show="hasTicket && isTeam(tournament)" ng-click="modal(tournament.game)">
           <i class="fa fa-plus"></i> Créer une équipe
         </button>
         <button class="btn btn-success btn-sm pull-right" ng-show="hasTicket && isSingle(tournament)" ng-click="joinTourney(tournament.game)">
           <i class="fa fa-plus"></i> Participer
         </button>
-        <h4 class="panel-title">{{ tournament.title }} <small>{{ tournament.rules }}</small></h4>
+        <h4 class="panel-title">
+          {{ tournament.title }}
+          <small>{{ tournament.rules }}</small>
+          <small ng-show="tournament.rules_url">
+            <a href="{{ tournament.rules_url }}"><i class="fa fa-external-link"></i> Règlements</a>
+          </small>
+        </h4>
       </div>
       <div class="panel-body">
         <table class="table table-striped table-hover">

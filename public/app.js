@@ -117,7 +117,9 @@ var app = angular.module('App', ['angular-loading-bar', 'ngAnimate', 'ngRoute', 
     };
   });
 
-app.run(function($rootScope, $http, Auth) {
+app.run(function($anchorScroll, Auth) {
+  // always scroll by 70 extra pixels (navbar height + padding)
+  $anchorScroll.yOffset = 70;
   // runs on first page load and refresh
   Auth.refresh();
 });
@@ -209,7 +211,7 @@ app.controller('GamesController', function($scope, $http) {
     });
 });
 
-app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
+app.controller('TournamentsController', function($scope, $http, $location, $anchorScroll, $modal, Auth) {
   $scope.hasTicket = false;
 
   $scope.init = function() {
@@ -327,6 +329,13 @@ app.controller('TournamentsController', function($scope, $http, $modal, Auth) {
       .error(function(err, status) {
         $scope.error = {message: err.message, status: status};
       });
+  };
+
+  $scope.scrollTo = function(hash) {
+    var previous = $location.hash();
+    $location.hash(hash);
+    $anchorScroll();
+    $location.hash(previous); // reset to old to keep any additional routing logic from kicking in
   };
 
   $scope.modal = function(game) {

@@ -621,6 +621,9 @@ table.table-no-margin {
 /* END PAY */
 
 /* BEGIN TOURNAMENTS */
+.tournaments .well {
+  cursor: pointer;
+}
 .tournaments .well .img-container {
   position: relative;
   width: 100%;
@@ -643,6 +646,9 @@ table.table-no-margin {
 }
 .tournaments .panel .panel-heading .panel-title small {
   padding-left: 10px;
+}
+.tournaments .panel .panel-heading .panel-title small .fa {
+  font-size: 85%;
 }
 /* END TOURNAMENTS */
 
