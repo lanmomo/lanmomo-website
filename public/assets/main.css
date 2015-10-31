@@ -621,6 +621,9 @@ table.table-no-margin {
 /* END PAY */
 
 /* BEGIN TOURNAMENTS */
+.tournaments .well {
+  cursor: pointer;
+}
 .tournaments .well .img-container {
   position: relative;
   width: 100%;
