@@ -19,3 +19,6 @@ TICKETS_MAX = {TYPE_IDS['pc']: 96, TYPE_IDS['console']: 32}
 PRICING = {TYPE_IDS['pc']: 20, TYPE_IDS['console']: 10}
 DISCOUNT_MOMO = 5
 LOG_PATH = 'lanmomo.log'
+
+# Server
+SERVER_TOKEN = 'SECRET'
