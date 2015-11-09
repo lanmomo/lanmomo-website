@@ -2,6 +2,7 @@ DEBUG = True
 WEB_ROOT = 'http://localhost:5000/#'
 DATABASE_URI = 'sqlite:////tmp/lanmomo-test.db'
 SECRET_KEY = 'secret'
+SERVER_TOKEN = 'SECRET'  # Used for notifier
 
 # Mailgun
 MAILGUN_USER = 'no-reply@lanmomo.org'

@@ -2,6 +2,7 @@ DEBUG = False
 WEB_ROOT = 'https://lanmomo.org'
 DATABASE_URI = 'mysql+mysqlconnector://lanmomo@localhost/lanmomo'
 SECRET_KEY = 'secret'
+SERVER_TOKEN = 'SECRET'  # Used for notifier
 
 # Mailgun
 MAILGUN_USER = 'no-reply@lanmomo.org'
