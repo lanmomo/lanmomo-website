@@ -368,6 +368,7 @@ app.controller('ServersController', function($scope, $http, $interval) {
   $scope.refresh = function() {
     $http.get('/api/servers')
       .success(function(servers) {
+        delete $scope.servers;
         $scope.servers = servers['servers'];
         $scope.state.loading = false;
       })
