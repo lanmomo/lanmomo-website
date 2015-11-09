@@ -5,7 +5,7 @@ import uuid
 import logging
 import json
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
@@ -127,6 +127,15 @@ def send_email(to_email, to_name, subject, message, attachements=None):
     mail.send_email(to_email, to_name, subject, message,
                     app.config['MAILGUN_USER'], app.config['MAILGUN_KEY'],
                     app.config['MAILGUN_DOMAIN'], attachements=attachements)
+
+
+def create_server(data):
+    return {
+        'id': data['game'],
+        'ip': data['ip'],
+        'hostname': data['hostname'],
+        'last_update': datetime.now()
+    }
 
 
 @app.before_request
@@ -265,12 +274,33 @@ def delete_team(id):
 
 @app.route('/api/servers', methods=['GET'])
 def get_servers():
-    return jsonify({'message': 'Not implemented'}), 500
+    to_pop = []
+    for i in range(len(servers)):
+        if servers[i]['last_update'] < datetime.now() - timedelta(minutes=2):
+            to_pop.append(i)
+
+    for i in range(len(to_pop)):
+        servers.pop(to_pop[i])
+
+    return jsonify({'servers': servers}), 200
 
 
 @app.route('/api/servers', methods=['POST'])
 def update_server():
-    return jsonify({'message': 'Not implemented'}), 500
+    to_pop = []
+    req = request.get_json()
+    if req['token'] == app.config['SERVER_TOKEN']:
+        for i in range(len(servers)):
+            if servers[i]['hostname'] == req['hostname']:
+                to_pop.append(i)
+
+        for i in range(len(to_pop)):
+            servers.pop(to_pop[i])
+
+        servers.append(create_server(req))
+        return jsonify({'message': 'Serveur ajouté.'}), 200
+
+    return jsonify({'message': 'Token invalide.'}), 401
 
 
 def get_ticket_from_seat_num(seat_num):
@@ -890,7 +920,9 @@ def login_in_please(message='Vous devez vous connecter.'):
 
 
 def setup(env):
-    global app, paypal_api, tournaments
+    global app, paypal_api, tournaments, servers
+
+    servers = []
 
     pub_conf_path = 'config/%s_config.py' % env
     private_conf_path = 'config/secret.%s_config.py' % env
