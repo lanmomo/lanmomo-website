@@ -129,12 +129,21 @@ def send_email(to_email, to_name, subject, message, attachements=None):
                     app.config['MAILGUN_DOMAIN'], attachements=attachements)
 
 
+def find_game_by_id(game_id_to_find):
+    for game_id, game_name in server_games.items():
+        if game_id == game_id_to_find:
+            return game_name
+
+
 def create_server(data):
     return {
-        'id': data['game'],
+        'game': {
+            'id': data['game'],
+            'name': find_game_by_id(data['game'])
+        },
         'ip': data['ip'],
         'hostname': data['hostname'],
-        'last_update': datetime.now()
+        'last_update': datetime.utcnow()
     }
 
 
@@ -920,7 +929,7 @@ def login_in_please(message='Vous devez vous connecter.'):
 
 
 def setup(env):
-    global app, paypal_api, tournaments, servers
+    global app, paypal_api, tournaments, servers, server_games
 
     servers = []
 
@@ -941,7 +950,6 @@ def setup(env):
         '[in %(pathname)s:%(lineno)d]'
     ))
     app.logger.addHandler(handler)
-
     app.logger.info('Starting lanmomo app')
 
     init_engine(app.config['DATABASE_URI'])
@@ -958,6 +966,10 @@ def setup(env):
 
     with open('config/tournaments.json') as data_file:
         tournaments = json.load(data_file)
+
+    with open('config/server_games.json') as data_file:
+        server_games = json.load(data_file)
+
     if 'STAGING' in app.config:
         app.config['CURRENT_COMMIT'] = '!!Staging is broken!!'
         set_app_commit()
