@@ -1,14 +1,14 @@
 {
-    "csgo": "CounterStrike: GlobalOffensive",
-    "csgo-comp": "CS: GO: Compétitif",
-    "css": "CounterStrike: Source",
-    "kf": "KillingFloor",
-    "mumble": "Serveurmumblepourlesjeux",
+    "csgo": "Counter-Strike: Global Offensive",
+    "csgo-comp": "CS:GO: Compétitif",
+    "css": "Counter-Strike: Source",
+    "kf": "Killing Floor",
+    "mumble": "Serveur mumble pour les jeux",
     "mc": "Minecraft",
-    "mvm": "TF2: Mannvs.Machine",
+    "mvm": "TF2: Mann vs. Machine",
     "ph": "TF2: PropHunt",
-    "tf2": "TeamFortress2",
-    "ttt": "Garry'sMod: TroubleinTerroristTown",
-    "tmnf": "TrackManiaNationsForever",
-    "ut2014": "UnrealTournament2014"
+    "tf2": "Team Fortress 2",
+    "ttt": "Garry's Mod: Trouble in Terrorist Town",
+    "tmnf": "TrackMania Nations Forever",
+    "ut2014": "Unreal Tournament 2014"
 }
